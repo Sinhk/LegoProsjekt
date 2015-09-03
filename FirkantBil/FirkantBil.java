@@ -6,7 +6,7 @@
 * 4. Endre hastighet på motorene
 * 5. Kjør framover igjen
 *
-* Programmet bruker klassen TchoPilot som er egnet til å styre en robot med to motorer
+* Programmet bruker klassen TachoPilot som er egnet til å styre en robot med to motorer
 */
 
 import lejos.hardware.motor.Motor;
