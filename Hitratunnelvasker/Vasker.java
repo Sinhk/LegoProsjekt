@@ -26,8 +26,15 @@ class Vasker{
 		try{
 		Brick brick = BrickFinder.getDefault();
 		Port lydPort = brick.getPort("S1"); // lydsensor
-		Port trykkPort = brick.getPort("S3"); // trykksensor
+		Port trykkPort1 = brick.getPort("S3"); // trykksensor1
+		Port trykkPort2 = brick.getPort("S4"); // trykksensor2
 		Port fargePort = brick.getPort("S2"); // fargesensor
+		
+		// Setter hastighet på roboten
+		Motor.A.setSpeed(90);
+		Motor.D.setSpeed(100);
+
+		Motor.C.setSpeed(900);
 			
 		EV3 ev3 = (EV3) BrickFinder.getLocal();
 		TextLCD lcd = ev3.getTextLCD();
@@ -38,8 +45,11 @@ class Vasker{
 		float[] lydSample = new float[lydsensor.sampleSize()];
 		
 		//trykksensor
-		SampleProvider trykksensor = new EV3TouchSensor(trykkPort);
-		float[] trykkSample = new float[trykksensor.sampleSize()];
+		SampleProvider trykksensor1 = new EV3TouchSensor(trykkPort1);
+		float[] trykkSample1 = new float[trykksensor1.sampleSize()];
+		SampleProvider trykksensor2 = new EV3TouchSensor(trykkPort2);
+		float[] trykkSample2 = new float[trykksensor2.sampleSize()];
+		
 		
 		
 		//fargesensor
@@ -53,24 +63,51 @@ class Vasker{
 		
 		boolean fortsett  = true;
 		
+		keys.waitForAnyPress();
+		Motor.C.forward();
 		while(fortsett) {
+			Motor.A.forward();
+			Motor.D.forward();
+			
 			lydsensor.fetchSample(lydSample, 0);
 			lcd.drawString("Lydnivaa: " + lydSample[0], 0, 2);
-			
+			lydsensor.fetchSample(lydSample, 0);
+			if (lydSample[0] > 0.6) {
+				Motor.A.stop();	
+				Motor.D.stop();
+				Thread.sleep(3000);
+				Motor.A.forward();	
+				Motor.D.forward();
+			}
 			
 			fargeLeser.fetchSample(fargeSample, 0);  // hent verdi fra fargesensor
       		lcd.drawString("Farge: " + fargeSample[0], 0, 4);
 			
 			
-			if (trykkSample != null && trykkSample.length > 0){
-				trykksensor.fetchSample(trykkSample, 0);
-				if (trykkSample[0] > 0){
-					System.out.println("Avslutter");
-					fortsett = false;
+			if (trykkSample1 != null && trykkSample1.length > 0){
+				trykksensor1.fetchSample(trykkSample1, 0);
+				if(trykkSample1[0] > 0){
+					Motor.A.stop();	
+					Thread.sleep(50);
+					Motor.A.forward();					
 	 			}
   	 		}
+			if (trykkSample2 != null && trykkSample2.length > 0){
+				trykksensor2.fetchSample(trykkSample2, 0);
+				if(trykkSample2[0] > 0){
+					Motor.A.stop();	
+					Motor.D.stop();	
+					fortsett = false;
+					
+	 			}
+  	 		}
+			
+			while(fargesensor.getColorID() != 6){
+				Motor.A.stop();	
+			}
+			Motor.A.forward();
+			
 			lcd.refresh();
-			Thread.sleep(1000);
 			lcd.clear();
 		}			
 			
