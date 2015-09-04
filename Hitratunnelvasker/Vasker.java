@@ -25,35 +25,42 @@ class Vasker{
 	public static void main (String[] arg) throws Exception  {
 		try{
 		Brick brick = BrickFinder.getDefault();
-		Port s1 = brick.getPort("S1"); // lydsensor
-		Port s2 = brick.getPort("S2"); // trykksensor
-		Port s3 = brick.getPort("S3"); // fargesensor
+		Port lydPort = brick.getPort("S1"); // lydsensor
+		Port trykkPort = brick.getPort("S3"); // trykksensor
+		Port fargePort = brick.getPort("S2"); // fargesensor
 			
 		EV3 ev3 = (EV3) BrickFinder.getLocal();
 		TextLCD lcd = ev3.getTextLCD();
-			
+		Keys keys = ev3.getKeys();
+		
 		//lydsensor
-		NXTSoundSensor lydsensor = new NXTSoundSensor(s1);
-		
-		
+		SampleProvider lydsensor = new NXTSoundSensor(lydPort).getDBMode();
+		float[] lydSample = new float[lydsensor.sampleSize()];
 		
 		//trykksensor
-		SampleProvider trykksensor = new EV3TouchSensor(s2);
-			float[] trykkSample = new float[trykksensor.sampleSize()];
+		SampleProvider trykksensor = new EV3TouchSensor(trykkPort);
+		float[] trykkSample = new float[trykksensor.sampleSize()];
 		
 		
 		//fargesensor
-		EV3ColorSensor fargesensor = new EV3ColorSensor(s3);
+		EV3ColorSensor fargesensor = new EV3ColorSensor(fargePort);
+		//.getColorIDMode();
+		//NXTColorSensor fargesensor = new NXTColorSensor(fargePort);
+		//fargesensor.getColorIDMode();
 		SampleProvider fargeLeser = fargesensor.getColorIDMode();
-		
 		float[] fargeSample = new float[fargeLeser.sampleSize()];  // tabell som innholder avlest verdi
+		
 		
 		boolean fortsett  = true;
 		
 		while(fortsett) {
+			lydsensor.fetchSample(lydSample, 0);
+			lcd.drawString("Lydnivaa: " + lydSample[0], 0, 2);
+			
 			
 			fargeLeser.fetchSample(fargeSample, 0);  // hent verdi fra fargesensor
-      		lcd.drawString("Farge: " + fargeSample[0], 0, 3);
+      		lcd.drawString("Farge: " + fargeSample[0], 0, 4);
+			
 			
 			if (trykkSample != null && trykkSample.length > 0){
 				trykksensor.fetchSample(trykkSample, 0);
@@ -62,6 +69,9 @@ class Vasker{
 					fortsett = false;
 	 			}
   	 		}
+			lcd.refresh();
+			Thread.sleep(1000);
+			lcd.clear();
 		}			
 			
 			
