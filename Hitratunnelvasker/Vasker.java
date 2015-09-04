@@ -27,9 +27,31 @@ class Vasker{
 	public static void main(String[] args) throws exceptions{
 		try{
 		Brick brick = BrickFinder.getDefault();
-    		Port s1 = brick.getPort("S1"); // fargesensor
-    		Port s2 = brick.getPort("S2"); // trykksensor
-    		Port s3 = brick.getPort("S3"); // ultrasonisksensor
+		Port s1 = brick.getPort("S1"); // lydsensor
+		Port s2 = brick.getPort("S2"); // trykksensor
+		Port s3 = brick.getPort("S3"); // fargesensor
+			
+			
+		//lydsensor
+		
+		
+		
+		
+		//trykksensor
+		
+		
+		
+		//fargesensor
+		
+		
+		
+			
+			
+			
+			
+			
+			
+			
 			
 		}	
 		
@@ -37,7 +59,7 @@ class Vasker{
 		
 		
 		
-		ost
+		
 		
 		
 		
