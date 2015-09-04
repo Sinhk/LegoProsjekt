@@ -31,8 +31,8 @@ class Vasker{
 		Port fargePort = brick.getPort("S2"); // fargesensor
 		
 		// Setter hastighet på roboten
-		Motor.A.setSpeed(90);
-		Motor.D.setSpeed(100);
+		Motor.A.setSpeed(100);
+		Motor.D.setSpeed(90);
 
 		Motor.C.setSpeed(900);
 			
@@ -62,7 +62,7 @@ class Vasker{
 		
 		
 		boolean fortsett  = true;
-		
+		lcd.drawString("Press key to start", 0, 3);
 		keys.waitForAnyPress();
 		Motor.C.forward();
 		while(fortsett) {
@@ -102,8 +102,11 @@ class Vasker{
 	 			}
   	 		}
 			
-			while(fargesensor.getColorID() != 6){
-				Motor.A.stop();	
+			if(fargesensor.getColorID() != 6){
+				Motor.A.backward();
+				Thread.sleep(4000);
+				Motor.A.setSpeed(90);
+				Motor.D.setSpeed(100);
 			}
 			Motor.A.forward();
 			
