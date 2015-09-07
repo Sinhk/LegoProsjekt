@@ -25,7 +25,6 @@ import lejos.robotics.navigation.DifferentialPilot;
 class Vasker{
 	public static void main (String[] arg) throws Exception  {
 		try{
-		DifferentialPilot  vaskar = new DifferentialPilot (2.1f, 4.4f, Motor.A, Motor.D, true);
 		Brick brick = BrickFinder.getDefault();
 		DifferentialPilot  vaskar = new DifferentialPilot (2.1f, 4.4f, Motor.A, Motor.D, true);
 		Port lydPort = brick.getPort("S1"); // lydsensor
