@@ -20,12 +20,14 @@ import lejos.hardware.Keys;
 import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
 import lejos.hardware.sensor.*;
+import lejos.robotics.navigation.DifferentialPilot;
 
 class Vasker{
 	public static void main (String[] arg) throws Exception  {
 		try{
 		DifferentialPilot  vaskar = new DifferentialPilot (2.1f, 4.4f, Motor.A, Motor.D, true);
 		Brick brick = BrickFinder.getDefault();
+		DifferentialPilot  vaskar = new DifferentialPilot (2.1f, 4.4f, Motor.A, Motor.D, true);
 		Port lydPort = brick.getPort("S1"); // lydsensor
 		Port trykkPort1 = brick.getPort("S3"); // trykksensor1
 		Port trykkPort2 = brick.getPort("S4"); // trykksensor2
@@ -77,8 +79,12 @@ class Vasker{
 			
 			lydsensor.fetchSample(lydSample, 0);
 			if (lydSample[0] > 0.6) {
+<<<<<<< HEAD
 				vaskar.stop();
 				Thread.sleep(3000);
+=======
+				vaskar.stop();	
+>>>>>>> 40d6ce487fdb012a422545f3472c28af1f03ce14
 				Motor.D.forward();
 				Motor.A.forward();
 					
