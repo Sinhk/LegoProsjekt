@@ -24,6 +24,7 @@ import lejos.hardware.sensor.*;
 class Vasker{
 	public static void main (String[] arg) throws Exception  {
 		try{
+		DifferentialPilot  vaskar = new DifferentialPilot (2.1f, 4.4f, Motor.A, Motor.D, true);
 		Brick brick = BrickFinder.getDefault();
 		Port lydPort = brick.getPort("S1"); // lydsensor
 		Port trykkPort1 = brick.getPort("S3"); // trykksensor1
@@ -76,11 +77,9 @@ class Vasker{
 			
 			lydsensor.fetchSample(lydSample, 0);
 			if (lydSample[0] > 0.6) {
-				Motor.D.stop();
-				Motor.A.stop();	
+				vaskar.stop();
 				Thread.sleep(3000);
 				Motor.D.forward();
-				Thread.sleep(200);
 				Motor.A.forward();
 					
 			}
