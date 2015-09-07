@@ -68,16 +68,16 @@ class Vasker{
 		while(fortsett) {
 			Motor.A.forward();
 			Motor.D.forward();			
-			
+			//Stop for lyd
 			lydsensor.fetchSample(lydSample, 0);
 			if (lydSample[0] > 0.6) {
 				vaskar.stop();
 				Thread.sleep(3000);
 				Motor.D.forward();
 				Motor.A.forward();
-					
 			}
 			
+			//Bruker trykksensor for kursjustering
 			if (trykkSample1 != null && trykkSample1.length > 0){
 				trykksensor1.fetchSample(trykkSample1, 0);
 				if(trykkSample1[0] > 0){
@@ -92,10 +92,10 @@ class Vasker{
 					Motor.D.stop();	
 					Thread.sleep(50);
 					Motor.D.forward();
-					
 	 			}
   	 		}
 			
+			//Snur i enden av tunnelen, fargesensor
 			if(fargesensor.getColorID() != 6){
 				Motor.C.stop();
 				if (right){
@@ -115,7 +115,8 @@ class Vasker{
 				}
 				Motor.C.forward();
 			}
-						
+			
+			//avslutter når begge trykksensor aktivers samtidig
 			trykksensor1.fetchSample(trykkSample1, 0);
 			trykksensor2.fetchSample(trykkSample2, 0);
 			if(trykkSample2[0] > 0 && trykkSample1[0] > 0){
