@@ -55,13 +55,8 @@ class Vasker{
 		SampleProvider trykksensor2 = new EV3TouchSensor(trykkPort2);
 		float[] trykkSample2 = new float[trykksensor2.sampleSize()];
 		
-		
-		
 		//fargesensor
 		EV3ColorSensor fargesensor = new EV3ColorSensor(fargePort);
-		//.getColorIDMode();
-		//NXTColorSensor fargesensor = new NXTColorSensor(fargePort);
-		//fargesensor.getColorIDMode();
 		SampleProvider fargeLeser = fargesensor.getColorIDMode();
 		float[] fargeSample = new float[fargeLeser.sampleSize()];  // tabell som innholder avlest verdi
 		
@@ -73,8 +68,6 @@ class Vasker{
 		while(fortsett) {
 			Motor.A.forward();
 			Motor.D.forward();			
-			//lydsensor.fetchSample(lydSample, 0);
-			//lcd.drawString("Lydnivaa: " + lydSample[0], 0, 2);
 			
 			lydsensor.fetchSample(lydSample, 0);
 			if (lydSample[0] > 0.6) {
@@ -84,9 +77,6 @@ class Vasker{
 				Motor.A.forward();
 					
 			}
-			
-			//fargeLeser.fetchSample(fargeSample, 0);  // hent verdi fra fargesensor
-      		//lcd.drawString("Farge: " + fargeSample[0], 0, 4);
 			
 			if (trykkSample1 != null && trykkSample1.length > 0){
 				trykksensor1.fetchSample(trykkSample1, 0);
@@ -134,7 +124,6 @@ class Vasker{
 				fortsett = false;
 			}
 		}				
-			
 			
 		}catch(Exception e){
 			System.out.println("Feil: " + e);
