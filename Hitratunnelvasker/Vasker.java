@@ -1,6 +1,6 @@
 /**
-* Vasker.java    ost
-*
+* Vasker.java 
+* 
 * Styreprogram for Hitratunnelvasker
 */
 
