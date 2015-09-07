@@ -79,12 +79,8 @@ class Vasker{
 			
 			lydsensor.fetchSample(lydSample, 0);
 			if (lydSample[0] > 0.6) {
-<<<<<<< HEAD
 				vaskar.stop();
 				Thread.sleep(3000);
-=======
-				vaskar.stop();	
->>>>>>> 40d6ce487fdb012a422545f3472c28af1f03ce14
 				Motor.D.forward();
 				Motor.A.forward();
 					
