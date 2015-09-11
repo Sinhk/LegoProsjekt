@@ -53,8 +53,8 @@ class Golfbanebil{
 		float[] ultraSample2 = new float[ultraLeser2.sampleSize()];
        
         // Setter hastighet på roboten
-        int speed1 = 150;
-    	int speed2 = 150;
+        int speed1 = 130;
+    	int speed2 = 130;
         Motor.A.setSpeed(speed1);
     	Motor.D.setSpeed(speed2);
     	
@@ -73,6 +73,7 @@ class Golfbanebil{
                 if (ultraSample1[0] <= 0.15){
                     Motor.A.backward();	
 				    Thread.sleep(1000);  
+				    Motor.A.forward();
                 }else{
                     Motor.A.stop();
                     Thread.sleep(300);
@@ -81,11 +82,12 @@ class Golfbanebil{
             }else if(ultraSample1[0] <= 0.1) {
                 if (ultraSample2[0] <= 0.15){
                     Motor.A.backward();	
-				    Thread.sleep(1500);
+				    Thread.sleep(1000);
+				    Motor.A.forward();
                 }else{
                     Motor.D.stop();
                     Thread.sleep(300);
-	        	Motor.D.forward();
+	        	    Motor.D.forward();
                 }
             }
 			Motor.A.forward();
@@ -97,11 +99,19 @@ class Golfbanebil{
             
             trykksensor1.fetchSample(trykkSample1, 0);
 			trykksensor2.fetchSample(trykkSample2, 0);
-			if(trykkSample2[0] > 0||trykkSample1[0] > 0){
-		    	Motor.A.stop();	
-				Motor.D.backward();
-				Thread.sleep(300);
-				//fortsett = false;
+			if(trykkSample2[0] > 0){
+			    pilot.backward();
+			    Thread.sleep(300);
+			    pilot.stop();
+			    pilot.rotate(20);
+			    pilot.forward();
+			} 
+			if(trykkSample1[0] > 0){
+			    pilot.backward();
+			    Thread.sleep(300);
+			    pilot.stop();
+			    pilot.rotate(-20);
+			    pilot.forward();
 			}
        
 
