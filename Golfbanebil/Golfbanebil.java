@@ -30,13 +30,14 @@ class Golfbanebil{
         Port s3 = brick.getPort("S3"); //
         Port s4 = brick.getPort("S4"); //
         
-        DifferentialPilot  pilot = new DifferentialPilot (5.7f, 11.5f, Motor.A, Motor.D, true);
+        DifferentialPilot pilot = new DifferentialPilot (5.7f, 11.5f, Motor.A, Motor.D, true);
+		pilot.setTravelSpeed(30);
+		
         EV3 ev3 = (EV3) BrickFinder.getLocal();
 		TextLCD lcd = ev3.getTextLCD();
 		
 		//Trykksensor
 		SampleProvider trykksensor1 = new EV3TouchSensor(s1);
-		pilot.setRobotSpeed(30);
 		float[] trykkSample1 = new float[trykksensor1.sampleSize()];
 		SampleProvider trykksensor2 = new EV3TouchSensor(s4);
 		float[] trykkSample2 = new float[trykksensor2.sampleSize()];
@@ -45,7 +46,7 @@ class Golfbanebil{
 		//Ultralyssensor
 		NXTUltrasonicSensor ultrasensor1 = new NXTUltrasonicSensor(s3);
 		SampleProvider ultraLeser1 = ultrasensor1.getDistanceMode();
-		float[] ultraSample1 = new float[ultraLeser2.sampleSize()];
+		float[] ultraSample1 = new float[ultraLeser1.sampleSize()];
 		
 		EV3UltrasonicSensor ultrasensor2 = new EV3UltrasonicSensor(s2);
 		SampleProvider ultraLeser2 = ultrasensor2.getDistanceMode();
@@ -61,31 +62,30 @@ class Golfbanebil{
         boolean fortsett = true;
         while(fortsett) {
             
-                
-    		
-    		
+                	
             lcd.clear();
             ultraLeser2.fetchSample(ultraSample2, 0);
-            if(ultraSample2 <= 0.03) {
+            if(ultraSample2[0] <= 0.1) {
                 Motor.A.stop();
-                Thread.sleep(300)
+                Thread.sleep(300);
                 Motor.A.forward();
 		
             }
             
             ultraLeser1.fetchSample(ultraSample1, 0);
-            if(ultraSample1 <= 0.03) {
+            if(ultraSample1[0] <= 0.1) {
                 Motor.D.stop();
-                Thread.sleep(300)
+                Thread.sleep(300);
 	        	Motor.D.forward();
             }
             
-			//lcd.drawString("Avstand: " + ultraSample2[0], 0,2);
+			lcd.drawString("Avstand: " + ultraSample2[0], 0,2);
+			lcd.drawString("Avstand: " + ultraSample1[0], 0,5);
             //Thread.sleep(400);
-            if(ultraSample1 <= 0.03 && ultraSample2 <= 0.03) {
+            if(ultraSample1[0] <= 0.1 && ultraSample2[0] <= 0.1) {
                 Motor.A.stop();	
 				Motor.D.stop();	
-                fortsett = false
+                fortsett = false;
             }
             
             trykksensor1.fetchSample(trykkSample1, 0);
