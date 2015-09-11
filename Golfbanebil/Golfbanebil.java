@@ -2,7 +2,6 @@
 * Golfbanebil.java 
 * 
 * 
-* 
 * Styreprogram for Golfbanebil
 */
 
@@ -11,13 +10,11 @@ import lejos.hardware.lcd.*;
 import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.NXTTouchSensor;
-import lejos.hardware.sensor.NXTLightSensor;
 import lejos.hardware.sensor.NXTUltrasonicSensor;
 import lejos.hardware.port.Port;
 import lejos.hardware.Brick;
 import lejos.hardware.BrickFinder;
 import lejos.hardware.ev3.EV3;
-import lejos.hardware.Keys;
 import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.navigation.DifferentialPilot;
@@ -30,8 +27,9 @@ class Golfbanebil{
         Port s3 = brick.getPort("S3"); //
         Port s4 = brick.getPort("S4"); //
         
-        DifferentialPilot pilot = new DifferentialPilot (5.7f, 11.5f, Motor.A, Motor.D, true);
-		pilot.setTravelSpeed(30);
+        DifferentialPilot pilot = new DifferentialPilot (5.7f, 11.5f, Motor.A, Motor.D, false);
+		pilot.setTravelSpeed(10);
+		pilot.setRotateSpeed(40);
 		
         EV3 ev3 = (EV3) BrickFinder.getLocal();
 		TextLCD lcd = ev3.getTextLCD();
@@ -61,23 +59,47 @@ class Golfbanebil{
     	
         boolean fortsett = true;
         while(fortsett) {
-           
+																
+			trykksensor1.fetchSample(trykkSample1, 0);
+			trykksensor2.fetchSample(trykkSample2, 0);
+			if(trykkSample2[0] > 0){
+			    pilot.backward();
+			    Thread.sleep(500);
+			    pilot.stop();
+			    pilot.rotate(-30);
+			    pilot.forward();
+			} 
+			if(trykkSample1[0] > 0){
+			    pilot.backward();
+			    Thread.sleep(300);
+			    pilot.stop();
+			    pilot.rotate(30);
+			    pilot.forward();
+			}
+			
             ultraLeser2.fetchSample(ultraSample2, 0);
-			 ultraLeser1.fetchSample(ultraSample1, 0);
-// 			if(ultraSample1[0] <= 0.1 && ultraSample2[0] <= 0.1) {
-//                 Motor.A.backward();	
-// 				Thread.sleep(1500);
-//             }else 
-            
+			ultraLeser1.fetchSample(ultraSample1, 0);            
             if(ultraSample2[0] <= 0.1) {
                 if (ultraSample1[0] <= 0.15){
                     Motor.A.backward();	
 				    Thread.sleep(1000);  
 				    Motor.A.forward();
                 }else{
-                    Motor.A.stop();
-                    Thread.sleep(300);
-                    Motor.A.forward();
+					int i = 0;
+                    while(ultraSample2[0] <= 0.1){
+						Motor.A.stop();
+						Thread.sleep(300);
+						Motor.A.forward();
+						if (i >= 5){
+							pilot.backward();
+							Thread.sleep(300);
+							pilot.stop();
+							pilot.rotate(30);
+							pilot.forward();
+						}
+						i++;
+						ultraLeser2.fetchSample(ultraSample2, 0);
+					} 
                 }
             }else if(ultraSample1[0] <= 0.1) {
                 if (ultraSample2[0] <= 0.15){
@@ -85,36 +107,26 @@ class Golfbanebil{
 				    Thread.sleep(1000);
 				    Motor.A.forward();
                 }else{
-                    Motor.D.stop();
-                    Thread.sleep(300);
-	        	    Motor.D.forward();
+					int i = 0;
+                    while(ultraSample1[0] <= 0.1){
+						Motor.D.stop();
+						Thread.sleep(300);
+						Motor.D.forward();
+						if (i >= 5){
+							pilot.backward();
+							Thread.sleep(300);
+							pilot.stop();
+							pilot.rotate(-30);
+							pilot.forward();
+						}
+						i++;
+						ultraLeser1.fetchSample(ultraSample1, 0);
+					}
+                    
                 }
             }
 			Motor.A.forward();
 			Motor.D.forward();
-            
-			lcd.drawString("Avstand: " + ultraSample2[0], 0,2);
-			lcd.drawString("Avstand: " + ultraSample1[0], 0,5);
-            //Thread.sleep(400);
-            
-            trykksensor1.fetchSample(trykkSample1, 0);
-			trykksensor2.fetchSample(trykkSample2, 0);
-			if(trykkSample2[0] > 0){
-			    pilot.backward();
-			    Thread.sleep(300);
-			    pilot.stop();
-			    pilot.rotate(20);
-			    pilot.forward();
-			} 
-			if(trykkSample1[0] > 0){
-			    pilot.backward();
-			    Thread.sleep(300);
-			    pilot.stop();
-			    pilot.rotate(-20);
-			    pilot.forward();
-			}
-       
-
         }
         
     }
