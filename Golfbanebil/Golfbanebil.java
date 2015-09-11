@@ -12,7 +12,7 @@ import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.NXTTouchSensor;
 import lejos.hardware.sensor.NXTLightSensor;
-import lejos.hardware.sensor.NXTColorSensor;
+import lejos.hardware.sensor.NXTUltrasonicSensor;
 import lejos.hardware.sensor.NXTSoundSensor;
 import lejos.hardware.port.Port;
 import lejos.hardware.Brick;
@@ -27,6 +27,7 @@ import lejos.robotics.navigation.DifferentialPilot;
 class Golfbanebil{
     public static void main (String[] arg) throws Exception  {
         boolean fortsett = true;
+		Brick brick = BrickFinder.getDefault();
         Port s1 = brick.getPort("S1"); //
         Port s2 = brick.getPort("S2"); //
         Port s3 = brick.getPort("S3"); //
@@ -38,18 +39,18 @@ class Golfbanebil{
 		
 		SampleProvider trykksensor1 = new EV3TouchSensor(s1);
 		float[] trykkSample1 = new float[trykksensor1.sampleSize()];
-		SampleProvider trykksensor2 = new EV3TouchSensor(s2);
+		SampleProvider trykksensor2 = new EV3TouchSensor(s4);
 		float[] trykkSample2 = new float[trykksensor2.sampleSize()];
 		
-		EV3ColorSensor ultrasensor = new EV3ColorSensor(s3);
+		NXTUltrasonicSensor ultrasensor = new NXTUltrasonicSensor(s3);
 		SampleProvider ultraLeser = ultrasensor.getDistanceMode();
 		float[] ultraSample = new float[ultraLeser.sampleSize()];
         
         while(fortsett) {
-            lcd.Clear()
+            lcd.clear();
             ultraLeser.fetchSample(ultraSample, 0);
 			lcd.drawString("Avstand: " + ultraSample[0], 0,2);
-            
+            Thread.sleep(400);
             
             
             trykksensor1.fetchSample(trykkSample1, 0);
