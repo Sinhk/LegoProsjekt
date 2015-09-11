@@ -72,7 +72,7 @@ class Golfbanebil{
             if(ultraSample2[0] <= 0.1) {
                 if (ultraSample1[0] <= 0.15){
                     Motor.A.backward();	
-				    Thread.sleep(1500);  
+				    Thread.sleep(1000);  
                 }else{
                     Motor.A.stop();
                     Thread.sleep(300);
