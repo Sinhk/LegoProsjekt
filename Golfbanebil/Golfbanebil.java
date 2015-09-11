@@ -64,18 +64,29 @@ class Golfbanebil{
            
             ultraLeser2.fetchSample(ultraSample2, 0);
 			 ultraLeser1.fetchSample(ultraSample1, 0);
-			if(ultraSample1[0] <= 0.1 && ultraSample2[0] <= 0.1) {
-                Motor.A.backward();	
-				Thread.sleep(1000);
-            }else if(ultraSample2[0] <= 0.1) {
-                Motor.A.stop();
-                Thread.sleep(300);
+// 			if(ultraSample1[0] <= 0.1 && ultraSample2[0] <= 0.1) {
+//                 Motor.A.backward();	
+// 				Thread.sleep(1500);
+//             }else 
+            
+            if(ultraSample2[0] <= 0.1) {
+                if (ultraSample1[0] <= 0.15){
+                    Motor.A.backward();	
+				    Thread.sleep(1500);  
+                }else{
+                    Motor.A.stop();
+                    Thread.sleep(300);
                 Motor.A.forward();
-		
+                }
             }else if(ultraSample1[0] <= 0.1) {
-                Motor.D.stop();
-                Thread.sleep(300);
+                if (ultraSample2[0] <= 0.15){
+                    Motor.A.backward();	
+				    Thread.sleep(1500);
+                }else{
+                    Motor.D.stop();
+                    Thread.sleep(300);
 	        	Motor.D.forward();
+                }
             }
 			Motor.A.forward();
 			Motor.D.forward();
