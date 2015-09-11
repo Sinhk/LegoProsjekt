@@ -61,32 +61,28 @@ class Golfbanebil{
     	
         boolean fortsett = true;
         while(fortsett) {
-            
-                	
-            lcd.clear();
+           
             ultraLeser2.fetchSample(ultraSample2, 0);
-            if(ultraSample2[0] <= 0.1) {
+			 ultraLeser1.fetchSample(ultraSample1, 0);
+			if(ultraSample1[0] <= 0.1 && ultraSample2[0] <= 0.1) {
+                Motor.A.backward();	
+				Thread.sleep(1000);
+            }else if(ultraSample2[0] <= 0.1) {
                 Motor.A.stop();
                 Thread.sleep(300);
                 Motor.A.forward();
 		
-            }
-            
-            ultraLeser1.fetchSample(ultraSample1, 0);
-            if(ultraSample1[0] <= 0.1) {
+            }else if(ultraSample1[0] <= 0.1) {
                 Motor.D.stop();
                 Thread.sleep(300);
 	        	Motor.D.forward();
             }
+			Motor.A.forward();
+			Motor.D.forward();
             
-			lcd.drawString("Avstand: " + ultraSample2[0], 0,2);
-			lcd.drawString("Avstand: " + ultraSample1[0], 0,5);
+			//lcd.drawString("Avstand: " + ultraSample2[0], 0,2);
+			//lcd.drawString("Avstand: " + ultraSample1[0], 0,5);
             //Thread.sleep(400);
-            if(ultraSample1[0] <= 0.1 && ultraSample2[0] <= 0.1) {
-                Motor.A.stop();	
-				Motor.D.stop();	
-                fortsett = false;
-            }
             
             trykksensor1.fetchSample(trykkSample1, 0);
 			trykksensor2.fetchSample(trykkSample2, 0);
@@ -96,8 +92,7 @@ class Golfbanebil{
 				Thread.sleep(300);
 				//fortsett = false;
 			}
-        Motor.A.forward();
-		Motor.D.forward();
+       
 
         }
         
