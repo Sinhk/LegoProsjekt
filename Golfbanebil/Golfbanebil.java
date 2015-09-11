@@ -92,8 +92,9 @@ class Golfbanebil{
 			trykksensor2.fetchSample(trykkSample2, 0);
 			if(trykkSample2[0] > 0||trykkSample1[0] > 0){
 		    	Motor.A.stop();	
-				Motor.D.stop();	
-				fortsett = false;
+				Motor.D.backward();
+				Thread.sleep(300);
+				//fortsett = false;
 			}
         Motor.A.forward();
 		Motor.D.forward();
