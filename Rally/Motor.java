@@ -7,7 +7,7 @@
 import lejos.hardware.motor.*;
 import lejos.robotics.navigation.DifferentialPilot;
 
-class Motor{
+class Driver{
     
     private DifferentialPilot pilot;
     private final int SPEED = 50;
@@ -15,7 +15,7 @@ class Motor{
     private final int TURN_RATE = 50;
     private final int TURN_ANGLE = 5;
 	
-    public Motor(){
+    public Driver(){
 		pilot = new DifferentialPilot (5.7f, 11.5f, Motor.A, Motor.D, true);
 		pilot.setTravelSpeed(SPEED);
     }

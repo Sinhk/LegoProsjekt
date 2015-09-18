@@ -18,14 +18,15 @@ class Rally{
 		EV3 ev3 = (EV3) BrickFinder.getLocal();
 		TextLCD lcd = ev3.getTextLCD();
 		
-		Motor motor = new Motor();
+		Driver motor = new Driver();
 		Sensor sensor = new Sensor();
 		int i=0;
 		boolean fortsett = true;
+		int
 		while(fortsett) {
 			
 			if(i == 0 ||i== 2||i== 3||i== 5||i== 6||i == 8||i==9||i==11||i==12) {
-				if(holdLeft) {
+				if(i==0||i==3||) {
 					motor.forward(1);
 					if(sensor.isBlackL()) {
 						motor.turnRigth();
