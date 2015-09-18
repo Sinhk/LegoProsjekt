@@ -25,7 +25,7 @@ class Rally{
 		while(fortsett) {
 			
 			if(i == 0 ||i== 2||i== 3||i== 5||i== 6||i == 8||i==9||i==11||i==12) {
-				if(i==0||i==3) {
+				if(i==0||i==3||i==6||i==9||i==12) {
 					motor.forward(1);
 					if(sensor.isBlackL()) {
 						motor.turnRight();
@@ -35,7 +35,7 @@ class Rally{
 						motor.forward(0);
 						Thread.sleep(2000);
 					}
-				}else {
+				}else if (i==2||i==5||i==8||i=11){
 					motor.forward(2);
 					if(sensor.isBlackR()) {
 						motor.turnLeft();
