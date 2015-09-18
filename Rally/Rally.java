@@ -22,14 +22,13 @@ class Rally{
 		Sensor sensor = new Sensor();
 		int i=0;
 		boolean fortsett = true;
-		int
 		while(fortsett) {
 			
 			if(i == 0 ||i== 2||i== 3||i== 5||i== 6||i == 8||i==9||i==11||i==12) {
-				if(i==0||i==3||) {
+				if(i==0||i==3) {
 					motor.forward(1);
 					if(sensor.isBlackL()) {
-						motor.turnRigth();
+						motor.turnRight();
 					}
 					if(sensor.isBlackR()) {
 						i++;
@@ -38,7 +37,7 @@ class Rally{
 					}
 				}else {
 					motor.forward(2);
-					if(sensor.isBlackR) {
+					if(sensor.isBlackR()) {
 						motor.turnLeft();
 					}
 					if(sensor.isBlackL()) {

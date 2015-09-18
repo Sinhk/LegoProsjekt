@@ -23,9 +23,9 @@ class Sensor{
         Port s3 = brick.getPort("S3"); //
         Port s4 = brick.getPort("S4"); //
         fargesensor1 = new EV3ColorSensor(s1);
-        fargesensor1.setCurrentMode(ColorIDMode);
+        fargesensor1.setCurrentMode("ColorIDMode");
         fargesensor2 = new NXTColorSensor(s2);
-        fargesensor2.setCurrentMode(ColorIDMode);
+        fargesensor2.setCurrentMode("ColorIDMode");
     }
     
     public boolean isBlackR() {

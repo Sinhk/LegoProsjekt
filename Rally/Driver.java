@@ -21,11 +21,11 @@ class Driver{
     }
     
     public void forward(int corr){ //corr 0, no correction, 1 correct left, 2 correct right
-        if (corr = 0){
+        if (corr == 0){
             pilot.forward(); 
-        }else if(corr = 1){
+        }else if(corr == 1){
             pilot.steer(CORR_RATE);
-        }else if(corr = 2){
+        }else if(corr == 2){
             pilot.steer(-CORR_RATE);
         }
     }
