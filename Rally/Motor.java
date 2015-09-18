@@ -10,10 +10,10 @@ import lejos.robotics.navigation.DifferentialPilot;
 class Motor{
     
     private DifferentialPilot pilot;
-    private final SPEED = 50;
-    private final CORR_RATE = 10;
-    private final TURN_RATE = 50;
-    private final TURN_ANGLE = 5;
+    private final int SPEED = 50;
+    private final int CORR_RATE = 10;
+    private final int TURN_RATE = 50;
+    private final int TURN_ANGLE = 5;
 	
     public Motor(){
 		pilot = new DifferentialPilot (5.7f, 11.5f, Motor.A, Motor.D, true);

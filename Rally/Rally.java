@@ -13,53 +13,53 @@ import lejos.hardware.BrickFinder;
 
 
 class Rally{
-    public static void main (String[] arg) throws Exception  {
+	public static void main (String[] arg) throws Exception  {
 
-        EV3 ev3 = (EV3) BrickFinder.getLocal();
+		EV3 ev3 = (EV3) BrickFinder.getLocal();
 		TextLCD lcd = ev3.getTextLCD();
-       
-       Motor motor = new Motor();
-       Sensor sensor = new Sensor();
-    	int i=0;
+		
+		Motor motor = new Motor();
+		Sensor sensor = new Sensor();
+		int i=0;
+		boolean fortsett = true;
+		while(fortsett) {
+			
+			if(i == 0 ||i== 2||i== 3||i== 5||i== 6||i == 8||i==9||i==11||i==12) {
+				if(holdLeft) {
+					motor.forward(1);
+					if(sensor.isBlackL()) {
+						motor.turnRigth();
+					}
+					if(sensor.isBlackR()) {
+						i++;
+						motor.forward(0);
+						Thread.sleep(2000);
+					}
+				}else {
+					motor.forward(2);
+					if(sensor.isBlackR) {
+						motor.turnLeft();
+					}
+					if(sensor.isBlackL()) {
+						i++;
+						motor.forward(0);
+						Thread.sleep(2000);
+					}
+					
+				}
+			}else {
+				motor.forward(2);
+				if(sensor.isBlackR()) {
+					motor.turnLeft();
+				}
+				if(sensor.isBlackL()) {
+					i++;
+				}
+			}
+			
+		}
 
-        boolean fortsett = true;
-        while(fortsett) {
-          
-            if(i == 0 ||i== 2||i== 3||i== 5||i== 6||i 8||i==9||i==11||i==12) {
-                if(holdLeft) {
-                    motor.forward(1);
-                    if(sensor.isBlackL) {
-                    motor.turnRigth
-                }
-                if(sensor.isBlackR) {
-                    i++;
-                    motor.forward(0);
-                    Thread.sleep(2000)
-                }
-                }else {
-                    motor.forward(2);
-                if(sensor.isBlackR) {
-                    motor.turnLeft
-                }
-                if(sensor.isBlackL) {
-                    i++;
-                    motor.forward(0);
-                    Thread.sleep(2000)
-                }
-            } else {
-                motor.forward(2);
-                if(sensor.isBlackR) {
-                    motor.turnLeft
-                }
-                if(sensor.isBlackL) {
-                    i++;
-                }
-            }
-            
-            }
-
-            fortsett = false;
-        }
-        
-    }
+		fortsett = false;
+	}
+	
 }
