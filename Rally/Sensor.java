@@ -15,6 +15,7 @@ import lejos.robotics.SampleProvider;
 class Sensor{
     private EV3ColorSensor fargesensor1;
     private NXTColorSensor fargesensor2;
+   
     public Sensor(){
         Brick brick = BrickFinder.getDefault();
         Port s1 = brick.getPort("S1"); //
@@ -26,4 +27,22 @@ class Sensor{
         fargesensor2 = new NXTColorSensor(s2);
         fargesensor2.setCurrentMode(ColorIDMode);
     }
+    
+    public boolean isBlackR() {
+        if (fargesensor1.getColorID()==7) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public boolean isBlackL() {
+        if (fargesensor2.getColorID()==7) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    
 }
