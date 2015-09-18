@@ -13,9 +13,9 @@ import lejos.robotics.SampleProvider;
 
 
 class Sensor{
-    Private EV3ColorSensor fargesensor1;
-    Private NXTColorSensor fargesensor2;
-    Public Sensor(){
+    private EV3ColorSensor fargesensor1;
+    private NXTColorSensor fargesensor2;
+    public Sensor(){
         Brick brick = BrickFinder.getDefault();
         Port s1 = brick.getPort("S1"); //
         Port s2 = brick.getPort("S2"); //
