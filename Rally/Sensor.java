@@ -15,47 +15,53 @@ import lejos.robotics.SampleProvider;
 
 
 class Sensor{
-	private SampleProvider fargeLeser1;
-	private SampleProvider fargeLeser2;
-	private float[] fargeSample1;
-	private float[] fargeSample2;
-	private EV3ColorSensor fargesensor1;
-	private NXTLightSensor fargesensor2;
+	private SampleProvider fargeLeser;
+	private SampleProvider lysLeser;
+	private float[] fargeSample;
+	private float[] lysSample;
+	private EV3ColorSensor fargesensor;
+	private NXTLightSensor lyssensor;
+	private double fargeValue = 0.0;
+	private double lysValue = 0.0;
    
     public Sensor(){
         Brick brick = BrickFinder.getDefault();
         Port s1 = brick.getPort("S1"); //
         Port s4 = brick.getPort("S4"); //
-        System.out.println("Init Sensor 1");
-		fargesensor1 = new EV3ColorSensor(s1);
-		fargeLeser1 = fargesensor1.getRGBMode();
-		fargeSample1 = new float[fargeLeser1.sampleSize()];
-        System.out.println("Init Sensor 2");
-		fargesensor2 = new NXTLightSensor(s4);
-		fargeLeser2 = fargesensor2.getAmbientMode();
-		fargeSample2 = new float[fargeLeser2.sampleSize()];
+        fargesensor = new EV3ColorSensor(s1);
+		fargeLeser = fargesensor.getRGBMode();
+		fargeSample = new float[fargeLeser.sampleSize()];
+        lyssensor = new NXTLightSensor(s4);
+		lysLeser = lyssensor.getAmbientMode();
+		lysSample = new float[lysLeser.sampleSize()];
+		
+		//LinearCalibrationFilter kan brukes for å kalibrere sensorene.
     }
     
     public boolean isBlackL() {
-		fargeLeser1.fetchSample(fargeSample1, 0);
-		if (fargeSample1[0] <= 0.01 && fargeSample1[0] != 0.0) {
-			System.out.println("Sensor 1: Svart: " + fargeSample1[0]);
-            return true;
+		fargeLeser.fetchSample(fargeSample, 0);
+		fargeValue = fargeSample[0];
+		if (fargeSample[0] <= 0.01 && fargeSample[0] != 0.0) {
+			return true;
         } else {
             return false;
         }
     }
     
     public boolean isBlackR() {
-		System.out.println(fargeSample2[0]);
-        fargeLeser2.fetchSample(fargeSample2, 0);
-		if (fargeSample2[0] <= 0.01 && fargeSample2[0] != 0.0) {
-            System.out.println("Sensor 2: Svart: "+ fargeSample2[0]);
+        lysLeser.fetchSample(lysSample, 0);
+        lysValue = lysSample[0];
+		if (lysSample[0] <= 0.01 && lysSample[0] != 0.0) {
             return true;
         } else {
             return false;
         }
     }
-    
+    public double getFargeValue() {
+    	return fargeValue;
+    	}
+    public double getLysValue() {
+    	return lysValue;
+    	}
     
 }

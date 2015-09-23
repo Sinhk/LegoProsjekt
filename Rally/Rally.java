@@ -3,13 +3,10 @@ package Rally;
 class Rally{
 	public static void main (String[] arg) throws Exception  {
 
-		System.out.println("Init Driver");
-		Driver motor = new Driver();
-		System.out.println("Init Sensor");
+		Mover motor = new Mover();
 		Sensor sensor = new Sensor();
 		int i=0;
 		boolean fortsett = true;
-		System.out.println("Start motor");
 		motor.forward(1);
 		while(fortsett) {
 			
