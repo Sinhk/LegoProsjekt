@@ -5,8 +5,9 @@ package Rally;
 *
 *
 */
-
-import lejos.hardware.motor.*;
+import lejos.hardware.motor.Motor;
+import lejos.robotics.chassis.Chassis;
+import lejos.robotics.chassis.Wheel;
 import lejos.robotics.navigation.DifferentialPilot;
 
 class Driver{
@@ -16,6 +17,9 @@ class Driver{
     private final int CORR_RATE = 10;
     private final int TURN_RATE = 50;
     private final int TURN_ANGLE = 15;
+	private Wheel leftWheel;
+	private Wheel rightWheel;
+	private Chassis myChassis;
 	
     public Driver(){
 		System.out.println("Set pilot");
