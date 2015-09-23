@@ -12,6 +12,7 @@ import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.NXTLightSensor;
 import lejos.robotics.SampleProvider;
+import lejos.robotics.filter.LinearCalibrationFilter;
 
 
 class Sensor{
@@ -34,7 +35,7 @@ class Sensor{
         lyssensor = new NXTLightSensor(s4);
 		lysLeser = lyssensor.getAmbientMode();
 		lysSample = new float[lysLeser.sampleSize()];
-		
+		//LinearCalibrationFilter filter = 
 		//LinearCalibrationFilter kan brukes for å kalibrere sensorene.
     }
     
