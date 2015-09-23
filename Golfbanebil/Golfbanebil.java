@@ -1,21 +1,19 @@
+package Golfbanebil;
+
+
 /**
 * Golfbanebil.java 
 * 
 * 
 * Styreprogram for Golfbanebil
 */
-
-import lejos.hardware.motor.*;
-import lejos.hardware.lcd.*;
-import lejos.hardware.sensor.EV3TouchSensor;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
-import lejos.hardware.sensor.NXTTouchSensor;
-import lejos.hardware.sensor.NXTUltrasonicSensor;
-import lejos.hardware.port.Port;
 import lejos.hardware.Brick;
 import lejos.hardware.BrickFinder;
-import lejos.hardware.ev3.EV3;
-import lejos.hardware.sensor.SensorModes;
+import lejos.hardware.motor.Motor;
+import lejos.hardware.port.Port;
+import lejos.hardware.sensor.EV3TouchSensor;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.hardware.sensor.NXTUltrasonicSensor;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.navigation.DifferentialPilot;
 
@@ -31,10 +29,7 @@ class Golfbanebil{
 		pilot.setTravelSpeed(10);
 		pilot.setRotateSpeed(40);
 		
-        EV3 ev3 = (EV3) BrickFinder.getLocal();
-		TextLCD lcd = ev3.getTextLCD();
-		
-		//Trykksensor
+		// Trykksensor
 		SampleProvider trykksensor1 = new EV3TouchSensor(s1);
 		float[] trykkSample1 = new float[trykksensor1.sampleSize()];
 		SampleProvider trykksensor2 = new EV3TouchSensor(s4);
