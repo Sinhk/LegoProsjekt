@@ -5,8 +5,9 @@ import lejos.hardware.ev3.EV3;
 import lejos.hardware.lcd.TextLCD;
 
 public class Skjerm extends Thread {
-	TextLCD lcd;
-	Sensor sensor;
+	private TextLCD lcd;
+	private Sensor sensor;
+	private int i = 0;
 
 	public Skjerm(Sensor sensor) {
 		this.sensor = sensor;
@@ -20,6 +21,8 @@ public class Skjerm extends Thread {
 				lcd.clear();
 				lcd.drawString("Farge: " + sensor.getFargeValue(), 0, 2);
 				lcd.drawString("Lys: " + sensor.getLysValue(), 0, 4);
+				if (i != 0)
+					lcd.drawString("i: " + i, 0, 6);
 
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
@@ -27,4 +30,8 @@ public class Skjerm extends Thread {
 		} while (!isInterrupted());
 	}
 
+	public void setI(int i) {
+		this.i = i;
+
+	}
 }
