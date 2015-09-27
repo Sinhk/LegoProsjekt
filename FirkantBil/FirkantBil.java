@@ -1,3 +1,7 @@
+package FirkantBil;
+
+
+
 /*    MinBilPilot.java G.S 2011 - 08 - 16
 * Program som styrer en bil med 2 motorer. Bilen oppfører seg slik:
 * 1. kjør framover

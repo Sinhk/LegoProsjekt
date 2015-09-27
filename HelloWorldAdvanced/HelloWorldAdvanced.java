@@ -1,8 +1,8 @@
+package HelloWorldAdvanced;
+
 import lejos.hardware.BrickFinder;
-import lejos.hardware.Keys;
 import lejos.hardware.ev3.EV3;
 import lejos.hardware.lcd.TextLCD;
-import lejos.hardware.motor.Motor;
 import lejos.robotics.RegulatedMotor;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.utility.PilotProps;
