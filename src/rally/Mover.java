@@ -1,4 +1,4 @@
-package Rally;
+package rally;
 
 /**
 *

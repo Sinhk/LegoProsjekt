@@ -1,4 +1,4 @@
-package Rally;
+package rally;
 
 import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
