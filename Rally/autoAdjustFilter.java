@@ -21,6 +21,7 @@ public class autoAdjustFilter extends AbstractFilter {
 	 */
 	private float[] minimum;
 	private float[] maximum;
+	long startTime = 0;
 
 	public autoAdjustFilter(SampleProvider source) {
 		super(source);
@@ -38,6 +39,7 @@ public class autoAdjustFilter extends AbstractFilter {
 		for (int i = 0; i < sampleSize; i++) {
 			minimum[i] = Float.POSITIVE_INFINITY;
 			maximum[i] = Float.NEGATIVE_INFINITY;
+			startTime = System.currentTimeMillis();
 		}
 	}
 
@@ -49,10 +51,12 @@ public class autoAdjustFilter extends AbstractFilter {
 	public void fetchSample(float[] sample, int offset) {
 		super.fetchSample(sample, offset);
 		for (int i = 0; i < sampleSize; i++) {
+			if (startTime > System.currentTimeMillis() - 10000) {
 			if (minimum[i] > sample[offset + i])
 				minimum[i] = sample[offset + i];
 			if (maximum[i] < sample[offset + i])
 				maximum[i] = sample[offset + i];
+			}
 			sample[offset + i] = (sample[offset + i] - minimum[i]) / (maximum[i] - minimum[i]);
 		}
 	}
