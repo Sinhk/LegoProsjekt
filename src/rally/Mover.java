@@ -12,13 +12,13 @@ import lejos.robotics.chassis.WheeledChassis;
 
 class Mover extends Thread {
 
-	private final double SPEED = 30;
+	private final double SPEED;
 	private double linSpeed;
 	private double maxLinSpeed;
 	// private double maxAngSpeed;
 	// private double linAcc;
 	// private double angAcc;
-	private final int MAX_STEER = 200;
+	private final int MAX_STEER;
 	private Chassis chassis;
 	private Sensor sensor;
 	private float offset;
@@ -29,7 +29,9 @@ class Mover extends Thread {
 	private float kC = 0;
 	private int teller;
 
-	public Mover(Sensor sensor) {
+	public Mover(Sensor sensor, double speed, int maxSteer, float kP, float kI, float kD) {
+		SPEED = speed;
+		MAX_STEER = maxSteer;
 		Wheel leftWheel = WheeledChassis.modelWheel(Motor.A, 5.6).offset(6);
 		Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 5.6).offset(-6);
 		chassis = new WheeledChassis(new Wheel[] { leftWheel, rightWheel }, WheeledChassis.TYPE_DIFFERENTIAL);
@@ -49,9 +51,9 @@ class Mover extends Thread {
 		// pilot = new MovePilot (myChassis);//(5.7f, 11.5f, Motor.A, Motor.D);
 
 		// PID konstanter
-		kP = 1400; // (float) (maxAngSpeed / 2);
-		kI = 0;// 4;
-		kD = 0;// 120;
+		this.kP = kP;
+		this.kI = kI;
+		this.kD = kD;
 	}
 
 	public void run() {

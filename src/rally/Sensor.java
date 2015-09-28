@@ -31,7 +31,7 @@ class Sensor {
 	private float lysMaxValue = 0;
 	private float lysMinValue = 0;
 
-	public Sensor(boolean autoCalibrate) {
+	public Sensor(boolean autoCalibrate, boolean rgbMode) {
 		Brick brick = BrickFinder.getDefault();
 		Port s1 = brick.getPort("S1"); //
 		Port s4 = brick.getPort("S4"); //
@@ -41,7 +41,7 @@ class Sensor {
 
 		rightsensor = new NXTLightSensor(s4);
 		rightLeser = rightsensor.getRedMode();
-		rgbMode = false;
+		this.rgbMode = rgbMode;
 		white = new float[rightLeser.sampleSize()];
 		black = new float[rightLeser.sampleSize()];
 

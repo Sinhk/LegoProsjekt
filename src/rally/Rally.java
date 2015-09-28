@@ -6,18 +6,21 @@ import lejos.hardware.ev3.EV3;
 import lejos.hardware.lcd.TextLCD;
 
 class Rally {
+	private final static boolean autoCalibrate = true;
+	private final static boolean rgbMode = false; // ColorSensor
+	private final static double SPEED = 30;
+	private final static int MAX_STEER = 200;
+	private static float kP = 1400;
+	private static float kI = 0;
+	private static float kD = 0;
 
 	public static void main(String[] arg) throws Exception {
-		Sensor sensor = new Sensor(true);
-		Mover motor = new Mover(sensor);
+		Sensor sensor = new Sensor(autoCalibrate, rgbMode);
+		Mover motor = new Mover(sensor, SPEED, MAX_STEER, kP, kI, kD);
 		sensor.calibrate(motor);
-		// sensor.start();
 		motor.start();
 		EV3 ev3 = (EV3) BrickFinder.getLocal();
 		TextLCD lcd = ev3.getTextLCD();
-		// Skjerm skjerm = new Skjerm(sensor);
-		// skjerm.start();
-		// motor.calibrate();
 		boolean fortsett = true;
 		while (fortsett) {
 
