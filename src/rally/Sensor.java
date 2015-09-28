@@ -87,7 +87,7 @@ class Sensor {
 			error = sample[0] - .5;
 		} else {
 
-			error = sample[0] - lysMinValue - (lysMaxValue - lysMinValue) / 2;
+			error = (sample[0] - lysMinValue / (lysMaxValue - lysMinValue) - .5);
 		}
 		return error;
 	}
