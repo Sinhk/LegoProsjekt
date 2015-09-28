@@ -10,7 +10,7 @@ class Rally {
 	private final static boolean rgbMode = false; // ColorSensor
 	private final static double SPEED = 30;
 	private final static int MAX_STEER = 200;
-	private static float kP = 1400;
+	private static float kP = 800;
 	private static float kI = 0;
 	private static float kD = 0;
 
