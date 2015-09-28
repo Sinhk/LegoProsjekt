@@ -8,8 +8,9 @@ import lejos.hardware.lcd.TextLCD;
 class Rally {
 	public static void main(String[] arg) throws Exception {
 		Sensor sensor = new Sensor();
-		sensor.calibrate();
-		Mover motor = new Mover(sensor, true);
+		Mover motor = new Mover(sensor, false);
+		sensor.calibrate(motor);
+		// sensor.start();
 		motor.start();
 		EV3 ev3 = (EV3) BrickFinder.getLocal();
 		TextLCD lcd = ev3.getTextLCD();
@@ -36,8 +37,12 @@ class Rally {
 				motor.setkP(motor.getkP() + 1);
 
 			}
+			if (Button.DOWN.isDown() && Button.ENTER.isDown())
+				fortsett = false;
 			Thread.sleep(500);
 		}
+		motor.interrupt();
+		System.exit(0);
 	}
 }
 

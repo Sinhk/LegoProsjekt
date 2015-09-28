@@ -12,7 +12,7 @@ import lejos.robotics.chassis.WheeledChassis;
 
 class Mover extends Thread {
 
-	private final double SPEED = 40;
+	private final double SPEED = 30;
 	private double linSpeed;
 	private double maxLinSpeed;
 	private double maxAngSpeed;
@@ -29,11 +29,11 @@ class Mover extends Thread {
 	private float kP;
 	private float kI;
 	private float kD;
-	private float kC;
+	private float kC = 0;
 
 	public Mover(Sensor sensor) {
-		Wheel leftWheel = WheeledChassis.modelWheel(Motor.A, 5.7).offset(6);
-		Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 5.7).offset(-6);
+		Wheel leftWheel = WheeledChassis.modelWheel(Motor.A, 5.6).offset(6);
+		Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 5.6).offset(-6);
 		chassis = new WheeledChassis(new Wheel[] { leftWheel, rightWheel }, WheeledChassis.TYPE_DIFFERENTIAL);
 		maxLinSpeed = chassis.getMaxLinearSpeed();
 		maxAngSpeed = chassis.getMaxAngularSpeed();
@@ -51,7 +51,7 @@ class Mover extends Thread {
 		// pilot = new MovePilot (myChassis);//(5.7f, 11.5f, Motor.A, Motor.D);
 
 		// PID konstanter
-		kP = 170; // (float) (maxAngSpeed / 2);
+		kP = 1400; // (float) (maxAngSpeed / 2);
 		kI = 0;// 4;
 		kD = 0;// 120;
 	}
@@ -64,7 +64,7 @@ class Mover extends Thread {
 	public void run() {
 		running = true;
 		if (calibrate)
-			calibrate();
+			;// calibrate();
 		float integral = 0;
 		float prevError = 0;
 		long prevTime = System.currentTimeMillis();
@@ -78,33 +78,42 @@ class Mover extends Thread {
 			kI = (2 * kP * 0.01f) / pC;
 			kD = (kP * pC) / (8 * 0.01f);
 		}
-		while (running) {
+		int teller = 0;
+		while (!isInterrupted()) {
 			float farge = sensor.getFargeValue();
-			float lys = sensor.getLysValue() - 0.5f;
-			float error = lys;
+			float lys = sensor.getLysValue();
+			float o = ((sensor.getLysMaxValue() - sensor.getLysMinValue()) / 2f);
+			// offset = o;
+			float error = lys - sensor.getLysMinValue() - o;
 
-			if (farge < 0.2) {
-				if (prevTime > System.currentTimeMillis() - 5000)
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+			if (farge < 0.4f) {
+				if (prevTime < (System.currentTimeMillis() - 3000)) {
+					teller++;
+					if (teller % 3 == 0) {
+						chassis.setVelocity(linSpeed * 2, 0);
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 
-				// chassis.getLinearDirection();
+				}
 
 				prevTime = System.currentTimeMillis();
 			}
+
 			integral += error;
 			if (integral > (maxAngSpeed / 2))
 				integral = (float) (maxAngSpeed / 2);
 			if (integral < (-maxAngSpeed / 2))
 				integral = (float) (-maxAngSpeed / 2);
 			float output = kP * error + kI * integral + kD * (error - prevError);
-			offset = output;
+			offset = teller;
+			// offset = System.currentTimeMillis() - prevTime;
 			prevError = error;
-
+			// prevTime = System.currentTimeMillis();
 			chassis.setVelocity(linSpeed, output);
 			try {
 				Thread.sleep(10);
@@ -135,14 +144,15 @@ class Mover extends Thread {
 		chassis.setVelocity(linSpeed, -TURN_RATE);
 	}
 
-	public void calibrate() {
-		chassis.setSpeed(1, 50);
-		chassis.rotate(45);
+	public void calibrate() throws InterruptedException {
+		chassis.setSpeed(1, 40);
+		chassis.rotate(35);
 		chassis.waitComplete();
-		chassis.rotate(-90);
+		Thread.sleep(500);
+		chassis.rotate(-35);
 		chassis.waitComplete();
-		chassis.rotate(45);
-		chassis.waitComplete();
+		// chassis.rotate(45);
+		// chassis.waitComplete();
 	}
 
 	public double getSpeed() {

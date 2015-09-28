@@ -11,7 +11,9 @@ import lejos.hardware.BrickFinder;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.NXTLightSensor;
 import lejos.robotics.SampleProvider;
-import lejos.robotics.filter.LinearCalibrationFilter;
+import lejos.robotics.filter.LowPassFilter;
+import lejos.robotics.filter.MaximumFilter;
+import lejos.robotics.filter.MinimumFilter;
 
 class Sensor {
 	private SampleProvider fargeLeser;
@@ -22,10 +24,15 @@ class Sensor {
 	private NXTLightSensor lyssensor;
 	private float fargeValue;
 	private float lysValue;
-	private autoAdjustFilter fargeFilter;
-	private autoAdjustFilter lysFilter;
-	private LinearCalibrationFilter fargeKalibrering;
-	private LinearCalibrationFilter lysKalibrering;
+	private LowPassFilter fargeFilter;
+	private LowPassFilter lysFilter;
+	private MaximumFilter fargeMax;
+	private MaximumFilter lysMax;
+	private MinimumFilter lysMin;
+	private MinimumFilter fargeMin;
+
+	private float lysMaxValue = 0;
+	private float lysMinValue = 0;
 
 	public Sensor() {
 		Brick brick = BrickFinder.getDefault();
@@ -38,12 +45,16 @@ class Sensor {
 		lyssensor = new NXTLightSensor(s4);
 		lysLeser = lyssensor.getRedMode();
 
-		fargeKalibrering = new LinearCalibrationFilter(fargeLeser);
-		lysKalibrering = new LinearCalibrationFilter(lysLeser);
-		fargeKalibrering.setTimeConstant(0.5f);
+		fargeFilter = new LowPassFilter(fargeLeser, 0.5f);
+		lysFilter = new LowPassFilter(lysLeser, 0.5f);
 
-		fargeFilter = new autoAdjustFilter(fargeKalibrering);
-		lysFilter = new autoAdjustFilter(lysKalibrering);
+		fargeMax = new MaximumFilter(fargeFilter, 200);
+		fargeMin = new MinimumFilter(fargeFilter, 200);
+		lysMax = new MaximumFilter(lysFilter, 2000);
+		lysMin = new MinimumFilter(lysFilter, 2000);
+
+		fargeFilter = new LowPassFilter(fargeLeser, 0.0f);
+		lysFilter = new LowPassFilter(lysLeser, 0.0f);
 
 		fargeSample = new float[fargeFilter.sampleSize()];
 		lysSample = new float[lysFilter.sampleSize()];
@@ -85,30 +96,50 @@ class Sensor {
 		return lysValue;
 	}
 
-	public void calibrate() {
-		fargeKalibrering.setOffsetCalibration(1);
-		lysKalibrering.setOffsetCalibration(1);
-		fargeKalibrering.setTimeConstant(0.5f);
-		lysKalibrering.setTimeConstant(0.5f);
-		fargeKalibrering.startCalibration();
-		lysKalibrering.startCalibration();
-		// mover.calibrate();
-		for (int i = 0; i < 100; i++) {
-			fargeFilter.fetchSample(fargeSample, 0);
-			lysFilter.fetchSample(lysSample, 0);
-		}
-		// Thread.sleep(2000);
-		fargeKalibrering.stopCalibration();
-		lysKalibrering.stopCalibration();
-		float[] offsetC = fargeKalibrering.getOffsetCorrection();
-		float[] scaleC = fargeKalibrering.getScaleCorrection();
-		float[] loffsetC = lysKalibrering.getOffsetCorrection();
-		float[] lscaleC = lysKalibrering.getScaleCorrection();
-		System.out.println(offsetC[0] + ", " + loffsetC[0]);
-		System.out.println(scaleC[0] + ", " + lscaleC[0]);
-		fargeKalibrering.save("farge.cal");
-		lysKalibrering.save("lys.cal");
+	public float getLysMaxValue() {
+		return lysMaxValue;
 	}
-}
 
-// Old calibration
+	public float getLysMinValue() {
+		return lysMinValue;
+	}
+
+	public void calibrate(Mover mover) throws InterruptedException {
+		Thread t = new Thread() {
+			public void run() {
+				do {
+					lysMin.fetchSample(lysSample, 0);
+					lysMax.fetchSample(lysSample, 0);
+					// System.out.println(lysSample[0]);
+				} while (!interrupted());
+			}
+		};
+		t.start();
+		mover.calibrate();
+		t.interrupt();
+		lysMin.fetchSample(lysSample, 0);
+		lysMinValue = lysSample[0];
+		// System.out.println(lysMinValue);
+		lysMax.fetchSample(lysSample, 0);
+		lysMaxValue = lysSample[0];
+		// System.out.println(lysMaxValue);
+
+	}
+
+}
+/*
+ * // Old calibration fargeKalibrering.setOffsetCalibration(1);
+ * lysKalibrering.setOffsetCalibration(1);
+ * fargeKalibrering.setTimeConstant(0.5f); lysKalibrering.setTimeConstant(0.5f);
+ * fargeKalibrering.startCalibration(); lysKalibrering.startCalibration(); //
+ * mover.calibrate(); for (int i = 0; i < 100; i++) {
+ * fargeKalibrering.fetchSample(fargeSample, 0);
+ * lysKalibrering.fetchSample(lysSample, 0); } // Thread.sleep(2000);
+ * fargeKalibrering.stopCalibration(); lysKalibrering.stopCalibration(); float[]
+ * offsetC = fargeKalibrering.getOffsetCorrection(); float[] scaleC =
+ * fargeKalibrering.getScaleCorrection(); float[] loffsetC =
+ * lysKalibrering.getOffsetCorrection(); float[] lscaleC =
+ * lysKalibrering.getScaleCorrection(); // System.out.println(offsetC[0] + ", "
+ * + loffsetC[0]); // System.out.println(scaleC[0] + ", " + lscaleC[0]);
+ * fargeKalibrering.save("farge.cal"); lysKalibrering.save("lys.cal"); }
+ */
