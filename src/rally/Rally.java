@@ -6,9 +6,10 @@ import lejos.hardware.ev3.EV3;
 import lejos.hardware.lcd.TextLCD;
 
 class Rally {
+
 	public static void main(String[] arg) throws Exception {
-		Sensor sensor = new Sensor();
-		Mover motor = new Mover(sensor, false);
+		Sensor sensor = new Sensor(true);
+		Mover motor = new Mover(sensor);
 		sensor.calibrate(motor);
 		// sensor.start();
 		motor.start();
@@ -21,7 +22,7 @@ class Rally {
 		while (fortsett) {
 
 			lcd.clear();
-			lcd.drawString("Farge: " + sensor.getFargeValue(), 0, 0);
+			lcd.drawString("Teller: " + motor.getTeller(), 0, 0);
 			lcd.drawString("Lys: " + sensor.getLysValue(), 0, 1);
 			lcd.drawString("Speed: " + motor.getSpeed(), 0, 2);
 			lcd.drawString("P: " + motor.getkP(), 0, 3);
@@ -30,11 +31,11 @@ class Rally {
 			lcd.drawString("Offset: " + motor.getOffset(), 0, 6);
 
 			if (Button.LEFT.isDown()) {
-				motor.setkP(motor.getkP() - 1);
+				motor.setkP(motor.getkP() - 5);
 
 			}
 			if (Button.RIGHT.isDown()) {
-				motor.setkP(motor.getkP() + 1);
+				motor.setkP(motor.getkP() + 5);
 
 			}
 			if (Button.DOWN.isDown() && Button.ENTER.isDown())

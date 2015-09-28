@@ -11,53 +11,50 @@ import lejos.hardware.BrickFinder;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.NXTLightSensor;
 import lejos.robotics.SampleProvider;
-import lejos.robotics.filter.LowPassFilter;
 import lejos.robotics.filter.MaximumFilter;
 import lejos.robotics.filter.MinimumFilter;
 
 class Sensor {
-	private SampleProvider fargeLeser;
-	private SampleProvider lysLeser;
-	private float[] fargeSample;
-	private float[] lysSample;
-	private NXTLightSensor fargesensor;
-	private NXTLightSensor lyssensor;
-	private float fargeValue;
-	private float lysValue;
-	private LowPassFilter fargeFilter;
-	private LowPassFilter lysFilter;
-	private MaximumFilter fargeMax;
-	private MaximumFilter lysMax;
-	private MinimumFilter lysMin;
-	private MinimumFilter fargeMin;
+	private SampleProvider leftLeser;
+	private SampleProvider rightLeser;
+	private float[] white;
+	private float[] black;
+	private NXTLightSensor leftsensor;
+	private NXTLightSensor rightsensor;
+	private boolean autoCalibrate;
+	private boolean rgbMode;
+	private SampleProvider rightFilter;
+	private autoAdjustFilter rightAutoFilter;
+	private MaximumFilter rightMax;
+	private MinimumFilter rightMin;
 
 	private float lysMaxValue = 0;
 	private float lysMinValue = 0;
 
-	public Sensor() {
+	public Sensor(boolean autoCalibrate) {
 		Brick brick = BrickFinder.getDefault();
 		Port s1 = brick.getPort("S1"); //
 		Port s4 = brick.getPort("S4"); //
+		this.autoCalibrate = autoCalibrate;
+		leftsensor = new NXTLightSensor(s1);
+		leftLeser = leftsensor.getRedMode();
 
-		fargesensor = new NXTLightSensor(s1);
-		fargeLeser = fargesensor.getRedMode();
+		rightsensor = new NXTLightSensor(s4);
+		rightLeser = rightsensor.getRedMode();
+		rgbMode = false;
+		white = new float[rightLeser.sampleSize()];
+		black = new float[rightLeser.sampleSize()];
 
-		lyssensor = new NXTLightSensor(s4);
-		lysLeser = lyssensor.getRedMode();
+		if (autoCalibrate) {
+			rightAutoFilter = new autoAdjustFilter(rightLeser);
+			rightFilter = rightAutoFilter;
 
-		fargeFilter = new LowPassFilter(fargeLeser, 0.5f);
-		lysFilter = new LowPassFilter(lysLeser, 0.5f);
+		} else
+			rightFilter = rightLeser;
 
-		fargeMax = new MaximumFilter(fargeFilter, 200);
-		fargeMin = new MinimumFilter(fargeFilter, 200);
-		lysMax = new MaximumFilter(lysFilter, 2000);
-		lysMin = new MinimumFilter(lysFilter, 2000);
+		rightMax = new MaximumFilter(rightLeser, 2000);
+		rightMin = new MinimumFilter(rightLeser, 2000);
 
-		fargeFilter = new LowPassFilter(fargeLeser, 0.0f);
-		lysFilter = new LowPassFilter(lysLeser, 0.0f);
-
-		fargeSample = new float[fargeFilter.sampleSize()];
-		lysSample = new float[lysFilter.sampleSize()];
 	}
 
 	/*
@@ -68,32 +65,31 @@ class Sensor {
 	 */
 
 	public boolean isBlackL() {
-
-		if (fargeValue <= 0.1 && fargeValue != 0.0) {
+		float[] sample = new float[leftLeser.sampleSize()];
+		leftLeser.fetchSample(sample, 0);
+		if (sample[0] <= 0.4 && sample[0] != 0.0) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public boolean isBlackR() {
-		if (lysValue <= 0.1 && lysValue != 0.0) {
-			return true;
+	public double getLysValue() {
+		float[] sample = new float[rightFilter.sampleSize()];
+		double error;
+		rightFilter.fetchSample(sample, 0);
+		if (rgbMode) {
+			double intensity = 0;
+			for (int i = 0; i < sample.length; i++)
+				intensity += Math.pow((sample[i] - black[i]) / ((double) white[i] - black[i]), 2);
+			error = 2 * (Math.sqrt(intensity) - .5);
+		} else if (autoCalibrate) {
+			error = sample[0] - .5;
 		} else {
-			return false;
+
+			error = sample[0] - lysMinValue - (lysMaxValue - lysMinValue) / 2;
 		}
-	}
-
-	public float getFargeValue() {
-		fargeFilter.fetchSample(fargeSample, 0);
-		fargeValue = fargeSample[0];
-		return fargeValue;
-	}
-
-	public float getLysValue() {
-		lysFilter.fetchSample(lysSample, 0);
-		lysValue = lysSample[0];
-		return lysValue;
+		return error;
 	}
 
 	public float getLysMaxValue() {
@@ -105,25 +101,34 @@ class Sensor {
 	}
 
 	public void calibrate(Mover mover) throws InterruptedException {
-		Thread t = new Thread() {
-			public void run() {
-				do {
-					lysMin.fetchSample(lysSample, 0);
-					lysMax.fetchSample(lysSample, 0);
-					// System.out.println(lysSample[0]);
-				} while (!interrupted());
-			}
-		};
-		t.start();
-		mover.calibrate();
-		t.interrupt();
-		lysMin.fetchSample(lysSample, 0);
-		lysMinValue = lysSample[0];
-		// System.out.println(lysMinValue);
-		lysMax.fetchSample(lysSample, 0);
-		lysMaxValue = lysSample[0];
-		// System.out.println(lysMaxValue);
+		if (autoCalibrate) {
+			mover.calibrate();
+		} else if (rgbMode) {
+			rightFilter.fetchSample(black, 0);
+			mover.rotate(-35);
+			rightFilter.fetchSample(white, 0);
+		} else {
+			float[] sample = new float[rightFilter.sampleSize()];
+			Thread t = new Thread() {
+				public void run() {
+					do {
+						float[] sample = new float[rightFilter.sampleSize()];
+						rightMin.fetchSample(sample, 0);
+						rightMax.fetchSample(sample, 0);
+						// System.out.println(lysSample[0]);
+					} while (!interrupted());
+				}
+			};
+			t.start();
 
+			t.interrupt();
+			rightMin.fetchSample(sample, 0);
+			lysMinValue = sample[0];
+			// System.out.println(lysMinValue);
+			rightMax.fetchSample(sample, 0);
+			lysMaxValue = sample[0];
+			// System.out.println(lysMaxValue);
+		}
 	}
 
 }
