@@ -15,14 +15,11 @@ class Mover extends Thread {
 	private final double SPEED = 30;
 	private double linSpeed;
 	private double maxLinSpeed;
-	private double maxAngSpeed;
-	private double linAcc;
-	private double angAcc;
-	private final int CORR_RATE = 5;
-	private final int TURN_RATE = 100;
+	// private double maxAngSpeed;
+	// private double linAcc;
+	// private double angAcc;
+	private final int MAX_STEER = 200;
 	private Chassis chassis;
-	private boolean running;
-	private boolean calibrate = false;
 	private Sensor sensor;
 	private float offset;
 
@@ -30,15 +27,16 @@ class Mover extends Thread {
 	private float kI;
 	private float kD;
 	private float kC = 0;
+	private int teller;
 
 	public Mover(Sensor sensor) {
 		Wheel leftWheel = WheeledChassis.modelWheel(Motor.A, 5.6).offset(6);
 		Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 5.6).offset(-6);
 		chassis = new WheeledChassis(new Wheel[] { leftWheel, rightWheel }, WheeledChassis.TYPE_DIFFERENTIAL);
 		maxLinSpeed = chassis.getMaxLinearSpeed();
-		maxAngSpeed = chassis.getMaxAngularSpeed();
-		linAcc = chassis.getLinearAcceleration();
-		angAcc = chassis.getAngularAcceleration();
+		// maxAngSpeed = chassis.getMaxAngularSpeed();
+		// linAcc = chassis.getLinearAcceleration();
+		// angAcc = chassis.getAngularAcceleration();
 		this.sensor = sensor;
 		// System.out.println("Max Linear Speed: " + maxLinSpeed);
 		// System.out.println("Max Angular Speed: " + maxAngSpeed);
@@ -56,15 +54,7 @@ class Mover extends Thread {
 		kD = 0;// 120;
 	}
 
-	public Mover(Sensor sensor, boolean calibrate) {
-		this(sensor);
-		this.calibrate = calibrate;
-	}
-
 	public void run() {
-		running = true;
-		if (calibrate)
-			;// calibrate();
 		float integral = 0;
 		float prevError = 0;
 		long prevTime = System.currentTimeMillis();
@@ -78,15 +68,9 @@ class Mover extends Thread {
 			kI = (2 * kP * 0.01f) / pC;
 			kD = (kP * pC) / (8 * 0.01f);
 		}
-		int teller = 0;
-		while (!isInterrupted()) {
-			float farge = sensor.getFargeValue();
-			float lys = sensor.getLysValue();
-			float o = ((sensor.getLysMaxValue() - sensor.getLysMinValue()) / 2f);
-			// offset = o;
-			float error = lys - sensor.getLysMinValue() - o;
-
-			if (farge < 0.4f) {
+		teller = 0;
+		while (!interrupted()) {
+			if (sensor.isBlackL()) {
 				if (prevTime < (System.currentTimeMillis() - 3000)) {
 					teller++;
 					if (teller % 3 == 0) {
@@ -100,17 +84,21 @@ class Mover extends Thread {
 					}
 
 				}
-
 				prevTime = System.currentTimeMillis();
 			}
 
+			float error = (float) sensor.getLysValue();
 			integral += error;
-			if (integral > (maxAngSpeed / 2))
-				integral = (float) (maxAngSpeed / 2);
-			if (integral < (-maxAngSpeed / 2))
-				integral = (float) (-maxAngSpeed / 2);
+			if (integral * kI > (MAX_STEER / 2))
+				integral = (float) (MAX_STEER / 2 / kI);
+			if (integral * kI < (-MAX_STEER / 2))
+				integral = (float) (-MAX_STEER / 2 / kI);
 			float output = kP * error + kI * integral + kD * (error - prevError);
-			offset = teller;
+			if (output > MAX_STEER)
+				output = MAX_STEER;
+			if (output < -MAX_STEER)
+				output = -MAX_STEER;
+			offset = output;
 			// offset = System.currentTimeMillis() - prevTime;
 			prevError = error;
 			// prevTime = System.currentTimeMillis();
@@ -125,31 +113,12 @@ class Mover extends Thread {
 		}
 	}
 
-	public void forward(int corr) { // corr 0, no correction, 1 correct left, 2
-									// correct right
-		if (corr == 0) {
-			chassis.setVelocity(linSpeed, 0.0);
-		} else if (corr == 1) {
-			chassis.setVelocity(linSpeed, CORR_RATE);
-		} else if (corr == 2) {
-			chassis.setVelocity(linSpeed, -CORR_RATE);
-		}
-	}
-
-	public void turnLeft() {
-		chassis.setVelocity(linSpeed, TURN_RATE);
-	}
-
-	public void turnRight() {
-		chassis.setVelocity(linSpeed, -TURN_RATE);
-	}
-
 	public void calibrate() throws InterruptedException {
 		chassis.setSpeed(1, 40);
-		chassis.rotate(35);
+		chassis.rotate(-30);
 		chassis.waitComplete();
-		Thread.sleep(500);
-		chassis.rotate(-35);
+		Thread.sleep(200);
+		chassis.rotate(25);
 		chassis.waitComplete();
 		// chassis.rotate(45);
 		// chassis.waitComplete();
@@ -189,6 +158,17 @@ class Mover extends Thread {
 
 	public float getOffset() {
 		return offset;
+	}
+
+	public void rotate(int i) {
+		chassis.setSpeed(1, 40);
+		chassis.rotate(i);
+		chassis.waitComplete();
+	}
+
+	public int getTeller() {
+
+		return teller;
 	}
 }
 
