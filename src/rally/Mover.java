@@ -71,17 +71,24 @@ class Mover extends Thread {
 			kD = (kP * pC) / (8 * 0.01f);
 		}
 		teller = 0;
+		// int speedTeller = 0;
 		while (!interrupted()) {
 			if (sensor.isBlackL()) {
 				if (prevTime < (System.currentTimeMillis() - 3000)) {
 					teller++;
+					if (teller == 1 || (teller - 1) % 3 == 0) {
+						chassis.setVelocity(linSpeed * 2, -10);
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+						}
+					}
 					if (teller % 3 == 0) {
 						chassis.setVelocity(linSpeed * 2, 0);
 						try {
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+
 						}
 					}
 
@@ -96,6 +103,14 @@ class Mover extends Thread {
 			if (integral * kI < (-MAX_STEER / 2))
 				integral = (float) (-MAX_STEER / 2 / kI);
 			float output = kP * error + kI * integral + kD * (error - prevError);
+			// if (output > 30 || output < -30) {
+			// setSpeed(speed / 3);
+			// speedTeller = 0;
+			// } else {
+			// speedTeller++;
+			// if (speedTeller > 10)
+			// setSpeed(speed);
+			// }
 			if (output > MAX_STEER)
 				output = MAX_STEER;
 			if (output < -MAX_STEER)

@@ -12,7 +12,7 @@ class Rally {
 		boolean rgbMode = false; // ColorSensor
 		double speed = 40;
 		int maxSteer = 160;
-		float kP = 100;
+		float kP = 80;
 		float kI = 3;
 		float kD = 1000;
 
@@ -43,14 +43,14 @@ class Rally {
 				motor.setkP(motor.getkP() + 5);
 
 			}
-			if (Button.DOWN.isDown() && Button.ENTER.isDown())
+			if (Button.ESCAPE.isDown())
 				fortsett = false;
 			Thread.sleep(500);
 		}
 		motor.interrupt();
 		sensor.close();
-		lcd.clear();
-		// System.exit(0);
+		// lcd.clear();
+		System.exit(0);
 	}
 }
 
