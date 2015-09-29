@@ -12,13 +12,13 @@ import lejos.robotics.chassis.WheeledChassis;
 
 class Mover extends Thread {
 
-	private final double SPEED;
+	private double speed;
 	private double linSpeed;
 	private double maxLinSpeed;
 	// private double maxAngSpeed;
 	// private double linAcc;
 	// private double angAcc;
-	private final int MAX_STEER;
+	private int MAX_STEER;
 	private Chassis chassis;
 	private Sensor sensor;
 	private float offset;
@@ -30,7 +30,7 @@ class Mover extends Thread {
 	private int teller;
 
 	public Mover(Sensor sensor, double speed, int maxSteer, float kP, float kI, float kD) {
-		SPEED = speed;
+		this.speed = speed;
 		MAX_STEER = maxSteer;
 		Wheel leftWheel = WheeledChassis.modelWheel(Motor.A, 5.6).offset(6);
 		Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 5.6).offset(-6);
@@ -46,7 +46,7 @@ class Mover extends Thread {
 		// System.out.println("Linear Acc: " + linAcc);
 		// System.out.println("Angular Acc: " + angAcc);
 
-		linSpeed = maxLinSpeed * (SPEED / 100);
+		setSpeed(speed);
 		// chassis.setAcceleration(5.0, 5.0);
 		// pilot = new MovePilot (myChassis);//(5.7f, 11.5f, Motor.A, Motor.D);
 
@@ -78,7 +78,7 @@ class Mover extends Thread {
 					if (teller % 3 == 0) {
 						chassis.setVelocity(linSpeed * 2, 0);
 						try {
-							Thread.sleep(2000);
+							Thread.sleep(1000);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -89,7 +89,7 @@ class Mover extends Thread {
 				prevTime = System.currentTimeMillis();
 			}
 
-			float error = (float) sensor.getLysValue();
+			float error = sensor.getRightValue();
 			integral += error;
 			if (integral * kI > (MAX_STEER / 2))
 				integral = (float) (MAX_STEER / 2 / kI);

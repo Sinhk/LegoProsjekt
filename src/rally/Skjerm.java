@@ -20,7 +20,7 @@ public class Skjerm extends Thread {
 			try {
 				lcd.clear();
 				// lcd.drawString("Farge: " + sensor.getFargeValue(), 0, 0);
-				lcd.drawString("Lys: " + sensor.getLysValue(), 0, 1);
+				lcd.drawString("Lys: " + sensor.getRightValue(), 0, 1);
 				if (i != 0)
 					lcd.drawString("i: " + i, 0, 6);
 

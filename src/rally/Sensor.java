@@ -74,20 +74,20 @@ class Sensor {
 		}
 	}
 
-	public double getLysValue() {
+	public float getRightValue() {
 		float[] sample = new float[rightFilter.sampleSize()];
-		double error;
+		float error;
 		rightFilter.fetchSample(sample, 0);
 		if (rgbMode) {
-			double intensity = 0;
+			float intensity = 0;
 			for (int i = 0; i < sample.length; i++)
 				intensity += Math.pow((sample[i] - black[i]) / ((double) white[i] - black[i]), 2);
-			error = 2 * (Math.sqrt(intensity) - .5);
+			error = (float) (2f * (Math.sqrt(intensity) - .5f));
 		} else if (autoCalibrate) {
-			error = sample[0] - .5;
+			error = sample[0] - .5f;
 		} else {
 
-			error = (sample[0] - lysMinValue / (lysMaxValue - lysMinValue) - .5);
+			error = (sample[0] - lysMinValue / (lysMaxValue - lysMinValue) - .5f);
 		}
 		return error;
 	}
@@ -102,7 +102,24 @@ class Sensor {
 
 	public void calibrate(Mover mover) throws InterruptedException {
 		if (autoCalibrate) {
+			rightAutoFilter.reset();
+			Thread t = new Thread() {
+				public void run() {
+					do {
+						float[] sample = new float[rightFilter.sampleSize()];
+						rightFilter.fetchSample(sample, 0);
+
+						try {
+							Thread.sleep(50);
+						} catch (InterruptedException e) {
+						}
+						// System.out.println(lysSample[0]);
+					} while (!interrupted());
+				}
+			};
+			t.start();
 			mover.calibrate();
+			t.interrupt();
 		} else if (rgbMode) {
 			rightFilter.fetchSample(black, 0);
 			mover.rotate(-35);
@@ -115,12 +132,18 @@ class Sensor {
 						float[] sample = new float[rightFilter.sampleSize()];
 						rightMin.fetchSample(sample, 0);
 						rightMax.fetchSample(sample, 0);
+
+						try {
+							Thread.sleep(50);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 						// System.out.println(lysSample[0]);
 					} while (!interrupted());
 				}
 			};
 			t.start();
-
+			mover.calibrate();
 			t.interrupt();
 			rightMin.fetchSample(sample, 0);
 			lysMinValue = sample[0];
@@ -129,6 +152,11 @@ class Sensor {
 			lysMaxValue = sample[0];
 			// System.out.println(lysMaxValue);
 		}
+	}
+
+	public void close() {
+		leftsensor.close();
+		rightsensor.close();
 	}
 
 }

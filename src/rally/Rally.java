@@ -6,18 +6,20 @@ import lejos.hardware.ev3.EV3;
 import lejos.hardware.lcd.TextLCD;
 
 class Rally {
-	private final static boolean autoCalibrate = true;
-	private final static boolean rgbMode = false; // ColorSensor
-	private final static double SPEED = 30;
-	private final static int MAX_STEER = 200;
-	private static float kP = 800;
-	private static float kI = 0;
-	private static float kD = 0;
 
 	public static void main(String[] arg) throws Exception {
+		boolean autoCalibrate = true;
+		boolean rgbMode = false; // ColorSensor
+		double speed = 40;
+		int maxSteer = 160;
+		float kP = 100;
+		float kI = 3;
+		float kD = 1000;
+
 		Sensor sensor = new Sensor(autoCalibrate, rgbMode);
-		Mover motor = new Mover(sensor, SPEED, MAX_STEER, kP, kI, kD);
+		Mover motor = new Mover(sensor, speed, maxSteer, kP, kI, kD);
 		sensor.calibrate(motor);
+		motor.setDaemon(true);
 		motor.start();
 		EV3 ev3 = (EV3) BrickFinder.getLocal();
 		TextLCD lcd = ev3.getTextLCD();
@@ -26,7 +28,7 @@ class Rally {
 
 			lcd.clear();
 			lcd.drawString("Teller: " + motor.getTeller(), 0, 0);
-			lcd.drawString("Lys: " + sensor.getLysValue(), 0, 1);
+			lcd.drawString("Right: " + sensor.getRightValue(), 0, 1);
 			lcd.drawString("Speed: " + motor.getSpeed(), 0, 2);
 			lcd.drawString("P: " + motor.getkP(), 0, 3);
 			lcd.drawString("I: " + motor.getkI(), 0, 4);
@@ -46,7 +48,9 @@ class Rally {
 			Thread.sleep(500);
 		}
 		motor.interrupt();
-		System.exit(0);
+		sensor.close();
+		lcd.clear();
+		// System.exit(0);
 	}
 }
 
