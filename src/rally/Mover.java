@@ -65,14 +65,14 @@ class Mover extends Thread {
 		// Pose pose = pp.getPose();
 
 		if (kC != 0) {
-			float pC = 0.5f;
+			float pC = 0.3f;
 			kP = 0.60f * kC;
-			kI = (2 * kP * 0.01f) / pC;
-			kD = (kP * pC) / (8 * 0.01f);
+			kI = (2 * kP * 0.05f) / pC;
+			kD = (kP * pC) / (8 * 0.05f);
 		}
 		teller = 0;
 		// int speedTeller = 0;
-		while (!interrupted()) {
+		do {
 			if (sensor.isBlackL()) {
 				if (prevTime < (System.currentTimeMillis() - 3000)) {
 					teller++;
@@ -127,7 +127,7 @@ class Mover extends Thread {
 				e.printStackTrace();
 			}
 
-		}
+		} while (!interrupted());
 	}
 
 	public void calibrate() throws InterruptedException {

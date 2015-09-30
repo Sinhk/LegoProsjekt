@@ -41,10 +41,11 @@ class Sensor {
 
 		rightsensor = new EV3ColorSensor(s4);
 		rightLeser = rightsensor.getRedMode();
+		// MeanFilter rightMean = new MeanFilter(rightLeser, 25);
+		// SampleThread rightThread = new SampleThread(rightLeser, 500);
 		this.rgbMode = rgbMode;
 		white = new float[rightLeser.sampleSize()];
 		black = new float[rightLeser.sampleSize()];
-
 		if (autoCalibrate) {
 			rightAutoFilter = new autoAdjustFilter(rightLeser);
 			rightFilter = rightAutoFilter;
@@ -78,27 +79,28 @@ class Sensor {
 		float[] sample = new float[rightFilter.sampleSize()];
 		double error;
 		rightFilter.fetchSample(sample, 0);
-		if (autoCalibrate && rgbMode) {
-			double intensity = 0;
-			for (int i = 0; i < sample.length; i++)
-				intensity += sample[i];
-			intensity /= 3;
-			error = 2 * (intensity - .5);
-		} else if (rgbMode) {
-			double intensity = 0;
-			for (int i = 0; i < sample.length; i++)
-				intensity += Math.pow((sample[i] - black[i]) / ((double) white[i] - black[i]), 2);
-			error = 2 * (Math.sqrt(intensity) - .5);
-		} else if (autoCalibrate) {
-			error = sample[0] - .5;
-			error = Math.round(error * 100) / 100;
-			if (error > .5)
-				error = .5;
-			if (error < -.5)
-				error = -.5;
-		} else {
-			error = (sample[0] - lysMinValue / (lysMaxValue - lysMinValue) - .5f);
+		/*
+		 * if (rgbMode) { double intensity = 0; for (int i = 0; i <
+		 * sample.length; i++) intensity += Math.pow((sample[i] - black[i]) /
+		 * ((double) white[i] - black[i]), 2); error = 2 * (Math.sqrt(intensity)
+		 * - .5); } else if (autoCalibrate) {
+		 */
+		error = sample[0] - .4;
+		error = Math.round((error * 100)) / 100.0;
+		if (error > -0.1 && error < 0.1) {
+			error = 0;
 		}
+		// if (error > 0)
+		// error *= 1.6;
+		if (error > .5)
+			error = .5;
+		if (error < -.5)
+			error = -.5;
+
+		// } else {
+		// error = (sample[0] - lysMinValue / (lysMaxValue - lysMinValue) -
+		// .5f);
+		// }
 
 		return (float) error;
 	}
