@@ -8,17 +8,14 @@ import lejos.hardware.lcd.TextLCD;
 class Rally {
 
 	public static void main(String[] arg) throws Exception {
-		boolean autoCalibrate = true;
-		boolean rgbMode = false; // ColorSensor
 		double speed = 40;
 		int maxSteer = 160;
 		float kP = 100;
 		float kI = 3;
 		float kD = 800;
 
-		Sensor sensor = new Sensor(autoCalibrate, rgbMode);
+		Sensor sensor = new Sensor();
 		Mover motor = new Mover(sensor, speed, maxSteer, kP, kI, kD);
-		sensor.calibrate(motor);
 		motor.setDaemon(true);
 		motor.start();
 		EV3 ev3 = (EV3) BrickFinder.getLocal();
@@ -53,42 +50,3 @@ class Rally {
 		// System.exit(0);
 	}
 }
-
-// if (i == 0 || i == 2 || i == 3 || i == 5 || i == 6 || i == 8 || i == 9 || i
-// == 11 || i == 12) {
-// if (i == 0 || i == 3 || i == 6 || i == 9 || i == 12) {
-// motor.forward(1);
-// if (sensor.isBlackL()) {
-// motor.turnRight();
-// Thread.sleep(300);
-// motor.forward(1);
-// }
-// if (sensor.isBlackR()) {
-// i++;
-// motor.forward(0);
-// Thread.sleep(1000);
-// }
-// } else if (i == 2 || i == 5 || i == 8 || i == 11) {
-// motor.forward(2);
-// if (sensor.isBlackR()) {
-// motor.turnLeft();
-// Thread.sleep(300);
-// motor.forward(2);
-// }
-// if (sensor.isBlackL()) {
-// i++;
-// motor.forward(0);
-// Thread.sleep(1000);
-// }
-//
-// }
-// } else {
-// motor.forward(2);
-// if (sensor.isBlackR()) {
-// motor.turnLeft();
-// }
-// if (sensor.isBlackL()) {
-// i++;
-// }
-// }
-// skjerm.setI(i);
