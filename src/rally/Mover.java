@@ -35,7 +35,7 @@ class Mover extends Thread {
 		maxLinSpeed = chassis.getMaxLinearSpeed();
 		this.sensor = sensor;
 		setSpeed(speed);
-		// chassis.setAcceleration(5.0, 5.0);
+		chassis.setAcceleration(chassis.getMaxLinearSpeed() / 2, chassis.getMaxAngularSpeed());
 		// pilot = new MovePilot (myChassis);//(5.7f, 11.5f, Motor.A, Motor.D);
 
 		// PID konstanter
@@ -63,13 +63,13 @@ class Mover extends Thread {
 			if (sensor.isBlackL()) {
 				if (prevTime < (System.currentTimeMillis() - 3000)) {
 					teller++;
-					if (teller == 1 || (teller - 1) % 3 == 0) {
-						chassis.setVelocity(linSpeed * 2, -10);
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-						}
-					}
+					// if (teller == 1 || (teller - 1) % 3 == 0) {
+					// chassis.setVelocity(linSpeed * 2, -20);
+					// try {
+					// Thread.sleep(1500);
+					// } catch (InterruptedException e) {
+					// }
+					// }
 					if (teller % 3 == 0) {
 						chassis.setVelocity(linSpeed * 2, 0);
 						try {
@@ -84,8 +84,8 @@ class Mover extends Thread {
 			}
 
 			float error = sensor.getRightValue();
-			if (error * integral <= 0)
-				integral *= 0.80f;
+			// if (error * integral <= 0)
+			// integral *= 0.80f;
 			integral += error;
 			if (integral * kI > (MAX_STEER / 2))
 				integral = (MAX_STEER / 2 / kI);
@@ -108,7 +108,7 @@ class Mover extends Thread {
 			offset = output;
 			chassis.setVelocity(linSpeed, output);
 			try {
-				Thread.sleep(50);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
 			}
 
