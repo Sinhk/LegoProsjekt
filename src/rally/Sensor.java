@@ -27,8 +27,6 @@ class Sensor {
 
 		rightsensor = new EV3ColorSensor(s4);
 		rightLeser = rightsensor.getRedMode();
-		// MeanFilter rightMean = new MeanFilter(rightLeser, 25);
-		// SampleThread rightThread = new SampleThread(rightLeser, 500);
 	}
 
 	public boolean isBlackL() {
@@ -50,9 +48,6 @@ class Sensor {
 		error *= 10.0;
 		if (error < 0.1 && error > -0.1)
 			error = 0;
-		// error = Math.round((error * 100)) / 100.0;
-		// if (error > 0)
-		// error *= 1.6;
 		return (float) error;
 	}
 

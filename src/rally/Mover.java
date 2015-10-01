@@ -18,7 +18,6 @@ class Mover extends Thread {
 	private float MAX_STEER;
 	private Chassis chassis;
 	private Sensor sensor;
-	private float offset;
 
 	private float kP;
 	private float kI;
@@ -26,9 +25,9 @@ class Mover extends Thread {
 	private float kC = 0;
 	private int teller;
 
-	public Mover(Sensor sensor, double speed, float maxSteer, float kP, float kI, float kD) {
-		this.speed = speed;
-		MAX_STEER = maxSteer;
+	public Mover(Sensor sensor) {
+		speed = 53;
+		MAX_STEER = 160;
 		Wheel leftWheel = WheeledChassis.modelWheel(Motor.A, 5.6).offset(6);
 		Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 5.6).offset(-6);
 		chassis = new WheeledChassis(new Wheel[] { leftWheel, rightWheel }, WheeledChassis.TYPE_DIFFERENTIAL);
@@ -36,22 +35,17 @@ class Mover extends Thread {
 		this.sensor = sensor;
 		setSpeed(speed);
 		chassis.setAcceleration(chassis.getMaxLinearSpeed() / 1.5, chassis.getMaxAngularSpeed());
-		// pilot = new MovePilot (myChassis);//(5.7f, 11.5f, Motor.A, Motor.D);
 
 		// PID konstanter
-		this.kP = kP;
-		this.kI = kI;
-		this.kD = kD;
+		kP = 80;
+		kI = 1;
+		kD = 400;
 	}
 
 	public void run() {
 		float integral = 0;
 		float prevError = 0;
 		long prevTime = System.currentTimeMillis();
-		long lastBlack = System.currentTimeMillis();
-
-		// PoseProvider pp = chassis.getPoseProvider();
-		// Pose pose = pp.getPose();
 
 		if (kC != 0) {
 			float pC = 0.3f;
@@ -65,13 +59,6 @@ class Mover extends Thread {
 			if (sensor.isBlackL()) {
 				if (prevTime < (System.currentTimeMillis() - 3000)) {
 					teller++;
-					// if (teller == 1 || (teller - 1) % 3 == 0) {
-					// chassis.setVelocity(8, 20);
-					// try {
-					// Thread.sleep(1000);
-					// } catch (InterruptedException e) {
-					// }
-					// }
 					if (teller % 3 == 0) {
 						chassis.setVelocity(linSpeed * 1.5, 0);
 						try {
@@ -79,7 +66,6 @@ class Mover extends Thread {
 						} catch (InterruptedException e) {
 
 						}
-						lastBlack = System.currentTimeMillis();
 					}
 
 				}
@@ -87,12 +73,6 @@ class Mover extends Thread {
 			}
 
 			float error = sensor.getRightValue();
-			if (error < 0.2)
-				lastBlack = System.currentTimeMillis();
-			if (lastBlack < (System.currentTimeMillis() - 5000))
-				recover();
-			// if (error * integral <= 0)
-			// integral *= 0.80f;
 			integral += error;
 			if (integral * kI > (MAX_STEER / 2))
 				integral = (MAX_STEER / 2 / kI);
@@ -100,19 +80,10 @@ class Mover extends Thread {
 				integral = (-MAX_STEER / 2 / kI);
 			float output = kP * error + kI * integral + kD * (error - prevError);
 			prevError = error;
-			// if (output > 30 || output < -30) {
-			// setSpeed(speed / 3);
-			// speedTeller = 0;
-			// } else {
-			// speedTeller++;
-			// if (speedTeller > 10)
-			// setSpeed(speed);
-			// }
 			if (output > MAX_STEER)
 				output = MAX_STEER;
 			if (output < -MAX_STEER)
 				output = -MAX_STEER;
-			offset = output;
 			if (output > 85 || output < -85) {
 				setSpeed(30);
 				speedCount = 0;
@@ -130,78 +101,7 @@ class Mover extends Thread {
 		} while (!interrupted());
 	}
 
-	public void recover() {
-		chassis.setVelocity(8, -40);
-		while (sensor.getRightValue() > 0.2) {
-			if (sensor.isBlackL()) {
-				chassis.setVelocity(8, 40);
-			}
-			chassis.setVelocity(0, 0);
-		}
-		chassis.setVelocity(linSpeed / 2, 0);
-		try {
-			Thread.sleep(50);
-		} catch (InterruptedException e) {
-
-		}
-
-	}
-
-	public void calibrate() throws InterruptedException {
-		chassis.setSpeed(1, 40);
-		chassis.rotate(-30);
-		chassis.waitComplete();
-		Thread.sleep(200);
-		chassis.rotate(25);
-		chassis.waitComplete();
-		// chassis.rotate(45);
-		// chassis.waitComplete();
-	}
-
-	public double getSpeed() {
-		return linSpeed;
-	}
-
 	public void setSpeed(double speed) {
 		linSpeed = maxLinSpeed * (speed / 100);
-	}
-
-	public float getkP() {
-		return kP;
-	}
-
-	public float getkI() {
-		return kI;
-	}
-
-	public float getkD() {
-		return kD;
-	}
-
-	public void setkP(float kP) {
-		this.kP = kP;
-	}
-
-	public void setkI(float kI) {
-		this.kI = kI;
-	}
-
-	public void setkD(float kD) {
-		this.kD = kD;
-	}
-
-	public float getOffset() {
-		return offset;
-	}
-
-	public void rotate(int i) {
-		chassis.setSpeed(1, 40);
-		chassis.rotate(i);
-		chassis.waitComplete();
-	}
-
-	public int getTeller() {
-
-		return teller;
 	}
 }
