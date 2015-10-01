@@ -8,9 +8,9 @@ import lejos.hardware.lcd.TextLCD;
 class Rally {
 
 	public static void main(String[] arg) throws Exception {
-		double speed = 30;
-		int maxSteer = 200;
-		float kP = 100;
+		double speed = 53;
+		int maxSteer = 160;
+		float kP = 80;
 		float kI = 1;
 		float kD = 400;
 

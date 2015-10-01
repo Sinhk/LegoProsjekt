@@ -35,7 +35,7 @@ class Mover extends Thread {
 		maxLinSpeed = chassis.getMaxLinearSpeed();
 		this.sensor = sensor;
 		setSpeed(speed);
-		chassis.setAcceleration(chassis.getMaxLinearSpeed() / 2, chassis.getMaxAngularSpeed());
+		chassis.setAcceleration(chassis.getMaxLinearSpeed() / 1.5, chassis.getMaxAngularSpeed());
 		// pilot = new MovePilot (myChassis);//(5.7f, 11.5f, Motor.A, Motor.D);
 
 		// PID konstanter
@@ -48,6 +48,7 @@ class Mover extends Thread {
 		float integral = 0;
 		float prevError = 0;
 		long prevTime = System.currentTimeMillis();
+		long lastBlack = System.currentTimeMillis();
 
 		// PoseProvider pp = chassis.getPoseProvider();
 		// Pose pose = pp.getPose();
@@ -59,24 +60,26 @@ class Mover extends Thread {
 			kD = (kP * pC) / (8 * 0.05f);
 		}
 		teller = 0;
+		int speedCount = 0;
 		do {
 			if (sensor.isBlackL()) {
 				if (prevTime < (System.currentTimeMillis() - 3000)) {
 					teller++;
 					// if (teller == 1 || (teller - 1) % 3 == 0) {
-					// chassis.setVelocity(linSpeed * 2, -20);
+					// chassis.setVelocity(8, 20);
 					// try {
-					// Thread.sleep(1500);
+					// Thread.sleep(1000);
 					// } catch (InterruptedException e) {
 					// }
 					// }
 					if (teller % 3 == 0) {
-						chassis.setVelocity(linSpeed * 2, 0);
+						chassis.setVelocity(linSpeed * 1.5, 0);
 						try {
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {
 
 						}
+						lastBlack = System.currentTimeMillis();
 					}
 
 				}
@@ -84,6 +87,10 @@ class Mover extends Thread {
 			}
 
 			float error = sensor.getRightValue();
+			if (error < 0.2)
+				lastBlack = System.currentTimeMillis();
+			if (lastBlack < (System.currentTimeMillis() - 5000))
+				recover();
 			// if (error * integral <= 0)
 			// integral *= 0.80f;
 			integral += error;
@@ -106,6 +113,14 @@ class Mover extends Thread {
 			if (output < -MAX_STEER)
 				output = -MAX_STEER;
 			offset = output;
+			if (output > 85 || output < -85) {
+				setSpeed(30);
+				speedCount = 0;
+			} else {
+				speedCount++;
+				if (speedCount > 60)
+					setSpeed(speed);
+			}
 			chassis.setVelocity(linSpeed, output);
 			try {
 				Thread.sleep(10);
@@ -113,6 +128,23 @@ class Mover extends Thread {
 			}
 
 		} while (!interrupted());
+	}
+
+	public void recover() {
+		chassis.setVelocity(8, -40);
+		while (sensor.getRightValue() > 0.2) {
+			if (sensor.isBlackL()) {
+				chassis.setVelocity(8, 40);
+			}
+			chassis.setVelocity(0, 0);
+		}
+		chassis.setVelocity(linSpeed / 2, 0);
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+
+		}
+
 	}
 
 	public void calibrate() throws InterruptedException {
