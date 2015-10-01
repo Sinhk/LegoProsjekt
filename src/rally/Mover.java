@@ -15,15 +15,13 @@ class Mover extends Thread {
 	private double speed;
 	private double linSpeed;
 	private double maxLinSpeed;
-	private float MAX_STEER;
+	private final float MAX_STEER;
 	private Chassis chassis;
 	private Sensor sensor;
 
 	private float kP;
 	private float kI;
 	private float kD;
-	private float kC = 0;
-	private int teller;
 
 	public Mover(Sensor sensor) {
 		speed = 53;
@@ -47,13 +45,7 @@ class Mover extends Thread {
 		float prevError = 0;
 		long prevTime = System.currentTimeMillis();
 
-		if (kC != 0) {
-			float pC = 0.3f;
-			kP = 0.60f * kC;
-			kI = (2 * kP * 0.05f) / pC;
-			kD = (kP * pC) / (8 * 0.05f);
-		}
-		teller = 0;
+		int teller = 0;
 		int speedCount = 0;
 		do {
 			if (sensor.isBlackL()) {
