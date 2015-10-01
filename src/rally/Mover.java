@@ -35,7 +35,7 @@ class Mover extends Thread {
 		chassis.setAcceleration(chassis.getMaxLinearSpeed() / 1.5, chassis.getMaxAngularSpeed());
 
 		// PID konstanter
-		kP = 80;
+		kP = 90;
 		kI = 1;
 		kD = 400;
 	}
