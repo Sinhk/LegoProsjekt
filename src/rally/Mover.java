@@ -96,4 +96,10 @@ class Mover extends Thread {
 	public void setSpeed(double speed) {
 		linSpeed = maxLinSpeed * (speed / 100);
 	}
+
+	public void stopMove() {
+		interrupt();
+		chassis.stop();
+		chassis.waitComplete();
+	}
 }
