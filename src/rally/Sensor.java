@@ -44,7 +44,7 @@ class Sensor {
 	public float getRightValue() {
 		float[] sample = new float[rightLeser.sampleSize()];
 		double error;
-		double offset = 0.09;
+		double offset = 0.095;
 		rightLeser.fetchSample(sample, 0);
 		error = sample[0] - offset;
 		error *= 10.0;
