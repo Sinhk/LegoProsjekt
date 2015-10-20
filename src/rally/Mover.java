@@ -15,10 +15,7 @@ class Mover extends Thread {
 	private double speed;
 	private double linSpeed;
 	private double maxLinSpeed;
-	// private double maxAngSpeed;
-	// private double linAcc;
-	// private double angAcc;
-	private int MAX_STEER;
+	private float MAX_STEER;
 	private Chassis chassis;
 	private Sensor sensor;
 	private float offset;
@@ -29,25 +26,16 @@ class Mover extends Thread {
 	private float kC = 0;
 	private int teller;
 
-	public Mover(Sensor sensor, double speed, int maxSteer, float kP, float kI, float kD) {
+	public Mover(Sensor sensor, double speed, float maxSteer, float kP, float kI, float kD) {
 		this.speed = speed;
 		MAX_STEER = maxSteer;
 		Wheel leftWheel = WheeledChassis.modelWheel(Motor.A, 5.6).offset(6);
 		Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 5.6).offset(-6);
 		chassis = new WheeledChassis(new Wheel[] { leftWheel, rightWheel }, WheeledChassis.TYPE_DIFFERENTIAL);
 		maxLinSpeed = chassis.getMaxLinearSpeed();
-		// maxAngSpeed = chassis.getMaxAngularSpeed();
-		// linAcc = chassis.getLinearAcceleration();
-		// angAcc = chassis.getAngularAcceleration();
 		this.sensor = sensor;
-		// System.out.println("Max Linear Speed: " + maxLinSpeed);
-		// System.out.println("Max Angular Speed: " + maxAngSpeed);
-
-		// System.out.println("Linear Acc: " + linAcc);
-		// System.out.println("Angular Acc: " + angAcc);
-
 		setSpeed(speed);
-		// chassis.setAcceleration(5.0, 5.0);
+		chassis.setAcceleration(chassis.getMaxLinearSpeed() / 2, chassis.getMaxAngularSpeed());
 		// pilot = new MovePilot (myChassis);//(5.7f, 11.5f, Motor.A, Motor.D);
 
 		// PID konstanter
@@ -71,18 +59,17 @@ class Mover extends Thread {
 			kD = (kP * pC) / (8 * 0.05f);
 		}
 		teller = 0;
-		// int speedTeller = 0;
 		do {
 			if (sensor.isBlackL()) {
 				if (prevTime < (System.currentTimeMillis() - 3000)) {
 					teller++;
-					if (teller == 1 || (teller - 1) % 3 == 0) {
-						chassis.setVelocity(linSpeed * 2, -10);
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-						}
-					}
+					// if (teller == 1 || (teller - 1) % 3 == 0) {
+					// chassis.setVelocity(linSpeed * 2, -20);
+					// try {
+					// Thread.sleep(1500);
+					// } catch (InterruptedException e) {
+					// }
+					// }
 					if (teller % 3 == 0) {
 						chassis.setVelocity(linSpeed * 2, 0);
 						try {
@@ -97,12 +84,15 @@ class Mover extends Thread {
 			}
 
 			float error = sensor.getRightValue();
+			// if (error * integral <= 0)
+			// integral *= 0.80f;
 			integral += error;
 			if (integral * kI > (MAX_STEER / 2))
-				integral = (float) (MAX_STEER / 2 / kI);
+				integral = (MAX_STEER / 2 / kI);
 			if (integral * kI < (-MAX_STEER / 2))
-				integral = (float) (-MAX_STEER / 2 / kI);
+				integral = (-MAX_STEER / 2 / kI);
 			float output = kP * error + kI * integral + kD * (error - prevError);
+			prevError = error;
 			// if (output > 30 || output < -30) {
 			// setSpeed(speed / 3);
 			// speedTeller = 0;
@@ -116,15 +106,10 @@ class Mover extends Thread {
 			if (output < -MAX_STEER)
 				output = -MAX_STEER;
 			offset = output;
-			// offset = System.currentTimeMillis() - prevTime;
-			prevError = error;
-			// prevTime = System.currentTimeMillis();
 			chassis.setVelocity(linSpeed, output);
 			try {
-				Thread.sleep(50);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 
 		} while (!interrupted());
@@ -188,21 +173,3 @@ class Mover extends Thread {
 		return teller;
 	}
 }
-
-/*
- * public void run() { running = true; if (calibrate) calibrate(); float
- * integral = 0; float prevError = 0;
- * 
- * if (kC != 0) { float pC = 0.5f; kP = 0.60f * kC; kI = (2 * kP * 0.01f) / pC;
- * kD = (kP * pC) / (8 * 0.01f); } while (running) { float farge =
- * (sensor.getFargeValue() + 0.02f) * 2; float lys = (sensor.getLysValue()) *
- * 2;// - 0.3f) * 1.7f; float error = lys - farge;
- * 
- * integral += error; if (integral > (maxAngSpeed / 2)) integral = (float)
- * (maxAngSpeed / 2); if (integral < (-maxAngSpeed / 2)) integral = (float)
- * (-maxAngSpeed / 2); float output = kP * error + kI * integral + kD * (error -
- * prevError); offset = output; prevError = error;
- * 
- * chassis.setVelocity(linSpeed, output); try { Thread.sleep(10); } catch
- * (InterruptedException e) { e.printStackTrace(); } } }
- */
