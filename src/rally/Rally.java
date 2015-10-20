@@ -4,6 +4,7 @@ import java.io.File;
 
 import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.hardware.lcd.GraphicsLCD;
 import lejos.hardware.lcd.Image;
 
@@ -80,13 +81,13 @@ class Rally {
 		// // File theme = new File("SMB-Theme.wav");
 		lcd.drawString("Klar", 0, 3, 0);
 		Button.waitForAnyPress();
-		// Sound.playSample(go, 100);
+		Sound.playSample(go, 100);
 		motor.start();
 		// Sound.playSample(theme, 100);
 		Button.waitForAnyPress();
 		motor.stopMove();
-		// Sound.playSample(die, 100);
-		// Sound.playSample(gameOver, 100);
+		Sound.playSample(die, 100);
+		Sound.playSample(gameOver, 100);
 		sensor.close();
 	}
 }
