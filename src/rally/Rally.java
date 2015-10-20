@@ -14,7 +14,7 @@ class Rally {
 		int maxSteer = 160;
 		float kP = 100;
 		float kI = 3;
-		float kD = 1000;
+		float kD = 800;
 
 		Sensor sensor = new Sensor(autoCalibrate, rgbMode);
 		Mover motor = new Mover(sensor, speed, maxSteer, kP, kI, kD);
@@ -43,13 +43,13 @@ class Rally {
 				motor.setkP(motor.getkP() + 5);
 
 			}
-			if (Button.DOWN.isDown() && Button.ENTER.isDown())
+			if (Button.ESCAPE.isDown())
 				fortsett = false;
 			Thread.sleep(500);
 		}
 		motor.interrupt();
 		sensor.close();
-		lcd.clear();
+		// lcd.clear();
 		// System.exit(0);
 	}
 }

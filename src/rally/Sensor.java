@@ -9,7 +9,7 @@ package rally;
 import lejos.hardware.Brick;
 import lejos.hardware.BrickFinder;
 import lejos.hardware.port.Port;
-import lejos.hardware.sensor.NXTLightSensor;
+import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.filter.MaximumFilter;
 import lejos.robotics.filter.MinimumFilter;
@@ -19,8 +19,8 @@ class Sensor {
 	private SampleProvider rightLeser;
 	private float[] white;
 	private float[] black;
-	private NXTLightSensor leftsensor;
-	private NXTLightSensor rightsensor;
+	private EV3ColorSensor leftsensor;
+	private EV3ColorSensor rightsensor;
 	private boolean autoCalibrate;
 	private boolean rgbMode;
 	private SampleProvider rightFilter;
@@ -36,15 +36,16 @@ class Sensor {
 		Port s1 = brick.getPort("S1"); //
 		Port s4 = brick.getPort("S4"); //
 		this.autoCalibrate = autoCalibrate;
-		leftsensor = new NXTLightSensor(s1);
+		leftsensor = new EV3ColorSensor(s1);
 		leftLeser = leftsensor.getRedMode();
 
-		rightsensor = new NXTLightSensor(s4);
+		rightsensor = new EV3ColorSensor(s4);
 		rightLeser = rightsensor.getRedMode();
+		// MeanFilter rightMean = new MeanFilter(rightLeser, 25);
+		// SampleThread rightThread = new SampleThread(rightLeser, 500);
 		this.rgbMode = rgbMode;
 		white = new float[rightLeser.sampleSize()];
 		black = new float[rightLeser.sampleSize()];
-
 		if (autoCalibrate) {
 			rightAutoFilter = new autoAdjustFilter(rightLeser);
 			rightFilter = rightAutoFilter;
@@ -67,7 +68,7 @@ class Sensor {
 	public boolean isBlackL() {
 		float[] sample = new float[leftLeser.sampleSize()];
 		leftLeser.fetchSample(sample, 0);
-		if (sample[0] <= 0.4 && sample[0] != 0.0) {
+		if (sample[0] <= 0.1 && sample[0] != 0.0) {
 			return true;
 		} else {
 			return false;
@@ -76,20 +77,32 @@ class Sensor {
 
 	public float getRightValue() {
 		float[] sample = new float[rightFilter.sampleSize()];
-		float error;
+		double error;
 		rightFilter.fetchSample(sample, 0);
-		if (rgbMode) {
-			float intensity = 0;
-			for (int i = 0; i < sample.length; i++)
-				intensity += Math.pow((sample[i] - black[i]) / ((double) white[i] - black[i]), 2);
-			error = (float) (2f * (Math.sqrt(intensity) - .5f));
-		} else if (autoCalibrate) {
-			error = sample[0] - .5f;
-		} else {
-
-			error = (sample[0] - lysMinValue / (lysMaxValue - lysMinValue) - .5f);
+		/*
+		 * if (rgbMode) { double intensity = 0; for (int i = 0; i <
+		 * sample.length; i++) intensity += Math.pow((sample[i] - black[i]) /
+		 * ((double) white[i] - black[i]), 2); error = 2 * (Math.sqrt(intensity)
+		 * - .5); } else if (autoCalibrate) {
+		 */
+		error = sample[0] - .4;
+		error = Math.round((error * 100)) / 100.0;
+		if (error > -0.1 && error < 0.1) {
+			error = 0;
 		}
-		return error;
+		// if (error > 0)
+		// error *= 1.6;
+		if (error > .5)
+			error = .5;
+		if (error < -.5)
+			error = -.5;
+
+		// } else {
+		// error = (sample[0] - lysMinValue / (lysMaxValue - lysMinValue) -
+		// .5f);
+		// }
+
+		return (float) error;
 	}
 
 	public float getLysMaxValue() {
@@ -121,9 +134,19 @@ class Sensor {
 			mover.calibrate();
 			t.interrupt();
 		} else if (rgbMode) {
-			rightFilter.fetchSample(black, 0);
-			mover.rotate(-35);
-			rightFilter.fetchSample(white, 0);
+			float[] sample = new float[rightFilter.sampleSize()];
+			MinimumFilter min = new MinimumFilter(rightFilter, 100);
+			for (int i = 0; i < 100; i++) {
+				min.fetchSample(sample, 0);
+			}
+			min.fetchSample(black, 0);
+			mover.rotate(-45);
+			MaximumFilter max = new MaximumFilter(rightFilter, 100);
+			for (int i = 0; i < 100; i++) {
+				max.fetchSample(sample, 0);
+			}
+			max.fetchSample(white, 0);
+			mover.rotate(30);
 		} else {
 			float[] sample = new float[rightFilter.sampleSize()];
 			Thread t = new Thread() {

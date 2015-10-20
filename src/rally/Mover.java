@@ -65,23 +65,30 @@ class Mover extends Thread {
 		// Pose pose = pp.getPose();
 
 		if (kC != 0) {
-			float pC = 0.5f;
+			float pC = 0.3f;
 			kP = 0.60f * kC;
-			kI = (2 * kP * 0.01f) / pC;
-			kD = (kP * pC) / (8 * 0.01f);
+			kI = (2 * kP * 0.05f) / pC;
+			kD = (kP * pC) / (8 * 0.05f);
 		}
 		teller = 0;
-		while (!interrupted()) {
+		// int speedTeller = 0;
+		do {
 			if (sensor.isBlackL()) {
 				if (prevTime < (System.currentTimeMillis() - 3000)) {
 					teller++;
+					if (teller == 1 || (teller - 1) % 3 == 0) {
+						chassis.setVelocity(linSpeed * 2, -10);
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+						}
+					}
 					if (teller % 3 == 0) {
 						chassis.setVelocity(linSpeed * 2, 0);
 						try {
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+
 						}
 					}
 
@@ -96,6 +103,14 @@ class Mover extends Thread {
 			if (integral * kI < (-MAX_STEER / 2))
 				integral = (float) (-MAX_STEER / 2 / kI);
 			float output = kP * error + kI * integral + kD * (error - prevError);
+			// if (output > 30 || output < -30) {
+			// setSpeed(speed / 3);
+			// speedTeller = 0;
+			// } else {
+			// speedTeller++;
+			// if (speedTeller > 10)
+			// setSpeed(speed);
+			// }
 			if (output > MAX_STEER)
 				output = MAX_STEER;
 			if (output < -MAX_STEER)
@@ -106,13 +121,13 @@ class Mover extends Thread {
 			// prevTime = System.currentTimeMillis();
 			chassis.setVelocity(linSpeed, output);
 			try {
-				Thread.sleep(10);
+				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-		}
+		} while (!interrupted());
 	}
 
 	public void calibrate() throws InterruptedException {

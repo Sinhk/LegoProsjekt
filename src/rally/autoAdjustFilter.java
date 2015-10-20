@@ -51,7 +51,7 @@ public class autoAdjustFilter extends AbstractFilter {
 	public void fetchSample(float[] sample, int offset) {
 		super.fetchSample(sample, offset);
 		for (int i = 0; i < sampleSize; i++) {
-			if (startTime > (System.currentTimeMillis() - 5000)) {
+			if (startTime > (System.currentTimeMillis() - 10000)) {
 				if (minimum[i] > sample[offset + i])
 					minimum[i] = sample[offset + i];
 				if (maximum[i] < sample[offset + i])
