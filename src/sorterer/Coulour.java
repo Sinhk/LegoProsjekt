@@ -12,8 +12,8 @@ import lejos.nxt.addon.*;
 
 public class Coulour {
     public static void main(String[] arg) throws Exception {
-
-	Button.waitForAnyPress();
+	LCD.drawString("Klar...", 0, 0);
+	// Button.waitForAnyPress();
 	BTConnect btc = new BTConnect();
 	btc.start();
 	int speed = 250;
@@ -31,7 +31,7 @@ public class Coulour {
 	    if (btc.getReady()) {
 		Motor.A.setSpeed(speed);
 		Motor.B.setSpeed(speed2);
-		LCD.drawString("sorterer", 0, 0);
+		LCD.drawString("sorterer", 0, 2);
 
 		Motor.A.rotate(vinkel1);
 		LCD.clear();
