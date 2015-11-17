@@ -78,10 +78,13 @@ public class Coulour {
 	    }
 	    if (btc.getDone()) {
 		fortsett = false;
-		btc.close();
 
 	    }
 	}
+	btc.close();
+	Thread.sleep(200);
+	System.exit(0);
+
     }
 
 }
