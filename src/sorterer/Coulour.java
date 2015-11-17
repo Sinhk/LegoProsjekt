@@ -14,7 +14,7 @@ public class Coulour {
     public static void main(String[] arg) throws Exception {
 	LCD.drawString("Klar...", 0, 0);
 	// Button.waitForAnyPress();
-	BTConnect btc = new BTConnect();
+	BTConnectNXT btc = new BTConnectNXT();
 	btc.start();
 	int speed = 250;
 	int speed2 = 200;
@@ -84,7 +84,6 @@ public class Coulour {
 	btc.close();
 	Thread.sleep(200);
 	System.exit(0);
-
     }
 
 }
