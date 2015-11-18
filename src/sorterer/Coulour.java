@@ -1,4 +1,4 @@
-package sorterer;
+package indeling;
 
 import lejos.nxt.ColorSensor;
 import lejos.nxt.Button;
@@ -20,7 +20,7 @@ public class Coulour {
 	int speed2 = 200;
 	int vinkel1 = 320;
 	int vinkel2 = 30;
-	int vinkel3 = 35;
+	int vinkel3 = 40;
 	int vent = 1500;
 	int vent2 = 1000;
 
@@ -28,7 +28,7 @@ public class Coulour {
 
 	while (fortsett) {
 
-	    if (btc.getReady() || Button.LEFT.isDown()) {
+	    if (btc.getReady() || Button.ENTER.isDown()) {
 		Motor.A.setSpeed(speed);
 		Motor.B.setSpeed(speed2);
 		LCD.drawString("sorterer", 0, 2);
@@ -57,7 +57,7 @@ public class Coulour {
 		}
 
 		if (color == 0) {
-		    Motor.B.rotate(-vinkel2);
+		    Motor.B.rotate(-vinkel3);
 		    Delay.msDelay(vent);
 		    Motor.A.rotate(vinkel2);
 		    Delay.msDelay(vent2);
@@ -76,7 +76,7 @@ public class Coulour {
 		    Motor.B.stop();
 		}
 	    }
-	    if (btc.getDone() || Button.RIGHT.isDown()) {
+	    if (btc.getDone() || Button.ESCAPE.isDown()) {
 		fortsett = false;
 
 	    }
