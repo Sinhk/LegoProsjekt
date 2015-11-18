@@ -18,14 +18,15 @@ public class BTConnectEV3 extends Thread {
     public void run() {
 	BTConnector con = new BTConnector();
 	// BTConnection nxt = con.connect("NXT", BTConnection.PACKET);
-	String address = "baka";
-	for (RemoteBTDevice device : Bluetooth.getLocalDevice().getPairedDevices()) {
-	    System.out.println(device.getName());
-	    System.out.println(device.getAddress());
-	    if (device.getName().toUpperCase().equals("NXT"))
-		address = device.getAddress();
-	}
-	BTConnection nxt = con.connect(address, BTConnection.PACKET);
+	/*
+	 * for (RemoteBTDevice device :
+	 * Bluetooth.getLocalDevice().getPairedDevices()) {
+	 * System.out.println(device.getName());
+	 * System.out.println(device.getAddress()); if
+	 * (device.getName().toUpperCase().equals("NXT")) address =
+	 * device.getAddress(); }
+	 */
+	BTConnection nxt = con.connect("00:16:53:0A:57:A7", BTConnection.PACKET);
 	if (nxt == null) {
 	    System.err.println("Failed to connect to any NXT");
 	    System.exit(1);
@@ -34,16 +35,26 @@ public class BTConnectEV3 extends Thread {
 	DataOutputStream dos;
 	dis = nxt.openDataInputStream();
 	dos = nxt.openDataOutputStream();
+	try {
+	    Thread.sleep(300);
+	} catch (InterruptedException e1) {
+	    // TODO Auto-generated catch block
+	    e1.printStackTrace();
+	}
 	running = true;
 	while (running) {
 	    try {
 		int value = 0;
-		if (ready)
+		if (ready) {
 		    value = 1;
-		ready = false;
-		if (done)
+		    ready = false;
+		}
+		if (done) {
 		    value = 5;
-		done = false;
+		    done = false;
+		    running = false;
+		}
+
 		dos.writeInt(value);
 
 	    } catch (IOException ioe) {

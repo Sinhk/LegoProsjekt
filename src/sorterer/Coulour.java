@@ -28,7 +28,7 @@ public class Coulour {
 
 	while (fortsett) {
 
-	    if (btc.getReady()) {
+	    if (btc.getReady() || Button.LEFT.isDown()) {
 		Motor.A.setSpeed(speed);
 		Motor.B.setSpeed(speed2);
 		LCD.drawString("sorterer", 0, 2);
@@ -76,7 +76,7 @@ public class Coulour {
 		    Motor.B.stop();
 		}
 	    }
-	    if (btc.getDone()) {
+	    if (btc.getDone() || Button.RIGHT.isDown()) {
 		fortsett = false;
 
 	    }

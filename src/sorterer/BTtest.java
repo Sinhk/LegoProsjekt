@@ -15,12 +15,11 @@ class BTtest {
 	boolean fortsett = true;
 	lcd.clear();
 	lcd.drawString("Trykk venstre for sortering", 0, 2);
-	lcd.drawString("Høyre for avslutt", 0, 4);
+	lcd.drawString("Hoyre for avslutt", 0, 4);
 	while (fortsett) {
 
 	    if (Button.LEFT.isDown()) {
 		btc.setReady();
-
 	    }
 	    if (Button.RIGHT.isDown()) {
 		btc.setDone();
@@ -29,7 +28,7 @@ class BTtest {
 		fortsett = false;
 
 	    }
-
+	    Thread.sleep(100);
 	}
 
 	// lcd.clear();
