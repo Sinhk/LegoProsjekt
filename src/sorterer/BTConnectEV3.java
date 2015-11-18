@@ -5,8 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import lejos.remote.nxt.BTConnector;
-import lejos.hardware.Bluetooth;
-import lejos.hardware.RemoteBTDevice;
 import lejos.remote.nxt.BTConnection;
 
 public class BTConnectEV3 extends Thread {

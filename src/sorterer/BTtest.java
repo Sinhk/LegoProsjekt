@@ -17,18 +17,17 @@ class BTtest {
 	lcd.drawString("Trykk venstre for sortering", 0, 2);
 	lcd.drawString("Hoyre for avslutt", 0, 4);
 	while (fortsett) {
+	    int button = Button.waitForAnyPress();
 
-	    if (Button.LEFT.isDown()) {
+	    if (button == Button.ID_LEFT) {
 		btc.setReady();
-	    }
-	    if (Button.RIGHT.isDown()) {
+	    } else if (button == Button.ID_RIGHT) {
 		btc.setDone();
 		btc.close();
 		Thread.sleep(200);
 		fortsett = false;
 
 	    }
-	    Thread.sleep(100);
 	}
 
 	// lcd.clear();

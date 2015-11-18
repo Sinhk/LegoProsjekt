@@ -1,4 +1,4 @@
-package indeling;
+package sorterer;
 
 import lejos.nxt.ColorSensor;
 import lejos.nxt.Button;

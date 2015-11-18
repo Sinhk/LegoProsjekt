@@ -1,89 +1,85 @@
-package indeling;
+package sorterer;
 
-import lejos.nxt.ColorSensor;
-import lejos.nxt.Button;
-import lejos.nxt.LCD;
-import lejos.nxt.Motor;
-import lejos.nxt.SensorPort;
-import lejos.util.Delay;
-import lejos.nxt.ColorSensor.Color;
-import lejos.nxt.addon.*;
-//Button.RIGHT.isDown()
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-public class Coulour {
-    public static void main(String[] arg) throws Exception {
-	LCD.drawString("Klar...", 0, 0);
-	// Button.waitForAnyPress();
-	BTConnectNXT btc = new BTConnectNXT();
-	btc.start();
-	int speed = 250;
-	int speed2 = 200;
-	int vinkel1 = 320;
-	int vinkel2 = 30;
-	int vinkel3 = 40;
-	int vent = 1500;
-	int vent2 = 1000;
+import lejos.nxt.comm.BTConnection;
+import lejos.nxt.comm.Bluetooth;
 
-	boolean fortsett = true;
+public class BTConnectNXT extends Thread {
+    private BTConnection btc;
+    private DataInputStream dis;
+    private DataOutputStream dos;
+    private boolean ready = false;
+    private boolean done = false;
+    private boolean running;
 
-	while (fortsett) {
+    public void run() {
 
-	    if (btc.getReady() || Button.ENTER.isDown()) {
-		Motor.A.setSpeed(speed);
-		Motor.B.setSpeed(speed2);
-		LCD.drawString("sorterer", 0, 2);
+	btc = Bluetooth.waitForConnection();
+	dis = btc.openDataInputStream();
+	dos = btc.openDataOutputStream();
+	running = true;
+	while (running) {
+	    try {
+		int value = dis.readInt();
+		if (value == 1)
+		    ready = true;
+		if (value == 5)
+		    done = true;
 
-		Motor.A.rotate(vinkel1);
-		LCD.clear();
-
-		// ColorSensor cs = new ColorSensor(SensorPort.S2);
-		// Color color = cs.getColor();
-
-		ColorHTSensor colorSensor = new ColorHTSensor(SensorPort.S2);
-		int color = colorSensor.getColorID();
-		LCD.drawString("color" + color, 1, 1);
-
-		// Button.waitForAnyPress();
-
-		if (color == 7) {
-		    Motor.B.rotate(vinkel3);
-		    Delay.msDelay(vent);
-		    Motor.A.rotate(vinkel2);
-		    Delay.msDelay(vent2);
-		    Motor.B.rotate(-vinkel3);
-		    Motor.A.rotate((-vinkel1) + (-vinkel2));
-		    Motor.B.stop();
-		    Motor.A.stop();
+	    } catch (IOException ioe) {
+		System.out.println("IOException reading:");
+		System.out.println(ioe.getMessage());
+		try {
+		    dis.close();
+		    dos.close();
+		    Thread.sleep(100);
+		    btc.close();
+		} catch (IOException e) {
+		} catch (InterruptedException ie) {
 		}
 
-		if (color == 0) {
-		    Motor.B.rotate(-vinkel3);
-		    Delay.msDelay(vent);
-		    Motor.A.rotate(vinkel2);
-		    Delay.msDelay(vent2);
-		    Motor.A.rotate(-(vinkel1 + vinkel2));
-		    Motor.B.rotate(vinkel3);
-		    Motor.B.stop();
-		    Motor.A.stop();
-		}
-
-		if (color != 0 && color != 7) {
-		    Delay.msDelay(vent);
-		    Motor.A.rotate(vinkel2);
-		    Delay.msDelay(vent2);
-		    Motor.A.rotate(-(vinkel1 + vinkel2));
-		    Motor.A.stop();
-		    Motor.B.stop();
-		}
-	    }
-	    if (btc.getDone() || Button.ESCAPE.isDown()) {
-		fortsett = false;
+		btc = Bluetooth.waitForConnection();
+		dis = btc.openDataInputStream();
+		dos = btc.openDataOutputStream();
 
 	    }
+
 	}
-	btc.close();
-	Thread.sleep(200);
-	System.exit(0);
+	try {
+	    dis.close();
+	    dos.close();
+	    Thread.sleep(100);
+	    btc.close();
+
+	} catch (IOException ioe) {
+	    System.out.println("IOException closing connection:");
+	    System.out.println(ioe.getMessage());
+	} catch (InterruptedException e) {
+
+	}
+    }
+
+    public boolean getReady() {
+	if (ready) {
+	    ready = false;
+	    return true;
+	} else
+	    return false;
+    }
+
+    public boolean getDone() {
+	if (done) {
+	    done = false;
+	    return true;
+	} else
+	    return false;
+    }
+
+    public void close() {
+	running = false;
     }
 
 }
