@@ -5,7 +5,12 @@ import java.io.IOException;
 
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
-
+/**
+ * Klasse for bluetooth kommunikasjon på NXT. 
+ * 
+ * @author sindr
+ *
+ */
 public class BTConnectNXT implements Runnable {
     private BTConnection btc;
     private DataInputStream dis;
