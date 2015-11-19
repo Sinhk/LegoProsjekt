@@ -49,7 +49,7 @@ public class Coulour {
 		LCD.drawString("sorterer", 0, 2);
 		int color = colorSensor.getColorID();
 		LCD.drawString("color" + color, 1, 4);
-		sort(color);
+		sortBall(color);
 	    }
 	    if (btc.getDone() || Button.ESCAPE.isDown()) {
 		fortsett = false;
@@ -61,7 +61,7 @@ public class Coulour {
 	System.exit(0);
     }
 
-    private static void sort(int color) {
+    private static void sortBall(int color) {
 	switch (color) {
 	case BLUE:
 	    inndeler.rotateTo(vinkel3);
@@ -73,6 +73,7 @@ public class Coulour {
 	    break;
 	}
 	heis.rotateTo(vinkel1 + vinkel2);
+	Delay.msDelay(vent);
 	inndeler.rotateTo(0, true);
 	heis.rotateTo(0);
 	inndeler.stop(true);
