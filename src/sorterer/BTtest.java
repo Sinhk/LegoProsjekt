@@ -11,7 +11,8 @@ class BTtest {
 	EV3 ev3 = (EV3) BrickFinder.getLocal();
 	TextLCD lcd = ev3.getTextLCD();
 	BTConnectEV3 btc = new BTConnectEV3();
-	btc.start();
+	Thread btThread = new Thread(btc);
+	btThread.start();
 	boolean fortsett = true;
 	lcd.clear();
 	lcd.drawString("Trykk venstre for sortering", 0, 2);
@@ -23,14 +24,11 @@ class BTtest {
 		btc.setReady();
 	    } else if (button == Button.ID_RIGHT) {
 		btc.setDone();
-		btc.close();
-		Thread.sleep(200);
+		btThread.join();
 		fortsett = false;
-
 	    }
 	}
-
-	// lcd.clear();
-	// System.exit(0);
+	lcd.clear();
+	System.exit(0);
     }
 }
