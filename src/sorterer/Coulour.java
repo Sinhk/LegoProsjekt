@@ -7,9 +7,8 @@ import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.SensorPort;
 import lejos.util.Delay;
-import lejos.nxt.ColorSensor.Color;
+import lejos.robotics.Color;
 import lejos.nxt.addon.*;
-import lejos.robotics.RegulatedMotor;
 //Button.RIGHT.isDown()
 
 public class Coulour {
@@ -36,18 +35,23 @@ public class Coulour {
 	heis.setSpeed(speed);
 	inndeler.setSpeed(speed2);
 	ColorHTSensor colorSensor = new ColorHTSensor(SensorPort.S2);
-	colorSensor.initBlackLevel();
+	// colorSensor.initBlackLevel();
 	boolean fortsett = true;
 
 	while (fortsett) {
 	    if (Button.RIGHT.isDown()) {
 		colorSensor.initBlackLevel();
 	    }
+	    if (Button.LEFT.isDown()) {
+		zero();
+	    }
 
 	    if (btc.getReady() || Button.ENTER.isDown()) {
 		LCD.clear();
 		LCD.drawString("sorterer", 0, 2);
 		int color = colorSensor.getColorID();
+		Color rgb = colorSensor.getColor();
+		LCD.drawString("R: " + rgb.getRed() + " G: " + rgb.getGreen() + " B: " + rgb.getBlue(), 0, 5);
 		LCD.drawString("color" + color, 1, 4);
 		sortBall(color);
 	    }
@@ -82,11 +86,13 @@ public class Coulour {
 
     /* Exprimental. Try to reset motors */
     private static void zero() {
+	heis.setSpeed(50);
 	heis.backward();
 	while (!heis.isStalled()) {
 	    Delay.msDelay(100);
 	}
 	heis.stop();
 	heis.resetTachoCount();
+	heis.setSpeed(speed);
     }
 }
