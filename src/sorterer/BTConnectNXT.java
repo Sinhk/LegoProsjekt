@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
+import lejos.nxt.comm.NXTConnection;
 
 public class BTConnectNXT implements Runnable {
     private BTConnection btc;
@@ -19,11 +20,14 @@ public class BTConnectNXT implements Runnable {
 
     public void run() {
 	running = true;
+	boolean connected = false;
 	while (running) {
-	    btc = Bluetooth.waitForConnection();
-	    dis = btc.openDataInputStream();
-	    dos = btc.openDataOutputStream();
-	    boolean connected = true;
+		btc = Bluetooth.waitForConnection(10000,BTConnection.PACKET);
+	    if (btc != null){
+	    	dis = btc.openDataInputStream();
+	    	dos = btc.openDataOutputStream();
+	    	connected= true;
+	    	}
 	    while (running && connected) {
 		try {
 		    int value = dis.readInt();
@@ -32,16 +36,17 @@ public class BTConnectNXT implements Runnable {
 		    if (value == DONE) {
 			done = true;
 			running = false;
-		    }
+		    }	
 		} catch (IOException ioe) {
-		    System.out.println("IOException reading:");
-		    System.out.println(ioe.getMessage());
 		    try {
+		    System.out.println("Disconnected");
 			dis.close();
 			dos.close();
 			Thread.sleep(100);
 			btc.close();
+			connected = false;
 		    } catch (IOException e) {
+		    	System.out.println("Cant reconnect");
 		    } catch (InterruptedException ie) {
 			running = false;
 		    }
