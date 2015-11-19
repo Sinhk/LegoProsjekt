@@ -32,7 +32,7 @@ public class BTConnectNXT implements Runnable {
 		    if (value == DONE) {
 			done = true;
 			running = false;
-		    }
+		    }	
 		} catch (IOException ioe) {
 		    System.out.println("IOException reading:");
 		    System.out.println(ioe.getMessage());
