@@ -1,4 +1,4 @@
-package sorterer;
+package plukker;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -17,7 +17,7 @@ public class BTConnectEV3 implements Runnable {
     private final int DONE = 5;
 
     public void run() {
-    	//TODO Add timout on connection, if necesary
+	// TODO Add timout on connection, if necesary
 	running = true;
 	boolean connected = false;
 	BTConnector con = new BTConnector();

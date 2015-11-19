@@ -1,4 +1,4 @@
-package sorterer;
+package plukker;
 
 import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
