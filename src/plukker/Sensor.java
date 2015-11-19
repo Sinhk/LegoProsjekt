@@ -37,17 +37,21 @@ class Sensor {
 
 	public float getRightValue() {
 		float[] sample = new float[rightLeser.sampleSize()];
+		
+		rightLeser.fetchSample(sample, 0);
+		return sample[0];
+		/*
 		double error;
 		double offset = 0.095;
-		rightLeser.fetchSample(sample, 0);
 		error = sample[0] - offset;
 		error *= 10.0;
 		if (error < 0.1 && error > -0.1)
 			error = 0;
-		// error = Math.round((error * 100)) / 100.0;
-		// if (error > 0)
-		// error *= 1.6;
+		error = Math.round((error * 100)) / 100.0;
+		if (error > 0)
+		error *= 1.6;
 		return (float) error;
+		*/
 	}
 
 	public void close() {

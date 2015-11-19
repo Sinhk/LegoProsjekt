@@ -12,6 +12,7 @@ class Main {
 		
 
 		Mover motor = new Mover(null, speed, maxSteer);
+	
 		motor.start();
 		//EV3 ev3 = (EV3) BrickFinder.getLocal();
 		boolean fortsett = true;
