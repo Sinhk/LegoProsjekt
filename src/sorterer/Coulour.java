@@ -14,17 +14,19 @@ import lejos.nxt.addon.*;
 public class Coulour {
     private final static int RED = 0;
     private final static int BLUE = 7;// 2
-    private static float speed = 350;			//setter heishastighet
-    private static float speed2 = 200;			//setter roteringshastighet
-    private static int vinkel1 = 365;			//setter heis rotasjon
+    private static float speed = 350; // setter heishastighet
+    private static float speed2 = 200; // setter roteringshastighet
+    private static int vinkel1 = 365; // setter heis rotasjon
     private static int vinkel2 = 30;
-    private static int vinkel3 = 60;			// setter sortererens rotasjonsvinkel
-    private static int vent = 1500;				// setter ventetid for hvorlenge sortereren skal vente på at ballen skall lande i båsen sin
+    private static int vinkel3 = 60; // setter sortererens rotasjonsvinkel
+    private static int vent = 1500; // setter ventetid for hvorlenge sortereren
+				    // skal vente på at ballen skall lande i
+				    // båsen sin
     private static int vent2 = 1000;
-    private static NXTRegulatedMotor heis = Motor.A;		//døper motor A til heis
-    private static NXTRegulatedMotor inndeler = Motor.B;	// døper motor B til inndeler
-    
-    
+    private static NXTRegulatedMotor heis = Motor.A; // døper motor A til heis
+    private static NXTRegulatedMotor inndeler = Motor.B; // døper motor B til
+							 // inndeler
+
     public static void main(String[] arg) throws Exception {
 	LCD.drawString("Klar...", 0, 0);						// skriver ut at programmet er klart til å kjøre
 	// Button.waitForAnyPress();
@@ -34,6 +36,7 @@ public class Coulour {
 	heis.resetTachoCount();
 	inndeler.resetTachoCount();
 	heis.setSpeed(speed);									//setter heishastigheten
+	heis.set
 	inndeler.setSpeed(speed2);								//setter indeler hastigheten
 	ColorHTSensor colorSensor = new ColorHTSensor(SensorPort.S2);		// forteller NXT I hvilken 
 	// colorSensor.initBlackLevel();
@@ -68,7 +71,7 @@ public class Coulour {
 	System.exit(0);
     }
 
-    private static void sortBall(int color) {																//sorterer baser på farge
+    private static void sortBall(int color) { // sorterer baser på farge
 	switch (color) {
 	case BLUE:
 	    inndeler.rotateTo(vinkel3);
@@ -79,7 +82,8 @@ public class Coulour {
 	default:
 	    break;
 	}
-	heis.rotateTo(vinkel1 + vinkel2);																		//algoritmen for å returnere heisen til 0 possisjon
+	heis.rotateTo(vinkel1 + vinkel2); // algoritmen for å returnere heisen
+					  // til 0 possisjon
 	Delay.msDelay(vent);
 	inndeler.rotateTo(0, true);
 	heis.rotateTo(0);
