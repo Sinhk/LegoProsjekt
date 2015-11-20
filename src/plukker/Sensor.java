@@ -9,20 +9,23 @@ import lejos.robotics.SampleProvider;
 class Sensor {
 	private SampleProvider distance;
 	private SampleProvider rightLeser;
+	private SampleProvider leftLeser;
 	private EV3UltrasonicSensor dist;
 	private EV3ColorSensor rightsensor;
+	private EV3ColorSensor leftsensor;
 
 	public Sensor() {
 		Brick brick = BrickFinder.getDefault();
 		Port s2 = brick.getPort("S2"); //
+		Port s3 = brick.getPort("S3"); //
 		Port s4 = brick.getPort("S4"); //
+		
 		dist = new EV3UltrasonicSensor(s2);
 		distance = dist.getDistanceMode();
-
 		rightsensor = new EV3ColorSensor(s4);
 		rightLeser = rightsensor.getRedMode();
-		// MeanFilter rightMean = new MeanFilter(rightLeser, 25);
-		// SampleThread rightThread = new SampleThread(rightLeser, 500);
+		leftsensor = new EV3ColorSensor(s3);
+		leftLeser = leftsensor.getRedMode();
 	}
 
 	public boolean getBall() {
@@ -40,18 +43,13 @@ class Sensor {
 		
 		rightLeser.fetchSample(sample, 0);
 		return sample[0];
-		/*
-		double error;
-		double offset = 0.095;
-		error = sample[0] - offset;
-		error *= 10.0;
-		if (error < 0.1 && error > -0.1)
-			error = 0;
-		error = Math.round((error * 100)) / 100.0;
-		if (error > 0)
-		error *= 1.6;
-		return (float) error;
-		*/
+	}
+	
+	public float getLeftValue() {
+		float[] sample = new float[leftLeser.sampleSize()];
+		
+		leftLeser.fetchSample(sample, 0);
+		return sample[0];
 	}
 
 	public void close() {
