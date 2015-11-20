@@ -63,9 +63,7 @@ class Mover extends Thread {
 		pilot.forward();
 
 	    } else if (sensor.getRightValue() < 0.18) {
-		//pilot.setLinearAcceleration(1000);
 		pilot.stop();
-		//pilot.setLinearAcceleration(10);
 		pilot.travel(-3);
 		turn(numberOfTurns);
 		numberOfTurns++;
@@ -85,8 +83,16 @@ class Mover extends Thread {
 	ps = SK.getPose();
 	rotate((ps.angleTo(ss)));
 	pilot.travel(ps.distanceTo(ss));
+	//finn linje
+	//roter til lineup
+	//kjør til avstand
 	Pickup.drop();
-	rotate(180);
+	//rygg ut
+	//start sorterer
+	/**
+	 *  her må vi finna på noke for å reset home,
+	 *  men legga den i en temp til den har kjørt tilbake.
+	 */
 	pilot.travel(ps.distanceTo(ss));
 	rotate(-(ps.angleTo(ss)));
     }
