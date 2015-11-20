@@ -7,6 +7,7 @@ import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.Motor;
 import lejos.hardware.port.MotorPort;
+import lejos.hardware.sensor.NXTUltrasonicSensor.DistanceMode;
 import lejos.hardware.lcd.*;
 import lejos.robotics.chassis.Chassis;
 import lejos.robotics.chassis.Wheel;
@@ -30,7 +31,10 @@ class Mover extends Thread {
     TextLCD lcd = ev3.getTextLCD();
     int numberOfTurns;
     int rightOrLeft;
-    Pose ps;
+    private Pose was;
+    private boolean dropped = false;
+    private float myHeading;
+   
 
     public Mover(Sensor sensor, double speed, float maxSteer) {
 	double wheelSize = 5.66;
@@ -47,6 +51,8 @@ class Mover extends Thread {
     public void run() {
 	OdometryPoseProvider pp = new OdometryPoseProvider(pilot);
 	Pose pose = pp.getPose();
+	//Pose was = pp.getPose();
+	
 	LCD.drawString("Press enter to start", 0, 4);
 	//testRotate();
 	Button.ENTER.waitForPressAndRelease();
@@ -80,21 +86,36 @@ class Mover extends Thread {
     }
 
     public void goHome(PoseProvider SK, Point ss) {
-	ps = SK.getPose();
+	Pose ps = SK.getPose();
+	ps.setHeading(myHeading);
+	SK.setPose(was);
 	rotate((ps.angleTo(ss)));
-	pilot.travel(ps.distanceTo(ss));
-	//finn linje
-	//roter til lineup
-	//kjør til avstand
-	Pickup.drop();
-	//rygg ut
+	pilot.forward();
+	while (!dropped) {
+		if (sensor.getRightValue() < 0.18) {  //finn linje
+			pilot.stop();
+			pilot.rotateRight();
+			if (sensor.getLeftValue() <0.18) { //roter til lineup
+				pilot.stop();
+				pilot.forward();
+				if (sensor.getBall()) {  //kjør til avstand
+					pilot.stop();
+					Pickup.drop();
+					dropped = true;
+				}
+			}
+		}
+	}
+	pilot.travel(-20); //rygg ut
 	//start sorterer
+	dropped = false;
 	/**
 	 *  her må vi finna på noke for å reset home,
 	 *  men legga den i en temp til den har kjørt tilbake.
 	 */
-	pilot.travel(ps.distanceTo(ss));
-	rotate(-(ps.angleTo(ss)));
+	pilot.rotate((ps.angleTo(was.getLocation())));
+	pilot.travel(ps.distanceTo(was.getLocation()));
+	pilot.rotate(myHeading);
     }
     public void testRotate(){
 	pilot.rotate(360);
