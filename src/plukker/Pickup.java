@@ -9,12 +9,6 @@ import lejos.utility.Delay;
 
 public class Pickup {
 
-	double linSpeed;
-	double maxLinSpeed;
-	float MAX_STEER;
-	float offset;
-	float speed = 20;
-
 	public static void pickup() {
 		Motor.B.setSpeed(260);
 		Motor.C.setSpeed(125);
