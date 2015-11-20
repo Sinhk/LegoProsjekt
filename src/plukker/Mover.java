@@ -4,7 +4,9 @@ import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.EV3;
 import lejos.hardware.lcd.TextLCD;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.Motor;
+import lejos.hardware.port.MotorPort;
 import lejos.hardware.lcd.*;
 import lejos.robotics.chassis.Chassis;
 import lejos.robotics.chassis.Wheel;
@@ -31,20 +33,22 @@ class Mover extends Thread {
     Pose ps;
 
     public Mover(Sensor sensor, double speed, float maxSteer) {
-	Wheel leftWheel = WheeledChassis.modelWheel(Motor.A, 5.6).offset(5.5);
-	Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 5.6).offset(-5.5);
+	double wheelSize = 5.66;
+	double wheelOffset = 5.31;
+	Wheel leftWheel = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(MotorPort.A), wheelSize).offset(wheelOffset);
+	Wheel rightWheel = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(MotorPort.D), wheelSize).offset(-wheelOffset);
 	chassis = new WheeledChassis(new Wheel[] { leftWheel, rightWheel }, WheeledChassis.TYPE_DIFFERENTIAL);
 	pilot = new MovePilot(chassis);
 	pilot.setLinearSpeed(pilot.getMaxLinearSpeed()*(speed/100));
 	pilot.setAngularSpeed(45);
 	this.sensor = sensor;
     }
-
     @Override
     public void run() {
 	OdometryPoseProvider pp = new OdometryPoseProvider(pilot);
 	Pose pose = pp.getPose();
 	LCD.drawString("Press enter to start", 0, 4);
+	testRotate();
 	Button.ENTER.waitForPressAndRelease();
 	pilot.forward();
 	do {
@@ -85,6 +89,26 @@ class Mover extends Thread {
 	rotate(180);
 	pilot.travel(ps.distanceTo(ss));
 	rotate(-(ps.angleTo(ss)));
+    }
+    public void testRotate(){
+	pilot.rotate(360);
+	Delay.msDelay(5000);
+	pilot.rotate(-360);
+	pilot.rotate(360);
+	pilot.rotate(-360);
+	pilot.rotate(360);
+	pilot.rotate(-360);
+	pilot.rotate(360);
+	pilot.rotate(-360);
+	pilot.rotate(360);
+	pilot.rotate(-90);
+	pilot.rotate(-90);
+	pilot.rotate(180);
+	pilot.rotate(-90);
+	pilot.rotate(-90);
+	pilot.rotate(-90);
+	pilot.rotate(-90);
+	
     }
 
     public void rotate(float f) {
