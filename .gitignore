@@ -16,5 +16,5 @@ hs_err_pid*
 /bin/
 
 #eclipse
-*.classpath
-*.project
+.classpath
+.project
