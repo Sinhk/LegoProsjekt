@@ -5,6 +5,7 @@ import lejos.hardware.Button;
 import lejos.hardware.ev3.EV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.Motor;
+import lejos.hardware.lcd.*;
 import lejos.robotics.chassis.Chassis;
 import lejos.robotics.chassis.Wheel;
 import lejos.robotics.chassis.WheeledChassis;
@@ -16,7 +17,6 @@ import lejos.robotics.navigation.Pose;
 import lejos.utility.Delay;
 
 class Mover extends Thread {
-
     // private double linSpeed;
     // private double maxLinSpeed;
     public static Chassis chassis;
@@ -35,8 +35,8 @@ class Mover extends Thread {
 	Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 5.6).offset(-5.5);
 	chassis = new WheeledChassis(new Wheel[] { leftWheel, rightWheel }, WheeledChassis.TYPE_DIFFERENTIAL);
 	pilot = new MovePilot(chassis);
-	pilot.setLinearSpeed(speed);
-	pilot.setAngularSpeed(10);
+	pilot.setLinearSpeed(pilot.getMaxLinearSpeed()*(speed/100));
+	pilot.setAngularSpeed(45);
 	this.sensor = sensor;
     }
 
@@ -44,9 +44,10 @@ class Mover extends Thread {
     public void run() {
 	OdometryPoseProvider pp = new OdometryPoseProvider(pilot);
 	Pose pose = pp.getPose();
+	LCD.drawString("Press enter to start", 0, 4);
 	Button.ENTER.waitForPressAndRelease();
+	pilot.forward();
 	do {
-	    pilot.forward();
 	    lcd.drawString("" + sensor.getRightValue(), 1, 3);
 	    lcd.drawString("" + numberOfTurns, 1, 4);
 	    if (sensor.getBall()) {
@@ -55,6 +56,7 @@ class Mover extends Thread {
 		Pickup.pickup();
 		Delay.msDelay(400);
 		goHome(pp, pose.getLocation());
+		pilot.forward();
 
 	    } else if (sensor.getRightValue() < 0.18) {
 		//pilot.setLinearAcceleration(1000);
@@ -63,9 +65,15 @@ class Mover extends Thread {
 		pilot.travel(-3);
 		turn(numberOfTurns);
 		numberOfTurns++;
-
+		pilot.forward();
+		
 	    }
 
+	    try {
+		Thread.sleep(50);
+	    } catch (InterruptedException e) {
+		break;
+	    }
 	} while (!interrupted());
     }
 
@@ -80,7 +88,6 @@ class Mover extends Thread {
     }
 
     public void rotate(float f) {
-	pilot.setLinearSpeed(20);
 	pilot.stop();
 	pilot.rotate(f);
     }

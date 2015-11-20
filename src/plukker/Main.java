@@ -7,10 +7,10 @@ import lejos.hardware.Button;
 class Main {
 
 	public static void main(String[] arg) throws Exception {
-		double speed = 53;
+		double speed = 30;
 		int maxSteer = 160;
-		
-		Mover motor = new Mover(null, speed, maxSteer);
+		Sensor sensor = new Sensor();
+		Mover motor = new Mover(sensor, speed, maxSteer);
 	
 		motor.start();
 		//EV3 ev3 = (EV3) BrickFinder.getLocal();
