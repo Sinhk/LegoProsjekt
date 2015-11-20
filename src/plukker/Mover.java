@@ -48,7 +48,7 @@ class Mover extends Thread {
 	OdometryPoseProvider pp = new OdometryPoseProvider(pilot);
 	Pose pose = pp.getPose();
 	LCD.drawString("Press enter to start", 0, 4);
-	testRotate();
+	//testRotate();
 	Button.ENTER.waitForPressAndRelease();
 	pilot.forward();
 	do {
