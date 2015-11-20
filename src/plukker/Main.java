@@ -10,7 +10,6 @@ class Main {
 		double speed = 53;
 		int maxSteer = 160;
 		
-
 		Mover motor = new Mover(null, speed, maxSteer);
 	
 		motor.start();

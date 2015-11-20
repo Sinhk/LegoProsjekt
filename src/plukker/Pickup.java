@@ -1,7 +1,6 @@
 package plukker;
 
 import lejos.hardware.motor.Motor;
-import lejos.robotics.chassis.Chassis;
 import lejos.utility.Delay;
 
 //import java.io.File;
@@ -11,11 +10,10 @@ import lejos.utility.Delay;
 public class Pickup {
 
 	double linSpeed;
-	static double maxLinSpeed;
+	double maxLinSpeed;
 	float MAX_STEER;
-	static Chassis chassis;
 	float offset;
-	static float speed = 20;
+	float speed = 20;
 
 	public static void pickup() {
 		Motor.B.setSpeed(260);
