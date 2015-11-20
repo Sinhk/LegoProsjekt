@@ -1,3 +1,4 @@
+/*
 package plukker;
 
 import javafx.scene.layout.GridPane;
@@ -26,7 +27,7 @@ public class Pickup2 extends Thread {
 	
 	private static final EV3LargeRegulatedMotor lift = EV3
 
-	/*
+	
 	public static void pickup() {
 		Motor.B.setSpeed(260);
 		Motor.C.setSpeed(125);
