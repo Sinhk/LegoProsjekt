@@ -17,12 +17,13 @@ import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.localization.PoseProvider;
 import lejos.robotics.navigation.MovePilot;
 import lejos.robotics.navigation.Pose;
+
 import lejos.utility.Delay;
 
 class Mover extends Thread {
     // private double linSpeed;
     // private double maxLinSpeed;
-    public static Chassis chassis;
+    public Chassis chassis;
     MovePilot pilot;
     private Sensor sensor;
     // private float offset;
@@ -45,6 +46,7 @@ class Mover extends Thread {
 	pilot = new MovePilot(chassis);
 	pilot.setLinearSpeed(pilot.getMaxLinearSpeed()*(speed/100));
 	pilot.setAngularSpeed(45);
+	
 	this.sensor = sensor;
     }
     @Override
@@ -87,8 +89,8 @@ class Mover extends Thread {
 
     public void goHome(PoseProvider SK, Point ss) {
 	Pose ps = SK.getPose();
-	ps.setHeading(myHeading);
-	SK.setPose(was);
+	//ps.setHeading(myHeading);
+	//SK.setPose(was);
 	rotate((ps.angleTo(ss)));
 	pilot.forward();
 	while (!dropped) {
@@ -117,26 +119,7 @@ class Mover extends Thread {
 	pilot.travel(ps.distanceTo(was.getLocation()));
 	pilot.rotate(myHeading);
     }
-    public void testRotate(){
-	pilot.rotate(360);
-	Delay.msDelay(5000);
-	pilot.rotate(-360);
-	pilot.rotate(360);
-	pilot.rotate(-360);
-	pilot.rotate(360);
-	pilot.rotate(-360);
-	pilot.rotate(360);
-	pilot.rotate(-360);
-	pilot.rotate(360);
-	pilot.rotate(-90);
-	pilot.rotate(-90);
-	pilot.rotate(180);
-	pilot.rotate(-90);
-	pilot.rotate(-90);
-	pilot.rotate(-90);
-	pilot.rotate(-90);
-	
-    }
+
 
     public void rotate(float f) {
 	pilot.stop();
@@ -155,5 +138,24 @@ class Mover extends Thread {
 	    rotate(-90);
 	    rightOrLeft = -1;
 	}
+    }
+    public void testRotate(){
+   	pilot.rotate(360);
+   	Delay.msDelay(5000);
+   	pilot.rotate(-360);
+   	pilot.rotate(360);
+   	pilot.rotate(-360);
+   	pilot.rotate(360);
+   	pilot.rotate(-360);
+   	pilot.rotate(360);
+   	pilot.rotate(-360);
+   	pilot.rotate(360);
+   	pilot.rotate(-90);
+   	pilot.rotate(-90);
+   	pilot.rotate(180);
+   	pilot.rotate(-90);
+   	pilot.rotate(-90);
+   	pilot.rotate(-90);
+   	pilot.rotate(-90);
     }
 }

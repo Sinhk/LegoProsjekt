@@ -44,6 +44,7 @@ public class Pickup2 extends Thread {
 		Delay.msDelay(200);
 	}
 }
+}
+
 */
 
-}
