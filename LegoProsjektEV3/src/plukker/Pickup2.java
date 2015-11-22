@@ -1,50 +1,63 @@
-/*
 package plukker;
 
-import javafx.scene.layout.GridPane;
-import lejos.hardware.BrickFinder;
-import lejos.hardware.Button;
-import lejos.hardware.ev3.EV3;
-import lejos.hardware.lcd.TextLCD;
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.motor.Motor;
+import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.MotorPort;
-import lejos.internal.ev3.EV3MotorPort;
-import lejos.internal.ev3.EV3Port;
-import lejos.hardware.lcd.*;
-import lejos.robotics.chassis.Chassis;
-import lejos.robotics.chassis.Wheel;
-import lejos.robotics.chassis.WheeledChassis;
-import lejos.robotics.geometry.Point;
-import lejos.robotics.localization.OdometryPoseProvider;
-import lejos.robotics.localization.PoseProvider;
-import lejos.robotics.navigation.MovePilot;
-import lejos.robotics.navigation.Pose;
 import lejos.utility.Delay;
 
-@SuppressWarnings("restriction")
-public class Pickup2 extends Thread {
+class Pickup {
 	
-	private static final EV3LargeRegulatedMotor lift = EV3
-
+	private NXTRegulatedMotor lift = Motor.C;
+	private EV3MediumRegulatedMotor claw = new EV3MediumRegulatedMotor(MotorPort.B);
+	private float liftSpeed = 125f;
+	private float clawSpeed = 260f;
 	
-	public static void pickup() {
-		Motor.B.setSpeed(260);
-		Motor.C.setSpeed(125);
-		Motor.C.rotate(100);
-		Motor.B.rotate(-100);
-		Delay.msDelay(800);
-		Motor.C.rotate(-100);
+	public Pickup(){
+	   zero();
 	}
-
-	public static void drop() {
-		Motor.C.rotate(30);
-		Motor.B.rotate(100);
-		Motor.C.rotate(-30);
+	
+	/**
+	 * Pickup ball
+	 */
+	public void pickup() {
+		lift.rotate(100);
+		claw.rotate(-100);
+		Delay.msDelay(800);
+		lift.rotate(-100);
+	}
+	
+	/**
+	 * Drop ball
+	 */
+	public void drop() {
+		lift.rotate(30);
+		claw.rotate(100);
+		lift.rotate(-30);
 		Delay.msDelay(200);
 	}
-}
+	
+	/**
+	 * Move motors to start positions and set speed
+	 */
+	public void zero(){
+	    lift.setSpeed(20);
+	    lift.backward();
+	    while (!lift.isStalled());
+	    lift.stop();
+	    lift.resetTachoCount();
+	    lift.setSpeed(liftSpeed);
+	    
+	    claw.setSpeed(20);
+	    claw.forward();
+	    while (!claw.isStalled());
+	    claw.stop();
+	    claw.resetTachoCount();
+	    claw.setSpeed(clawSpeed);
+	}
+	
 }
 
-*/
+
+
 

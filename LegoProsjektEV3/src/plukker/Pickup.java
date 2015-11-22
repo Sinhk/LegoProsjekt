@@ -7,7 +7,7 @@ import lejos.utility.Delay;
 
 //import lejos.hardware.Sound;
 
-public class Pickup {
+class PickupOld {
 
 	public static void pickup() {
 		Motor.B.setSpeed(260);
