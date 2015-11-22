@@ -23,7 +23,7 @@ class Pickup {
 	public void pickup() {
 		lift.rotate(100);
 		claw.rotate(-100);
-		Delay.msDelay(800);
+		//Delay.msDelay(800);
 		lift.rotate(-100);
 	}
 	
