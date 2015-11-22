@@ -44,7 +44,9 @@ class Mover extends Thread {
 	chassis = new WheeledChassis(new Wheel[] { leftWheel, rightWheel }, WheeledChassis.TYPE_DIFFERENTIAL);
 	pilot = new MovePilot(chassis);
 	pilot.setLinearSpeed(pilot.getMaxLinearSpeed() * (speed / 100));
-	pilot.setAngularSpeed(45);
+	pilot.setAngularSpeed(pilot.getMaxAngularSpeed()* 0.2);
+	pilot.setAngularAcceleration(pilot.getAngularAcceleration()*0.5);
+	pilot.setLinearAcceleration(pilot.getLinearAcceleration()*0.5);
 	pp = new OdometryPoseProvider(pilot);
 	startPose = pp.getPose();
 
@@ -63,8 +65,8 @@ class Mover extends Thread {
 	pilot.forward();
 	searching = true;
 	do {
-	    // TODO Slow down while searching, speed up for return. Less speed
-	    // and acceleration = more accuracy
+	    // TODO Slow down while searching, speed up for return. 
+	    //Less speed and acceleration = more accuracy
 	    while (searching) {
 		lcd.drawString("" + sensor.getRightValue(), 1, 3);
 		lcd.drawString("" + numberOfTurns, 1, 4);

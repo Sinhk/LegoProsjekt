@@ -23,8 +23,6 @@ public class BTConnectEV3 implements Runnable {
     private final int READY = 1;
     private final int DONE = 5;
 
-    // TODO Check if this needs rewrite. Compare to NXT version, tt tried to
-    // close bt connection when it wasn't open.
     public void run() {
 	running = true;
 	boolean connected = false;
