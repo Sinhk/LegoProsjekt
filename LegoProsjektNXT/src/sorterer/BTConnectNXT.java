@@ -7,7 +7,7 @@ import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 
 /**
- * Klasse for bluetooth kommunikasjon på NXT.
+ * Klasse for bluetooth kommunikasjon pÃ¥ NXT.
  * 
  * @author sindr
  *
@@ -29,10 +29,10 @@ public class BTConnectNXT implements Runnable {
 	running = true;
 	boolean connected = false;
 	while (running) {
-	    // Venter på bluetooth tilkobling
+	    // Venter pÃ¥ bluetooth tilkobling
 	    btc = Bluetooth.waitForConnection(10000, BTConnection.PACKET);
 	    if (btc != null) {
-		// Åpner io stream når tilkobling er opprettet
+		// Ã…pner io stream nï¿½r tilkobling er opprettet
 		dis = btc.openDataInputStream();
 		// dos = btc.openDataOutputStream();
 		connected = true;
@@ -55,7 +55,7 @@ public class BTConnectNXT implements Runnable {
 			// dos.close();
 			Thread.sleep(100);
 			btc.close();
-			// Går ut av indre loop for vente på ny tilkobling
+			// GÃ¥r ut av indre loop for vente pÃ¥ ny tilkobling
 			connected = false;
 		    } catch (IOException e) {
 			System.out.println("Can't reconnect");
