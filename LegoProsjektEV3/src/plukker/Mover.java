@@ -27,8 +27,8 @@ class Mover extends Thread {
     private TextLCD lcd = ev3.getTextLCD();
     private EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
     private EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.D);
-    int numberOfTurns;
-    int rightOrLeft;
+    int numberOfTurns = 0;
+    //int rightOrLeft;
     // private Pose was;
     // private boolean dropped = false;
     private OdometryPoseProvider pp;
@@ -73,6 +73,7 @@ class Mover extends Thread {
 		    pilot.stop();
 		    align();
 		    //TODO Add correction to poseprovider. Set heading, if accurate
+		    //pilot.travel(-3);
 		    turn(numberOfTurns);
 		    numberOfTurns++;
 		    pilot.forward();
@@ -127,7 +128,6 @@ class Mover extends Thread {
 	// finn linje
 	while (!sensor.getRight() && sensor.getLeft()) {
 	}
-	;
 	pilot.stop();
 	// roter til lineup
 	align();
@@ -146,7 +146,7 @@ class Mover extends Thread {
 	pilot.backward();
 	while (!sensor.getRight() && sensor.getLeft()) {
 	}
-	;
+
 	pilot.stop();
 	alignReverse();
 	pp.setPose(startPose);
@@ -164,15 +164,11 @@ class Mover extends Thread {
 
     public void turn(int i) {
 	if (i % 2 == 0) {
-	    rotate(90);
-	    pilot.travel(12);
-	    rotate(90);
-	    rightOrLeft = 1;
+	    pilot.arc(wheelOffset, 180);
+
 	} else {
-	    rotate(-90);
-	    pilot.travel(12);
-	    rotate(-90);
-	    rightOrLeft = -1;
+	    pilot.arc(-wheelOffset, 180);
+	
 	}
     }
 
