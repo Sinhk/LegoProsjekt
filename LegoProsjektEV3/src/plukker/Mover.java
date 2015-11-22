@@ -29,9 +29,9 @@ class Mover extends Thread {
     private EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.D);
     int numberOfTurns;
     int rightOrLeft;
-    //private Pose was;
-    //private boolean dropped = false;
-    private OdometryPoseProvider pp;  
+    // private Pose was;
+    // private boolean dropped = false;
+    private OdometryPoseProvider pp;
     private Pose startPose;
     private Pose searchPose;
     private volatile boolean searching;
@@ -39,10 +39,8 @@ class Mover extends Thread {
     private double wheelOffset = 5.31;
 
     public Mover(Sensor sensor, double speed, float maxSteer) {
-	Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, wheelSize)
-		.offset(wheelOffset);
-	Wheel rightWheel = WheeledChassis.modelWheel(rightMotor, wheelSize)
-		.offset(-wheelOffset);
+	Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, wheelSize).offset(wheelOffset);
+	Wheel rightWheel = WheeledChassis.modelWheel(rightMotor, wheelSize).offset(-wheelOffset);
 	chassis = new WheeledChassis(new Wheel[] { leftWheel, rightWheel }, WheeledChassis.TYPE_DIFFERENTIAL);
 	pilot = new MovePilot(chassis);
 	pilot.setLinearSpeed(pilot.getMaxLinearSpeed() * (speed / 100));
@@ -55,59 +53,68 @@ class Mover extends Thread {
 
     @Override
     public void run() {
+	LCD.drawString("Set robot at X:0 Y:0 θ:0" , 0, 2);
 	LCD.drawString("Press enter to start", 0, 4);
 	// testRotate();
 	Button.ENTER.waitForPressAndRelease();
+	LCD.clear();
+	pilot.travel(10);
+	pilot.rotate(90);
 	pilot.forward();
 	searching = true;
 	do {
-	    //TODO Slow down while searching, speed up for return. Less speed and acceleration = more accuracy
-	    while (searching ){
-	    lcd.drawString("" + sensor.getRightValue(), 1, 3);
-	    lcd.drawString("" + numberOfTurns, 1, 4);
+	    // TODO Slow down while searching, speed up for return. Less speed
+	    // and acceleration = more accuracy
+	    while (searching) {
+		lcd.drawString("" + sensor.getRightValue(), 1, 3);
+		lcd.drawString("" + numberOfTurns, 1, 4);
 
-	    if (sensor.getRight()) {
-		pilot.stop();
-		align();
-		pilot.travel(-3);
-		turn(numberOfTurns);
-		numberOfTurns++;
-		pilot.forward();
-
-	    }
+		if (sensor.getRight()) {
+		    pilot.stop();
+		    align();
+		    //TODO Add correction to poseprovider. Set heading, if accurate
+		    turn(numberOfTurns);
+		    numberOfTurns++;
+		    pilot.forward();
+		}
 	    }
 	    try {
 		Thread.sleep(50);
 	    } catch (InterruptedException e) {
 		break;
 	    }
-	   
+
 	} while (!interrupted());
     }
 
-    public void align(){
-	if(sensor.getRight()){
-		pilot.arcForward(-wheelOffset);
-		while (!sensor.getLeft()){}
-		pilot.stop();
-	  }else if(sensor.getLeft()){
-		pilot.arcForward(wheelOffset);
-		while (!sensor.getRight()){}
-		pilot.stop();
+    public void align() {
+	if (sensor.getRight()) {
+	    pilot.arcForward(-wheelOffset);
+	    while (!sensor.getLeft()) {
 	    }
-    }
-    public void alignReverse(){
-	if(sensor.getRight()){
-		pilot.arcBackward(-wheelOffset);
-		while (!sensor.getLeft()){}
-		pilot.stop();
-	  }else if(sensor.getLeft()){
-		pilot.arcBackward(wheelOffset);
-		while (!sensor.getRight()){}
-		pilot.stop();
+	    pilot.stop();
+	} else if (sensor.getLeft()) {
+	    pilot.arcForward(wheelOffset);
+	    while (!sensor.getRight()) {
 	    }
+	    pilot.stop();
+	}
     }
-    
+
+    public void alignReverse() {
+	if (sensor.getRight()) {
+	    pilot.arcBackward(-wheelOffset);
+	    while (!sensor.getLeft()) {
+	    }
+	    pilot.stop();
+	} else if (sensor.getLeft()) {
+	    pilot.arcBackward(wheelOffset);
+	    while (!sensor.getRight()) {
+	    }
+	    pilot.stop();
+	}
+    }
+
     public void goHome() {
 	searching = false;
 	pilot.stop();
@@ -117,33 +124,37 @@ class Mover extends Thread {
 	// SK.setPose(was);
 	rotate((searchPose.relativeBearing(homePoint)));
 	pilot.forward();
-	 // finn linje
-	    while (!sensor.getRight()&&sensor.getLeft()){};
-	    pilot.stop();
-	 // roter til lineup
-	    align();
-	    pilot.rotate(-90);
-	 // kj�r til avstand
-	    pilot.forward();
-	   while(!sensor.getBall()){}
-	   pilot.stop();
-	   pickUp.drop();
-	pilot.travel(-20);   
+	// finn linje
+	while (!sensor.getRight() && sensor.getLeft()) {
+	}
+	;
+	pilot.stop();
+	// roter til lineup
+	align();
+	pilot.rotate(-90);
+	// kjør til avstand
+	pilot.forward();
+	while (!sensor.getBall()) {
+	}
+	pilot.stop();
+	pickUp.drop();
+	pilot.travel(-20);
     }
-    
-    public void resumeSearch(){
+
+    public void resumeSearch() {
 	pilot.rotate(-90);
 	pilot.backward();
-	while (!sensor.getRight()&&sensor.getLeft()){};
-	    pilot.stop();
-	    alignReverse();
-	    pp.setPose(startPose);
-	    
-	
+	while (!sensor.getRight() && sensor.getLeft()) {
+	}
+	;
+	pilot.stop();
+	alignReverse();
+	pp.setPose(startPose);
+
 	pilot.rotate(pp.getPose().relativeBearing(searchPose.getLocation()));
 	pilot.travel(pp.getPose().distanceTo(searchPose.getLocation()));
 	pilot.rotate(searchPose.getHeading() - pp.getPose().getHeading());
-	searching=true;
+	searching = true;
     }
 
     public void rotate(float f) {
