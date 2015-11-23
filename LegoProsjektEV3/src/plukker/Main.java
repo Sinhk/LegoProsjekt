@@ -32,7 +32,7 @@ class Main {
 			    fortsett = false;
 			Thread.sleep(50);
 		}
-		motor.interrupt();
+		motor.terminate();
 		nxt.setDone();
 		motor.join();
 		btThread.join();

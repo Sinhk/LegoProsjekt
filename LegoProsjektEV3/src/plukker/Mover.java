@@ -37,6 +37,7 @@ class Mover extends Thread {
     private volatile boolean searching;
     private double wheelSize = 5.66;
     private double wheelOffset = 5.31;
+    private volatile boolean running;
 
     public Mover(Sensor sensor,Pickup pickUp, double speed, float maxSteer) {
 	Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, wheelSize).offset(wheelOffset);
@@ -44,7 +45,7 @@ class Mover extends Thread {
 	chassis = new WheeledChassis(new Wheel[] { leftWheel, rightWheel }, WheeledChassis.TYPE_DIFFERENTIAL);
 	pilot = new MovePilot(chassis);
 	pilot.setLinearSpeed(pilot.getMaxLinearSpeed() * (speed / 100));
-	pilot.setAngularSpeed(pilot.getMaxAngularSpeed()* 0.2);
+	pilot.setAngularSpeed(pilot.getMaxAngularSpeed()* 0.1);
 	pilot.setAngularAcceleration(pilot.getAngularAcceleration()*0.5);
 	pilot.setLinearAcceleration(pilot.getLinearAcceleration()*0.5);
 	pp = new OdometryPoseProvider(pilot);
@@ -61,18 +62,19 @@ class Mover extends Thread {
 	// testRotate();
 	Button.ENTER.waitForPressAndRelease();
 	LCD.clear();
-	pilot.travel(10);
-	pilot.rotate(90);
+	pilot.travel(20);
+	pilot.rotate(-90);
 	pilot.forward();
 	searching = true;
+	running=true;
 	do {
 	    // TODO Slow down while searching, speed up for return. 
 	    //Less speed and acceleration = more accuracy
-	    while (searching) {
+	    while (running&&searching) {
 		lcd.drawString("" + sensor.getRightValue(), 1, 3);
 		lcd.drawString("" + numberOfTurns, 1, 4);
 
-		if (sensor.getRight()) {
+		if (sensor.getRight()||sensor.getLeft()) {
 		    pilot.stop();
 		    align();
 		    //TODO Add correction to poseprovider. Set heading, if accurate
@@ -85,13 +87,17 @@ class Mover extends Thread {
 	    try {
 		Thread.sleep(50);
 	    } catch (InterruptedException e) {
-		break;
+		running = false;
 	    }
 
-	} while (!interrupted());
+	} while (running);
+	pilot.stop();
     }
 
     public void align() {
+	if(sensor.getRight()&&sensor.getLeft()){
+	    
+	}else{
 	if (sensor.getRight()) {
 	    pilot.arcForward(-wheelOffset);
 	    while (!sensor.getLeft()) {
@@ -102,6 +108,7 @@ class Mover extends Thread {
 	    while (!sensor.getRight()) {
 	    }
 	    pilot.stop();
+	}
 	}
     }
 
@@ -126,10 +133,12 @@ class Mover extends Thread {
 	Point homePoint = startPose.getLocation();
 	// ps.setHeading(myHeading);
 	// SK.setPose(was);
+	
+	System.out.println(searchPose.relativeBearing(homePoint) + ", " + searchPose.getHeading());
 	rotate((searchPose.relativeBearing(homePoint)));
 	pilot.forward();
 	// finn linje
-	while (!sensor.getRight() && sensor.getLeft()) {
+	while (!sensor.getRight() && !sensor.getLeft()) {
 	}
 	pilot.stop();
 	// roter til lineup
@@ -175,6 +184,9 @@ class Mover extends Thread {
 	}
     }
 
+    public void terminate(){
+	running = false;
+    }
     public void testRotate() {
 	pilot.rotate(360);
 	Delay.msDelay(5000);
