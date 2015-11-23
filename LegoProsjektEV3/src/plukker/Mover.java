@@ -230,5 +230,9 @@ class Mover extends Thread {
 	pilot.rotate(-90);
 	pilot.rotate(-90);
 	pilot.rotate(-90);
+    }
+
+    public MovePilot getPilot() {
+	return pilot;
     } 
 }

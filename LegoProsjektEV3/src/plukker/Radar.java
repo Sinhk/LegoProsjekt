@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lejos.robotics.geometry.Point;
+import lejos.robotics.navigation.Navigator;
+import lejos.robotics.navigation.Waypoint;
 
 public class Radar {
     private Sensor sensor;
@@ -62,5 +64,21 @@ public class Radar {
 	 for (Point p : pointList){
 	     System.out.println("X: " +p.getX() +" Y: " + p.getY());
 	 }
+    }
+    public Point getClosestPoint(){
+	float minLength = Float.POSITIVE_INFINITY;
+	Point closest = pointList.get(0);
+	for (Point p : pointList){
+	    if(p.length() <minLength) closest = p; 
+	}
+	return closest;
+    }
+    public void navigate(){
+	Navigator navigator = new Navigator(mover.getPilot());
+	for(Point p: pointList){
+	    navigator.addWaypoint(new Waypoint(p));
+	}
+	navigator.followPath();
+	navigator.waitForStop();
     }
 }
