@@ -2,15 +2,8 @@ package sorterer;
 
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
-import lejos.nxt.Motor;
-import lejos.nxt.NXTRegulatedMotor;
-import lejos.nxt.SensorPort;
-import lejos.util.Delay;
-import lejos.robotics.Color;
-import lejos.nxt.addon.*;
 
 public class Sorterer {
-
 
     public static void main(String[] arg) throws Exception {
 	LCD.drawString("Klar...", 0, 0);
@@ -21,15 +14,15 @@ public class Sorterer {
 	btThread.start();
 
 	Controller cont = new Controller();
-	
+
 	// colorSensor.initBlackLevel();
 	boolean fortsett = true;
 
 	// nullstill motorer
-		
+
 	while (fortsett) {
 	    if (Button.RIGHT.isDown()) {
-		// kalibrerer svartniv�er
+		// kalibrerer svartnivåer
 		cont.initBlackLevel();
 	    }
 	    if (Button.LEFT.isDown()) {
@@ -42,7 +35,7 @@ public class Sorterer {
 	    }
 
 	    if (btc.getDone() || Button.ESCAPE.isDown()) {
-		// stopper l�kken
+		// stopper løkken
 		fortsett = false;
 	    }
 	}
@@ -53,7 +46,4 @@ public class Sorterer {
 	System.exit(0);
     }
 
-
-
-   
 }

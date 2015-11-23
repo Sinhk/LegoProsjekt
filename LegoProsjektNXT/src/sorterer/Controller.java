@@ -11,48 +11,43 @@ import lejos.util.Delay;
 //TODO Find better name
 public class Controller {
     // Konstanter for faregverdier
-    private final  int BLACK = 1;
-    private final  int RED = 2;
-    private final  int BLUE = 3;
+    private final int BLACK = 1;
+    private final int RED = 2;
+    private final int BLUE = 3;
     // Grense for svartverdi
-    private final  int THRESHOLD = 15;
+    private final int THRESHOLD = 15;
 
     // Fartsvariabler
-    private  float speedHeis = 450;
-    private  float speedInndeler = 150;
+    private float speedHeis = 450;
+    private float speedInndeler = 150;
 
     // rotasjonvinkler
-    private  int vinkelHeis = 420;
-    private  int vinkelKalibrering = 60;
-    private  int vinkelInndeler = 50;
+    private int vinkelHeis = 420;
+    private int vinkelKalibrering = 60;
+    private int vinkelInndeler = 50;
 
     // ventetid for sortereren
     private static int vent = 1000;
 
     // navngir motorer
-    private  NXTRegulatedMotor heis = Motor.A;
-    private  NXTRegulatedMotor inndeler = Motor.B;
+    private NXTRegulatedMotor heis = Motor.A;
+    private NXTRegulatedMotor inndeler = Motor.B;
 
     // Sensor
-    private  ColorHTSensor colorSensor;
-    
-    public Controller(){
+    private ColorHTSensor colorSensor;
+
+    public Controller() {
 	colorSensor = new ColorHTSensor(SensorPort.S2);
 	zero();
     }
-    
-    
-    
-    
-    
-    
+
     /**
-     * Leser farge og finner ut om ballen er r�d, bl� eller svart
+     * Leser farge og finner ut om ballen er rød, blå eller svart
      */
     public int getColor() {
 	Color rgb = colorSensor.getColor();
 	// skriver ut farge verdier
-	// TODO Ta vekk (kommenter ut) denne n�r vi er ferdig � teste
+	// TODO Ta vekk (kommenter ut) denne når vi er ferdig å teste
 	LCD.drawString("R: " + rgb.getRed() + " G: " + rgb.getGreen() + " B: " + rgb.getBlue(), 0, 5);
 
 	int red = rgb.getRed();
@@ -68,6 +63,7 @@ public class Controller {
 	}
 	return 0;
     }
+
     /**
      * Sorterer ball basert på farge. Styrer motorer
      */
@@ -99,7 +95,7 @@ public class Controller {
 	inndeler.setStallThreshold(2, 10);
 	inndeler.setSpeed(20);
 	inndeler.forward();
-	// Venter til motor m�ter motstand
+	// Venter til motor møter motstand
 	while (!inndeler.isStalled()) {
 	}
 	inndeler.stop();
@@ -110,7 +106,7 @@ public class Controller {
 
 	heis.setSpeed(50);
 	heis.backward();
-	// Venter til motor m�ter motstand
+	// Venter til motor møter motstand
 	while (!heis.isStalled()) {
 	}
 	heis.flt();
@@ -119,14 +115,10 @@ public class Controller {
 	heis.flt();
     }
 
-
-
-
-
-
     public void initBlackLevel() {
 	colorSensor.initBlackLevel();
     }
+
     public void initWhiteBalance() {
 	colorSensor.initWhiteBalance();
     }
