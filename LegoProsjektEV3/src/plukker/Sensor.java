@@ -4,7 +4,9 @@ import lejos.hardware.Brick;
 import lejos.hardware.BrickFinder;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.*;
+import lejos.robotics.Gyroscope;
 import lejos.robotics.SampleProvider;
+import lejos.utility.GyroDirectionFinder;
 
 class Sensor {
     private SampleProvider distance;
@@ -14,12 +16,14 @@ class Sensor {
     private EV3ColorSensor rightsensor;
     private EV3ColorSensor leftsensor;
     private final float BLACK = 0.18f;
+    private GyroDirectionFinder gyro;
 
     public Sensor() {
 	Brick brick = BrickFinder.getDefault();
-	Port s2 = brick.getPort("S2"); //
-	Port s3 = brick.getPort("S3"); //
-	Port s4 = brick.getPort("S4"); //
+	Port s1 = brick.getPort("S1");
+	Port s2 = brick.getPort("S2"); 
+	Port s3 = brick.getPort("S3"); 
+	Port s4 = brick.getPort("S4");
 
 	dist = new EV3UltrasonicSensor(s2);
 	distance = dist.getDistanceMode();
@@ -27,6 +31,8 @@ class Sensor {
 	rightLeser = rightsensor.getRedMode();
 	leftsensor = new EV3ColorSensor(s3);
 	leftLeser = leftsensor.getRedMode();
+	//TODO Maybe use gyro for more accurate tracking
+	//gyro = new GyroDirectionFinder( new EV3GyroSensor(s1), true) ;
     }
 
     public boolean getBall() {
