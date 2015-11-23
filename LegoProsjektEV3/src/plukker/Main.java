@@ -2,8 +2,6 @@ package plukker;
 
 //import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
-//import lejos.hardware.ev3.EV3;
-import lejos.utility.Delay;
 
 class Main {
 

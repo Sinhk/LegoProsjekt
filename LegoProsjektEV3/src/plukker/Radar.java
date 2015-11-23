@@ -1,0 +1,66 @@
+package plukker;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import lejos.robotics.geometry.Point;
+
+public class Radar {
+    private Sensor sensor;
+    private Mover mover;
+    List<Point> pointList = new ArrayList<Point>();
+    float radius;
+    float diameter;
+    private final float ERR = 5f;
+    
+    public Radar(Sensor sensor, Mover mover,float searchRadius){
+	this.sensor = sensor;
+	this.mover = mover;
+	radius = searchRadius;
+	diameter = radius *2;
+    }
+
+    public void makeMap(){
+	pointList.clear();
+	List<float[]> points = new ArrayList<float[]>();
+	mover.slowSpin(360);
+	while(mover.isMoving()){
+	    float distance = sensor.getDistance();
+	    if (distance <= radius){
+		float angle = mover.getHeading();
+		points.add(new float[]{distance,angle});
+	    }    
+	}
+	float lastDistance = 0;
+	float lastAngle = 0;
+	float totalAngle = 0;
+	float totalDistance = 0;
+	int matchCount = 0;
+	for (float[] p : points){
+	    float distance = p[0];
+	    float angle = p[1];
+	    if (Math.abs(distance-lastDistance) < ERR && Math.abs(angle-lastAngle)< ERR ){
+		totalAngle += angle;
+		totalDistance += distance;
+		matchCount++;
+	    }else{
+		if (matchCount > 1){
+		    float meanDistance = totalDistance / matchCount;
+		    float meanAngle = totalAngle /matchCount;
+		    pointList.add(mover.getPointAt(meanDistance, meanAngle));
+		}
+		totalAngle = angle;
+		totalDistance = distance;
+		matchCount = 1;
+	    }
+		
+	    lastDistance = p[0];
+	    lastAngle = p[1];
+	}
+	 mover.setSpeeds();
+	 System.out.println("Found " + pointList.size() + " potential balls:" );
+	 for (Point p : pointList){
+	     System.out.println("X: " +p.getX() +" Y: " + p.getY());
+	 }
+    }
+}

@@ -87,4 +87,10 @@ class Sensor {
 	leftsensor.close();
     }
 
+    public float getDistance() {
+	float[] sample = new float[distance.sampleSize()];
+	distance.fetchSample(sample, 0);
+	return sample[0];
+    }
+
 }
