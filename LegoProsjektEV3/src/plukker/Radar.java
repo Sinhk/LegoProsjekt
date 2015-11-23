@@ -14,68 +14,71 @@ public class Radar {
     float radius;
     float diameter;
     private final float ERR = 5f;
-    
-    public Radar(Sensor sensor, Mover mover,float searchRadius){
+
+    public Radar(Sensor sensor, Mover mover, float searchRadius) {
 	this.sensor = sensor;
 	this.mover = mover;
 	radius = searchRadius;
-	diameter = radius *2;
+	diameter = radius * 2;
     }
 
-    public void makeMap(){
+    public void makeMap() {
 	pointList.clear();
 	List<float[]> points = new ArrayList<float[]>();
 	mover.slowSpin(360);
-	while(mover.isMoving()){
+	while (mover.isMoving()) {
 	    float distance = sensor.getDistance();
-	    if (distance <= radius){
+	    if (distance <= radius) {
 		float angle = mover.getHeading();
-		points.add(new float[]{distance,angle});
-	    }    
+		points.add(new float[] { distance, angle });
+	    }
 	}
 	float lastDistance = 0;
 	float lastAngle = 0;
 	float totalAngle = 0;
 	float totalDistance = 0;
 	int matchCount = 0;
-	for (float[] p : points){
+	for (float[] p : points) {
 	    float distance = p[0];
 	    float angle = p[1];
-	    if (Math.abs(distance-lastDistance) < ERR && Math.abs(angle-lastAngle)< ERR ){
+	    if (Math.abs(distance - lastDistance) < ERR && Math.abs(angle - lastAngle) < ERR) {
 		totalAngle += angle;
 		totalDistance += distance;
 		matchCount++;
-	    }else{
-		if (matchCount > 1){
+	    } else {
+		if (matchCount > 1) {
 		    float meanDistance = totalDistance / matchCount;
-		    float meanAngle = totalAngle /matchCount;
+		    float meanAngle = totalAngle / matchCount;
 		    pointList.add(mover.getPointAt(meanDistance, meanAngle));
 		}
 		totalAngle = angle;
 		totalDistance = distance;
 		matchCount = 1;
 	    }
-		
+
 	    lastDistance = p[0];
 	    lastAngle = p[1];
 	}
-	 mover.setSpeeds();
-	 System.out.println("Found " + pointList.size() + " potential balls:" );
-	 for (Point p : pointList){
-	     System.out.println("X: " +p.getX() +" Y: " + p.getY());
-	 }
-    }
-    public Point getClosestPoint(){
-	float minLength = Float.POSITIVE_INFINITY;
-	Point closest = pointList.get(0);
-	for (Point p : pointList){
-	    if(p.length() <minLength) closest = p; 
+	mover.setSpeeds();
+	System.out.println("Found " + pointList.size() + " potential balls:");
+	for (Point p : pointList) {
+	    System.out.println("X: " + p.getX() + " Y: " + p.getY());
 	}
-	return closest;
     }
-    public void navigate(){
+
+    public Point getClosestPoint() {
+	float minLength = Float.POSITIVE_INFINITY;
+	int closest = -1;
+	for (int i = 0; i < pointList.size(); i++) {
+	    if (pointList.get(i).length() < minLength)
+		closest = i;
+	}
+	return pointList.get(closest);
+    }
+
+    public void navigate() {
 	Navigator navigator = new Navigator(mover.getPilot());
-	for(Point p: pointList){
+	for (Point p : pointList) {
 	    navigator.addWaypoint(new Waypoint(p));
 	}
 	navigator.followPath();
