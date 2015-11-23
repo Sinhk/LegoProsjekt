@@ -11,8 +11,8 @@ class Main {
 		double speed = 30;
 		int maxSteer = 160;
 		Sensor sensor = new Sensor();
-		Mover motor = new Mover(sensor, speed, maxSteer);
 		Pickup pickUp = new Pickup();
+		Mover motor = new Mover(sensor,pickUp, speed, maxSteer);
 		BTConnectEV3 nxt = new BTConnectEV3();    
 		Thread btThread = new Thread(nxt);
 		btThread.start();

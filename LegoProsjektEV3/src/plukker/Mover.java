@@ -22,7 +22,7 @@ class Mover extends Thread {
     private Chassis chassis;
     private MovePilot pilot;
     private Sensor sensor;
-    private Pickup pickUp = new Pickup();
+    private Pickup pickUp;
     private EV3 ev3 = (EV3) BrickFinder.getLocal();
     private TextLCD lcd = ev3.getTextLCD();
     private EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
@@ -38,7 +38,7 @@ class Mover extends Thread {
     private double wheelSize = 5.66;
     private double wheelOffset = 5.31;
 
-    public Mover(Sensor sensor, double speed, float maxSteer) {
+    public Mover(Sensor sensor,Pickup pickUp, double speed, float maxSteer) {
 	Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, wheelSize).offset(wheelOffset);
 	Wheel rightWheel = WheeledChassis.modelWheel(rightMotor, wheelSize).offset(-wheelOffset);
 	chassis = new WheeledChassis(new Wheel[] { leftWheel, rightWheel }, WheeledChassis.TYPE_DIFFERENTIAL);
@@ -51,6 +51,7 @@ class Mover extends Thread {
 	startPose = pp.getPose();
 
 	this.sensor = sensor;
+	this.pickUp = pickUp;
     }
 
     @Override
