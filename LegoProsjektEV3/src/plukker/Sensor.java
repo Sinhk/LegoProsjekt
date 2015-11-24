@@ -10,8 +10,8 @@ import lejos.utility.GyroDirectionFinder;
 
 class Sensor {
     private SampleProvider distance;
-    private SampleProvider rightLeser;
-    private SampleProvider leftLeser;
+    private SampleProvider rightSignal;
+    private SampleProvider leftSignal;
     private EV3UltrasonicSensor dist;
     private EV3ColorSensor rightsensor;
     private EV3ColorSensor leftsensor;
@@ -28,11 +28,9 @@ class Sensor {
 	dist = new EV3UltrasonicSensor(s2);
 	distance = dist.getDistanceMode();
 	rightsensor = new EV3ColorSensor(s4);
-	rightLeser = rightsensor.getRedMode();
+	rightSignal = rightsensor.getRedMode();
 	leftsensor = new EV3ColorSensor(s3);
-	leftLeser = leftsensor.getRedMode();
-	//TODO Maybe use gyro for more accurate tracking
-	//gyro = new GyroDirectionFinder( new EV3GyroSensor(s1), true) ;
+	leftSignal = leftsensor.getRedMode();
     }
 
     public boolean getBall() {
@@ -48,11 +46,11 @@ class Sensor {
     /**
      * Read right sensor
      * 
-     * @return true if black, false if not
+     * @return true hvis sort, ellers false
      */
     public boolean getRight() {
-	float[] sample = new float[rightLeser.sampleSize()];
-	rightLeser.fetchSample(sample, 0);
+	float[] sample = new float[rightSignal.sampleSize()];
+	rightSignal.fetchSample(sample, 0);
 	if (sample[0] < BLACK) {
 	    return true;
 	} else
@@ -62,11 +60,11 @@ class Sensor {
     /**
      * Read left sensor
      * 
-     * @return true if black, false if not
+     * @return true hvis sort, ellers false
      */
     public boolean getLeft() {
-	float[] sample = new float[leftLeser.sampleSize()];
-	leftLeser.fetchSample(sample, 0);
+	float[] sample = new float[leftSignal.sampleSize()];
+	leftSignal.fetchSample(sample, 0);
 	if (sample[0] < BLACK) {
 	    return true;
 	} else
@@ -74,16 +72,16 @@ class Sensor {
     }
 
     public float getRightValue() {
-	float[] sample = new float[rightLeser.sampleSize()];
+	float[] sample = new float[rightSignal.sampleSize()];
 
-	rightLeser.fetchSample(sample, 0);
+	rightSignal.fetchSample(sample, 0);
 	return sample[0];
     }
 
     public float getLeftValue() {
-	float[] sample = new float[leftLeser.sampleSize()];
+	float[] sample = new float[leftSignal.sampleSize()];
 
-	leftLeser.fetchSample(sample, 0);
+	leftSignal.fetchSample(sample, 0);
 	return sample[0];
     }
 
