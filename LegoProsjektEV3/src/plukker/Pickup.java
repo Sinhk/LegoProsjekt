@@ -13,7 +13,7 @@ class Pickup {
 	private float clawSpeed = 260f;
 	
 	public Pickup(){
-	   zero();
+	  // zero();
 	}
 	
 	/**
@@ -21,7 +21,7 @@ class Pickup {
 	 */
 	public void pickup() {
 		lift.rotate(125);
-		claw.rotate(-120);
+		claw.rotate(-150);
 		//Delay.msDelay(800);
 		lift.rotateTo(20);
 	}

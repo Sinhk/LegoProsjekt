@@ -6,6 +6,7 @@ import lejos.hardware.port.Port;
 import lejos.hardware.sensor.*;
 import lejos.robotics.Gyroscope;
 import lejos.robotics.SampleProvider;
+import lejos.utility.Delay;
 import lejos.utility.GyroDirectionFinder;
 
 class Sensor {
@@ -16,7 +17,8 @@ class Sensor {
     private EV3ColorSensor rightsensor;
     private EV3ColorSensor leftsensor;
     private final float BLACK = 0.18f;
-    private GyroDirectionFinder gyro;
+    private EV3GyroSensor gyroSensor;
+    private SampleProvider gyro;
 
     public Sensor() {
 	Brick brick = BrickFinder.getDefault();
@@ -31,6 +33,9 @@ class Sensor {
 	rightSignal = rightsensor.getRedMode();
 	leftsensor = new EV3ColorSensor(s3);
 	leftSignal = leftsensor.getRedMode();
+	gyroSensor = new EV3GyroSensor(s1);
+	gyro = gyroSensor.getAngleMode();
+	gyroSensor.reset();
     }
 
     public boolean getBall() {
@@ -97,4 +102,14 @@ class Sensor {
 	return sample[0];
     }
 
+    public float getGyro(){
+	float[] sample = new float[gyro.sampleSize()];
+	gyro.fetchSample(sample, 0);
+	return sample[0];
+    }
+
+    public void resetGyro() {
+	gyroSensor.reset();
+	Delay.msDelay(5000);	
+    }
 }
