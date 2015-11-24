@@ -269,5 +269,10 @@ class Mover extends Thread {
 
     public void gyroZero(double angle) {
 	pilot.rotate(angle-sensor.getGyro());
+    }
+
+    public void setPose0() {
+	pp.setPose(startPose);
+	
     } 
 }

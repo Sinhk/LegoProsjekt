@@ -94,6 +94,6 @@ public class Radar {
 	}
 	navigator.followPath();
 	navigator.singleStep(false);
-	navigator.waitForStop();
+	//navigator.waitForStop();
     }
 }

@@ -23,8 +23,8 @@ class Sensor {
     public Sensor() {
 	Brick brick = BrickFinder.getDefault();
 	Port s1 = brick.getPort("S1");
-	Port s2 = brick.getPort("S2"); 
-	Port s3 = brick.getPort("S3"); 
+	Port s2 = brick.getPort("S2");
+	Port s3 = brick.getPort("S3");
 	Port s4 = brick.getPort("S4");
 
 	dist = new EV3UltrasonicSensor(s2);
@@ -102,7 +102,7 @@ class Sensor {
 	return sample[0];
     }
 
-    public float getGyro(){
+    public float getGyro() {
 	float[] sample = new float[gyro.sampleSize()];
 	gyro.fetchSample(sample, 0);
 	return sample[0];
@@ -110,6 +110,6 @@ class Sensor {
 
     public void resetGyro() {
 	gyroSensor.reset();
-	Delay.msDelay(5000);	
+	Delay.msDelay(5000);
     }
 }

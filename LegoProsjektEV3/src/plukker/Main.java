@@ -22,7 +22,7 @@ class Main {
 		Button.ENTER.waitForPressAndRelease();
 		radar.navigate();
 		
-		motor.start();
+		//motor.start();
 		//EV3 ev3 = (EV3) BrickFinder.getLocal();
 		boolean fortsett = true;
 		while (fortsett) {
@@ -35,6 +35,12 @@ class Main {
 		    }
 			if (Button.ESCAPE.isDown())
 			    fortsett = false;
+			if (Button.ENTER.isDown()){
+			    motor.setPose0();
+			    sensor.resetGyro();
+			    radar.makeMap();
+			    radar.navigate();
+			    }
 			Thread.sleep(50);
 		}
 		motor.terminate();
