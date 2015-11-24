@@ -79,7 +79,7 @@ public class Controller {
 	    break;
 	}
 
-	lift.rotateTo(angelLift);
+	lift.rotateTo(angleLift);
 	Delay.msDelay(wait);
 	switcher.rotateTo(0, true);
 	lift.rotateTo(10);
