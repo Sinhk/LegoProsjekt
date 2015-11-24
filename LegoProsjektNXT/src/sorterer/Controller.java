@@ -8,7 +8,7 @@ import lejos.nxt.addon.ColorHTSensor;
 import lejos.robotics.Color;
 import lejos.util.Delay;
 
-//TODO Find better name
+
 public class Controller {
     // Konstanter for faregverdier
     private final int BLACK = 1;
@@ -18,20 +18,20 @@ public class Controller {
     private final int THRESHOLD = 15;
 
     // Fartsvariabler
-    private float speedHeis = 450;
-    private float speedInndeler = 150;
+    private float speedLift = 450;
+    private float speedSwitcher = 150;
 
     // rotasjonvinkler
-    private int vinkelHeis = 420;
-    private int vinkelKalibrering = 60;
-    private int vinkelInndeler = 50;
+    private int angleLift = 420;
+    private int angleCalibrate = 60;
+    private int angleSwitcher = 50;
 
     // ventetid for sortereren
-    private static int vent = 1000;
+    private static int wait = 1000;
 
     // navngir motorer
-    private NXTRegulatedMotor heis = Motor.A;
-    private NXTRegulatedMotor inndeler = Motor.B;
+    private NXTRegulatedMotor lift = Motor.A;
+    private NXTRegulatedMotor switcher = Motor.B;
 
     // Sensor
     private ColorHTSensor colorSensor;
@@ -47,7 +47,6 @@ public class Controller {
     public int getColor() {
 	Color rgb = colorSensor.getColor();
 	// skriver ut farge verdier
-	// TODO Ta vekk (kommenter ut) denne når vi er ferdig å teste
 	LCD.drawString("R: " + rgb.getRed() + " G: " + rgb.getGreen() + " B: " + rgb.getBlue(), 0, 5);
 
 	int red = rgb.getRed();
@@ -71,48 +70,48 @@ public class Controller {
 	int color = getColor();
 	switch (color) {
 	case BLUE:
-	    inndeler.rotateTo(vinkelInndeler, true);
+	    switcher.rotateTo(angleSwitcher, true);
 	    break;
 	case RED:
-	    inndeler.rotateTo(-vinkelInndeler, true);
+	    switcher.rotateTo(-angleSwitcher, true);
 	    break;
 	default:
 	    break;
 	}
 
-	heis.rotateTo(vinkelHeis);
-	Delay.msDelay(vent);
-	inndeler.rotateTo(0, true);
-	heis.rotateTo(10);
-	inndeler.stop(true);
-	heis.flt();
+	lift.rotateTo(angelLift);
+	Delay.msDelay(wait);
+	switcher.rotateTo(0, true);
+	lift.rotateTo(10);
+	switcher.stop(true);
+	lift.flt();
     }
 
     /**
      * Reset motorer til startposisjon
      */
     public void zero() {
-	inndeler.setStallThreshold(2, 10);
-	inndeler.setSpeed(20);
-	inndeler.forward();
+	switcher.setStallThreshold(2, 10);
+	switcher.setSpeed(20);
+	switcher.forward();
 	// Venter til motor møter motstand
-	while (!inndeler.isStalled()) {
+	while (!switcher.isStalled()) {
 	}
-	inndeler.stop();
-	inndeler.setStallThreshold(50, 1000);
-	inndeler.rotate(-vinkelKalibrering);
-	inndeler.resetTachoCount();
-	inndeler.setSpeed(speedInndeler);
+	switcher.stop();
+	switcher.setStallThreshold(50, 1000);
+	switcher.rotate(-angleCalibrate);
+	switcher.resetTachoCount();
+	switcher.setSpeed(speedSwitcher);
 
-	heis.setSpeed(50);
-	heis.backward();
+	lift.setSpeed(50);
+	lift.backward();
 	// Venter til motor møter motstand
-	while (!heis.isStalled()) {
+	while (!lift.isStalled()) {
 	}
-	heis.flt();
-	heis.resetTachoCount();
-	heis.setSpeed(speedHeis);
-	heis.flt();
+	lift.flt();
+	lift.resetTachoCount();
+	lift.setSpeed(speedLift);
+	lift.flt();
     }
 
     public void initBlackLevel() {

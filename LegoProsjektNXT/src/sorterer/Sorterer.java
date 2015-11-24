@@ -6,7 +6,7 @@ import lejos.nxt.LCD;
 public class Sorterer {
 
     public static void main(String[] arg) throws Exception {
-	LCD.drawString("Klar...", 0, 0);
+	LCD.drawString("Ready...", 0, 0);
 
 	// Starter thread for bluetooth kommunikasjon
 	BTConnectNXT btc = new BTConnectNXT();
