@@ -14,12 +14,13 @@ class Main {
 		Mover motor = new Mover(sensor,pickUp, speed, maxSteer);
 		BTConnectEV3 nxt = new BTConnectEV3();    
 		Thread btThread = new Thread(nxt);
-		//btThread.start();
-		Radar radar = new Radar(sensor, motor, 1);
-		radar.makeMap();
-		LCD.drawString("Press enter to start", 0, 4);
-		Button.ENTER.waitForPressAndRelease();
-		radar.navigate();
+		btThread.start();
+		//motor.testRotate();
+		//Radar radar = new Radar(sensor, motor, 1f);
+		//radar.makeMap();
+		//LCD.drawString("Press enter to start", 0, 4);
+		//Button.ENTER.waitForPressAndRelease();
+		//radar.navigate();
 		
 		motor.start();
 		//EV3 ev3 = (EV3) BrickFinder.getLocal();

@@ -28,9 +28,10 @@ public class Radar {
 	mover.slowSpin(360);
 	while (mover.isMoving()) {
 	    float distance = sensor.getDistance();
-	    if (distance <= radius) {
+	    if (distance <= radius&&distance > 0) {
 		float angle = mover.getHeading();
-		points.add(new float[] { distance, angle });
+		points.add(new float[] { distance*100.0f, angle });
+		System.out.println(distance +", " + angle);
 	    }
 	}
 	float lastDistance = 0;
@@ -41,14 +42,17 @@ public class Radar {
 	for (float[] p : points) {
 	    float distance = p[0];
 	    float angle = p[1];
+	    System.out.println(distance+", "+ angle + ", "+Math.abs(distance - lastDistance) +", " +Math.abs(angle - lastAngle) );
 	    if (Math.abs(distance - lastDistance) < ERR && Math.abs(angle - lastAngle) < ERR) {
 		totalAngle += angle;
 		totalDistance += distance;
 		matchCount++;
+		System.out.println(matchCount);
 	    } else {
 		if (matchCount > 1) {
 		    float meanDistance = totalDistance / matchCount;
 		    float meanAngle = totalAngle / matchCount;
+		    System.out.println(meanDistance +", " + meanAngle);
 		    pointList.add(mover.getPointAt(meanDistance, meanAngle));
 		}
 		totalAngle = angle;
@@ -58,6 +62,12 @@ public class Radar {
 
 	    lastDistance = p[0];
 	    lastAngle = p[1];
+	}
+	if (matchCount > 1) {
+	    float meanDistance = totalDistance / matchCount;
+	    float meanAngle = totalAngle / matchCount;
+	    System.out.println(meanDistance +", " + meanAngle);
+	    pointList.add(mover.getPointAt(meanDistance, meanAngle));
 	}
 	mover.setSpeeds();
 	System.out.println("Found " + pointList.size() + " potential balls:");
@@ -82,6 +92,7 @@ public class Radar {
 	    navigator.addWaypoint(new Waypoint(p));
 	}
 	navigator.followPath();
+	navigator.singleStep(false);
 	navigator.waitForStop();
     }
 }

@@ -182,17 +182,19 @@ class Mover extends Thread {
     }
     
     public void slowSpin(double angle ){
-	pilot.setAngularSpeed(10);
+	pilot.setAngularSpeed(20);
     	pilot.rotate(angle, true);
     }
     
     public void turn(int i) {
 	if (i % 2 == 0) {
-	    pilot.arc(wheelOffset, 180);
-
+	    rotate(90);
+	    pilot.travel(12);
+	    rotate(90);
 	} else {
-	    pilot.arc(-wheelOffset, 180);
-	
+	    rotate(-90);
+	    pilot.travel(12);
+	    rotate(-90);
 	}
     }
 
