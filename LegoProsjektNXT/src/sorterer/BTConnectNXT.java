@@ -33,7 +33,7 @@ public class BTConnectNXT implements Runnable {
 	    if (btc != null) {
 		// åpner io stream når tilkobling er opprettet
 		dis = btc.openDataInputStream();
-		
+
 		connected = true;
 	    }
 	    while (running && connected) {
@@ -51,7 +51,7 @@ public class BTConnectNXT implements Runnable {
 		    try {
 			System.out.println("Disconnected");
 			dis.close();
-			
+
 			Thread.sleep(100);
 			btc.close();
 			// Går ut av indre loop for vente på ny tilkobling
@@ -67,7 +67,7 @@ public class BTConnectNXT implements Runnable {
 	try {
 	    if (btc != null) {
 		dis.close();
-		
+
 		Thread.sleep(100);
 		btc.close();
 	    }

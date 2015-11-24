@@ -8,7 +8,6 @@ import lejos.nxt.addon.ColorHTSensor;
 import lejos.robotics.Color;
 import lejos.util.Delay;
 
-
 public class Controller {
     // Konstanter for faregverdier
     private final int BLACK = 1;
