@@ -10,28 +10,42 @@ import lejos.robotics.navigation.Waypoint;
 public class Radar {
     private Sensor sensor;
     private Mover mover;
-    List<Point> pointList = new ArrayList<Point>();
-    float radius;
-    float diameter;
+    private List<Point> pointList = new ArrayList<Point>();
+    private float radius;
+    private float diameter;
     private final float ERR = 5f;
+    private final float objectSize;
 
-    public Radar(Sensor sensor, Mover mover, float searchRadius) {
+    /**
+     * 
+     * @param sensor
+     *            Sensor object to use
+     * @param mover
+     *            Mover object to use
+     * @param searchRadius
+     *            radius to search inn
+     * @param objectSize
+     *            approximate size of object to search for. Side viewed by
+     *            sensor
+     */
+    public Radar(Sensor sensor, Mover mover, float searchRadius, float objectSize) {
 	this.sensor = sensor;
 	this.mover = mover;
 	radius = searchRadius;
 	diameter = radius * 2;
+	this.objectSize = objectSize;
     }
 
-    public void makeMap() {
+    public void findPoints() {
 	pointList.clear();
 	List<float[]> points = new ArrayList<float[]>();
 	mover.slowSpin(360);
 	while (mover.isMoving()) {
 	    float distance = sensor.getDistance();
-	    if (distance <= radius&&distance > 0) {
-		float angle = sensor.getGyro();//mover.getHeading();
-		points.add(new float[] { distance*100.0f, angle });
-		System.out.println(distance +", " + angle);
+	    if (distance <= radius && distance > 0) {
+		float angle = sensor.getGyro();// mover.getHeading();
+		points.add(new float[] { distance * 100.0f, angle });
+		System.out.println(distance + ", " + angle);
 	    }
 	}
 	mover.gyroZero(360.0);
@@ -39,25 +53,33 @@ public class Radar {
 	float lastAngle = 0;
 	float totalAngle = 0;
 	float totalDistance = 0;
+	float startAngle = 0;
 	int matchCount = 0;
 	for (float[] p : points) {
 	    float distance = p[0];
 	    float angle = p[1];
-	    //System.out.println(distance+", "+ angle + ", "+Math.abs(distance - lastDistance) +", " +Math.abs(angle - lastAngle) );
+	    // System.out.println(distance+", "+ angle + ", "+Math.abs(distance
+	    // - lastDistance) +", " +Math.abs(angle - lastAngle) );
 	    if (Math.abs(distance - lastDistance) < ERR && Math.abs(angle - lastAngle) < ERR) {
 		totalAngle += angle;
 		totalDistance += distance;
 		matchCount++;
-		//System.out.println(matchCount);
+		// System.out.println(matchCount);
 	    } else {
 		if (matchCount > 1) {
 		    float meanDistance = totalDistance / matchCount;
 		    float meanAngle = totalAngle / matchCount;
-		    System.out.println(meanDistance +", " + meanAngle);
-		    pointList.add(mover.getPointAt(meanDistance, meanAngle));
+		    float coverAngle = angle - startAngle;
+		    System.out.println(meanDistance + ", " + meanAngle);
+		    if (coverAngle < 2 * Math.atan((objectSize / 2) / meanDistance)) {
+			pointList.add(mover.getPointAt(meanDistance, meanAngle));
+		    }
+		    ;
+
 		}
 		totalAngle = angle;
 		totalDistance = distance;
+		startAngle = angle;
 		matchCount = 1;
 	    }
 
@@ -67,7 +89,7 @@ public class Radar {
 	if (matchCount > 1) {
 	    float meanDistance = totalDistance / matchCount;
 	    float meanAngle = totalAngle / matchCount;
-	    System.out.println(meanDistance +", " + meanAngle);
+	    System.out.println(meanDistance + ", " + meanAngle);
 	    pointList.add(mover.getPointAt(meanDistance, meanAngle));
 	}
 	mover.setSpeeds();
@@ -94,6 +116,6 @@ public class Radar {
 	}
 	navigator.followPath();
 	navigator.singleStep(false);
-	//navigator.waitForStop();
+	// navigator.waitForStop();
     }
 }
