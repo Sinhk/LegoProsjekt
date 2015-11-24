@@ -28,7 +28,7 @@ class Mover extends Thread {
     private EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
     private EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.D);
     int numberOfTurns = 0;
-    //int rightOrLeft;
+    // int rightOrLeft;
     // private Pose was;
     // private boolean dropped = false;
     private OdometryPoseProvider pp;
@@ -40,31 +40,31 @@ class Mover extends Thread {
     private volatile boolean running;
     private double speed;
 
-    public Mover(Sensor sensor,Pickup pickUp, double speed, float maxSteer) {
+    public Mover(Sensor sensor, Pickup pickUp, double speed) {
 	Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, wheelSize).offset(wheelOffset);
 	Wheel rightWheel = WheeledChassis.modelWheel(rightMotor, wheelSize).offset(-wheelOffset);
 	chassis = new WheeledChassis(new Wheel[] { leftWheel, rightWheel }, WheeledChassis.TYPE_DIFFERENTIAL);
 	pilot = new MovePilot(chassis);
-	this.speed=speed;
+	this.speed = speed;
 	setSpeeds();
 	pp = new OdometryPoseProvider(pilot);
 	startPose = pp.getPose();
 
 	this.sensor = sensor;
 	this.pickUp = pickUp;
-	//testRotate();
+	// testRotate();
     }
 
     public void setSpeeds() {
 	pilot.setLinearSpeed(pilot.getMaxLinearSpeed() * (speed / 100));
-	pilot.setAngularSpeed(90);//pilot.getMaxAngularSpeed()* 0.1);
-	//pilot.setAngularAcceleration(pilot.getAngularAcceleration());
-	//pilot.setLinearAcceleration(pilot.getLinearAcceleration());
+	pilot.setAngularSpeed(90);// pilot.getMaxAngularSpeed()* 0.1);
+	// pilot.setAngularAcceleration(pilot.getAngularAcceleration());
+	// pilot.setLinearAcceleration(pilot.getLinearAcceleration());
     }
 
     @Override
     public void run() {
-	LCD.drawString("Set robot at X:0 Y:0 θ:0" , 0, 2);
+	LCD.drawString("Set robot at X:0 Y:0 θ:0", 0, 2);
 	LCD.drawString("Press enter to start", 0, 4);
 	// testRotate();
 	Button.ENTER.waitForPressAndRelease();
@@ -73,19 +73,20 @@ class Mover extends Thread {
 	pilot.rotate(-90);
 	pilot.forward();
 	searching = true;
-	running=true;
+	running = true;
 	do {
-	    // TODO Slow down while searching, speed up for return. 
-	    //Less speed and acceleration = more accuracy
-	    while (running&&searching) {
+	    // TODO Slow down while searching, speed up for return.
+	    // Less speed and acceleration = more accuracy
+	    while (running && searching) {
 		lcd.drawString("" + sensor.getRightValue(), 1, 3);
 		lcd.drawString("" + numberOfTurns, 1, 4);
 
-		if (sensor.getRight()||sensor.getLeft()) {
+		if (sensor.getRight() || sensor.getLeft()) {
 		    pilot.stop();
 		    align();
-		    //TODO Add correction to poseprovider. Set heading, if accurate
-		    //pilot.travel(-3);
+		    // TODO Add correction to poseprovider. Set heading, if
+		    // accurate
+		    // pilot.travel(-3);
 		    turn(numberOfTurns);
 		    numberOfTurns++;
 		    pilot.forward();
@@ -102,20 +103,20 @@ class Mover extends Thread {
     }
 
     public void align() {
-	if(sensor.getRight()&&sensor.getLeft()){
-	    
-	}else{
-	if (sensor.getRight()) {
-	    pilot.arcForward(-wheelOffset);
-	    while (!sensor.getLeft()) {
+	if (sensor.getRight() && sensor.getLeft()) {
+
+	} else {
+	    if (sensor.getRight()) {
+		pilot.arcForward(-wheelOffset);
+		while (!sensor.getLeft()) {
+		}
+		pilot.stop();
+	    } else if (sensor.getLeft()) {
+		pilot.arcForward(wheelOffset);
+		while (!sensor.getRight()) {
+		}
+		pilot.stop();
 	    }
-	    pilot.stop();
-	} else if (sensor.getLeft()) {
-	    pilot.arcForward(wheelOffset);
-	    while (!sensor.getRight()) {
-	    }
-	    pilot.stop();
-	}
 	}
     }
 
@@ -140,7 +141,7 @@ class Mover extends Thread {
 	Point homePoint = startPose.getLocation();
 	// ps.setHeading(myHeading);
 	// SK.setPose(was);
-	
+
 	System.out.println(searchPose.relativeBearing(homePoint) + ", " + searchPose.getHeading());
 	rotate((searchPose.relativeBearing(homePoint)));
 	System.out.println(pp.getPose().getHeading());
@@ -170,23 +171,78 @@ class Mover extends Thread {
 	pilot.stop();
 	alignReverse();
 	pp.setPose(startPose);
-
+	sensor.resetGyro();
 	pilot.rotate(pp.getPose().relativeBearing(searchPose.getLocation()));
 	pilot.travel(pp.getPose().distanceTo(searchPose.getLocation()));
 	pilot.rotate(searchPose.getHeading() - pp.getPose().getHeading());
 	searching = true;
+    }
+    
+/**
+ * Tries to pick up ball at Point
+ * 
+ * @param point Point location of ball
+ * @return true if ball is grabbed, false if ball is lost
+ */
+    public boolean fetchBall(Point point) {
+	pilot.rotate(pp.getPose().relativeBearing(point));
+	pilot.forward();
+	while (pp.getPose().distanceTo(point) > 1f)
+	    ;
+	float estDist = pp.getPose().distanceTo(point);
+	if (correctAim(estDist)) {
+	    pilot.forward();
+	    float lastDistance = estDist;
+	    while (true) {
+		if (sensor.getBall()) {
+		    if (pickUp.pickup()) {
+			return true;
+		    } else
+			return false;
+		}
+
+		float distance = sensor.getDistance();
+		if (distance > lastDistance) {
+		    if (!correctAim(lastDistance))
+			return false;
+		}
+		lastDistance = distance;
+	    }
+	}
+	return false;
+    }
+
+    /**
+     * 
+     * @param distance
+     *            expected distance
+     */
+    public boolean correctAim(float distance) {
+	float ERR = 5f;
+
+	float angle = 30f;
+	int run = 1;
+	while (Math.abs(distance - sensor.getDistance()) > ERR) {
+	    pilot.rotate(angle * run, true);
+	    while (pilot.isMoving() && Math.abs(distance - sensor.getDistance()) > ERR)Thread.yield();
+	    pilot.stop();
+	    if (angle * run >= 180)
+		return false;
+	    run++;
+	}
+	return true;
     }
 
     public void rotate(float f) {
 	pilot.stop();
 	pilot.rotate(f);
     }
-    
-    public void slowSpin(double angle ){
+
+    public void slowSpin(double angle) {
 	pilot.setAngularSpeed(20);
-    	pilot.rotate(angle, true);
+	pilot.rotate(angle, true);
     }
-    
+
     public void turn(int i) {
 	if (i % 2 == 0) {
 	    rotate(90);
@@ -199,80 +255,88 @@ class Mover extends Thread {
 	}
     }
 
-    public void terminate(){
+    public void terminate() {
 	running = false;
     }
-    
+
     public boolean isMoving() {
 	return pilot.isMoving();
     }
-    
-    public Point getPointAt(float distance,float bearing){
+
+    public Point getPointAt(float distance, float bearing) {
 	return pp.getPose().pointAt(distance, bearing);
     }
-    
+
     public float getHeading() {
 	return pp.getPose().getHeading();
     }
-    
+
     public void testRotate() {
 	pilot.rotate(90);
-	System.out.println("90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
-	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	System.out.println("90, " + pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() + ", " + rightMotor.getPosition());
 	pilot.rotate(90);
-	System.out.println("90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
-	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	System.out.println("90, " + pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() + ", " + rightMotor.getPosition());
 	pilot.rotate(90);
-	System.out.println("90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
-	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	System.out.println("90, " + pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() + ", " + rightMotor.getPosition());
 	pilot.rotate(90);
-	System.out.println("90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
-	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
-	pilot.rotate(360-sensor.getGyro());
+	System.out.println("90, " + pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() + ", " + rightMotor.getPosition());
+	pilot.rotate(360 - sensor.getGyro());
 	pilot.rotate(-360);
-	pilot.rotate(0-sensor.getGyro());
+	pilot.rotate(0 - sensor.getGyro());
 	sensor.resetGyro();
-	System.out.println("-360, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
-	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	System.out.println("-360, " + pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() + ", " + rightMotor.getPosition());
 	Button.ENTER.waitForPressAndRelease();
 	pilot.rotate(360);
-	System.out.println("360, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
-	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());	
+	System.out.println("360, " + pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() + ", " + rightMotor.getPosition());
 	pilot.rotate(-180);
-	System.out.println("-180, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
-	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	System.out.println("-180, " + pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() + ", " + rightMotor.getPosition());
 	pilot.rotate(180);
-	System.out.println("180, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
-	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	System.out.println("180, " + pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() + ", " + rightMotor.getPosition());
 	pilot.rotate(-360);
 	sensor.resetGyro();
-	System.out.println("-360, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
-	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	System.out.println("-360, " + pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() + ", " + rightMotor.getPosition());
 	pilot.rotate(90);
-	System.out.println("90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
-	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	System.out.println("90, " + pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() + ", " + rightMotor.getPosition());
 	pilot.rotate(90);
-	System.out.println("90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
-	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	System.out.println("90, " + pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() + ", " + rightMotor.getPosition());
 	pilot.rotate(-90);
-	System.out.println("-90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
-	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	System.out.println("-90, " + pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() + ", " + rightMotor.getPosition());
 	pilot.rotate(-90);
-	System.out.println("-90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
-	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
-	
+	System.out.println("-90, " + pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() + ", " + rightMotor.getPosition());
+
     }
 
     public MovePilot getPilot() {
 	return pilot;
     }
 
-    public void gyroZero(double angle) {
-	pilot.rotate(angle-sensor.getGyro());
+    public void gyroRotateTo(double angle) {
+	pilot.rotate(angle - sensor.getGyro());
     }
 
     public void setPose0() {
 	pp.setPose(startPose);
-	
-    } 
+
+    }
+    public void goToPoint(Point point){
+	pilot.rotate(pp.getPose().relativeBearing(point));
+	pilot.travel(pp.getPose().distanceTo(point));
+    }
+    public void goToCentre(float searchRadius) {
+	goToPoint(startPose.pointAt(searchRadius, -45));
+	gyroRotateTo(0);
+    }
 }

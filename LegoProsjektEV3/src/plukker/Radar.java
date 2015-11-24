@@ -48,7 +48,7 @@ public class Radar {
 		System.out.println(distance + ", " + angle);
 	    }
 	}
-	mover.gyroZero(360.0);
+	mover.gyroRotateTo(360.0);
 	float lastDistance = 0;
 	float lastAngle = 0;
 	float totalAngle = 0;
@@ -98,15 +98,23 @@ public class Radar {
 	    System.out.println("X: " + p.getX() + " Y: " + p.getY());
 	}
     }
-
-    public Point getClosestPoint() {
+/**
+ * 
+ * @param delete if point should be removed from list
+ * @return point closest to origo
+ */
+    public Point getClosestPoint(boolean delete) {
 	float minLength = Float.POSITIVE_INFINITY;
 	int closest = -1;
 	for (int i = 0; i < pointList.size(); i++) {
 	    if (pointList.get(i).length() < minLength)
 		closest = i;
 	}
-	return pointList.get(closest);
+	Point point = pointList.get(closest);
+	if (delete){
+	    pointList.remove(closest);
+	}
+	return point;
     }
 
     public void navigate() {
@@ -117,5 +125,9 @@ public class Radar {
 	navigator.followPath();
 	navigator.singleStep(false);
 	// navigator.waitForStop();
+    }
+
+    public int getRemaining() {
+	return pointList.size();
     }
 }

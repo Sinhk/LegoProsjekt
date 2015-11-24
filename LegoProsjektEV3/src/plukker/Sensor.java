@@ -1,39 +1,34 @@
 package plukker;
 
-import lejos.hardware.Brick;
-import lejos.hardware.BrickFinder;
-import lejos.hardware.port.Port;
-import lejos.hardware.sensor.*;
-import lejos.robotics.Gyroscope;
+import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.hardware.sensor.EV3GyroSensor;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
-import lejos.utility.GyroDirectionFinder;
 
 class Sensor {
+    // SampleProviders
     private SampleProvider distance;
     private SampleProvider rightSignal;
     private SampleProvider leftSignal;
+    private SampleProvider gyro;
+    // Sensors
     private EV3UltrasonicSensor dist;
     private EV3ColorSensor rightsensor;
     private EV3ColorSensor leftsensor;
-    private final float BLACK = 0.18f;
     private EV3GyroSensor gyroSensor;
-    private SampleProvider gyro;
+    // Constants
+    private final float BLACK = 0.18f;
 
     public Sensor() {
-	Brick brick = BrickFinder.getDefault();
-	Port s1 = brick.getPort("S1");
-	Port s2 = brick.getPort("S2");
-	Port s3 = brick.getPort("S3");
-	Port s4 = brick.getPort("S4");
-
-	dist = new EV3UltrasonicSensor(s2);
+	dist = new EV3UltrasonicSensor(SensorPort.S2);
 	distance = dist.getDistanceMode();
-	rightsensor = new EV3ColorSensor(s4);
+	rightsensor = new EV3ColorSensor(SensorPort.S4);
 	rightSignal = rightsensor.getRedMode();
-	leftsensor = new EV3ColorSensor(s3);
+	leftsensor = new EV3ColorSensor(SensorPort.S3);
 	leftSignal = leftsensor.getRedMode();
-	gyroSensor = new EV3GyroSensor(s1);
+	gyroSensor = new EV3GyroSensor(SensorPort.S1);
 	gyro = gyroSensor.getAngleMode();
 	gyroSensor.reset();
     }
@@ -99,7 +94,7 @@ class Sensor {
     public float getDistance() {
 	float[] sample = new float[distance.sampleSize()];
 	distance.fetchSample(sample, 0);
-	return sample[0];
+	return (sample[0] == 0.0) ? Float.POSITIVE_INFINITY : sample[0];
     }
 
     public float getGyro() {
