@@ -29,11 +29,12 @@ public class Radar {
 	while (mover.isMoving()) {
 	    float distance = sensor.getDistance();
 	    if (distance <= radius&&distance > 0) {
-		float angle = mover.getHeading();
+		float angle = sensor.getGyro();//mover.getHeading();
 		points.add(new float[] { distance*100.0f, angle });
 		System.out.println(distance +", " + angle);
 	    }
 	}
+	mover.gyroZero(360.0);
 	float lastDistance = 0;
 	float lastAngle = 0;
 	float totalAngle = 0;
@@ -42,12 +43,12 @@ public class Radar {
 	for (float[] p : points) {
 	    float distance = p[0];
 	    float angle = p[1];
-	    System.out.println(distance+", "+ angle + ", "+Math.abs(distance - lastDistance) +", " +Math.abs(angle - lastAngle) );
+	    //System.out.println(distance+", "+ angle + ", "+Math.abs(distance - lastDistance) +", " +Math.abs(angle - lastAngle) );
 	    if (Math.abs(distance - lastDistance) < ERR && Math.abs(angle - lastAngle) < ERR) {
 		totalAngle += angle;
 		totalDistance += distance;
 		matchCount++;
-		System.out.println(matchCount);
+		//System.out.println(matchCount);
 	    } else {
 		if (matchCount > 1) {
 		    float meanDistance = totalDistance / matchCount;

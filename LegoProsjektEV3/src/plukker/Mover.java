@@ -35,8 +35,8 @@ class Mover extends Thread {
     private Pose startPose;
     private Pose searchPose;
     private volatile boolean searching;
-    private double wheelSize = 5.66;
-    private double wheelOffset = 5.31;
+    private double wheelSize = 5.56;
+    private double wheelOffset = 5.28;
     private volatile boolean running;
     private double speed;
 
@@ -52,13 +52,14 @@ class Mover extends Thread {
 
 	this.sensor = sensor;
 	this.pickUp = pickUp;
+	//testRotate();
     }
 
     public void setSpeeds() {
 	pilot.setLinearSpeed(pilot.getMaxLinearSpeed() * (speed / 100));
-	pilot.setAngularSpeed(pilot.getMaxAngularSpeed()* 0.1);
-	pilot.setAngularAcceleration(pilot.getAngularAcceleration()*0.5);
-	pilot.setLinearAcceleration(pilot.getLinearAcceleration()*0.5);
+	pilot.setAngularSpeed(90);//pilot.getMaxAngularSpeed()* 0.1);
+	//pilot.setAngularAcceleration(pilot.getAngularAcceleration());
+	//pilot.setLinearAcceleration(pilot.getLinearAcceleration());
     }
 
     @Override
@@ -215,26 +216,58 @@ class Mover extends Thread {
     }
     
     public void testRotate() {
-	pilot.rotate(360);
-	Delay.msDelay(5000);
+	pilot.rotate(90);
+	System.out.println("90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	pilot.rotate(90);
+	System.out.println("90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	pilot.rotate(90);
+	System.out.println("90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	pilot.rotate(90);
+	System.out.println("90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	pilot.rotate(360-sensor.getGyro());
 	pilot.rotate(-360);
+	pilot.rotate(0-sensor.getGyro());
+	sensor.resetGyro();
+	System.out.println("-360, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	Button.ENTER.waitForPressAndRelease();
 	pilot.rotate(360);
-	pilot.rotate(-360);
-	pilot.rotate(360);
-	pilot.rotate(-360);
-	pilot.rotate(360);
-	pilot.rotate(-360);
-	pilot.rotate(360);
-	pilot.rotate(-90);
-	pilot.rotate(-90);
+	System.out.println("360, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());	
+	pilot.rotate(-180);
+	System.out.println("-180, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
 	pilot.rotate(180);
+	System.out.println("180, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	pilot.rotate(-360);
+	sensor.resetGyro();
+	System.out.println("-360, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	pilot.rotate(90);
+	System.out.println("90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	pilot.rotate(90);
+	System.out.println("90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
 	pilot.rotate(-90);
+	System.out.println("-90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
 	pilot.rotate(-90);
-	pilot.rotate(-90);
-	pilot.rotate(-90);
+	System.out.println("-90, " +  pp.getPose().getHeading() + ", " + sensor.getGyro());
+	System.out.println(leftMotor.getPosition() +", " + rightMotor.getPosition());
+	
     }
 
     public MovePilot getPilot() {
 	return pilot;
+    }
+
+    public void gyroZero(double angle) {
+	pilot.rotate(angle-sensor.getGyro());
     } 
 }
