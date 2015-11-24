@@ -34,16 +34,16 @@ public class BTConnectEV3 implements Runnable {
 	while (running) {
 	    // Try to connect until success, then open io streams
 	    while (running && !connected) {
-		try{
+		try {
 		    nxt = con.connect(address, NXTConnection.PACKET);
-		
-		if (nxt != null) {
-		    // dis = nxt.openDataInputStream();
-		    dos = nxt.openDataOutputStream();
-		    connected = true;
-		}
-		Thread.sleep(500);
-		}catch (InterruptedException ie){
+
+		    if (nxt != null) {
+			// dis = nxt.openDataInputStream();
+			dos = nxt.openDataOutputStream();
+			connected = true;
+		    }
+		    Thread.sleep(500);
+		} catch (InterruptedException ie) {
 		    running = false;
 		}
 	    }
