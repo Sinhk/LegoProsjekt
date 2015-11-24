@@ -14,7 +14,6 @@ import lejos.robotics.geometry.Point;
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.MovePilot;
 import lejos.robotics.navigation.Pose;
-import lejos.utility.Delay;
 
 class Mover extends Thread {
     // private double linSpeed;
@@ -177,13 +176,14 @@ class Mover extends Thread {
 	pilot.rotate(searchPose.getHeading() - pp.getPose().getHeading());
 	searching = true;
     }
-    
-/**
- * Tries to pick up ball at Point
- * 
- * @param point Point location of ball
- * @return true if ball is grabbed, false if ball is lost
- */
+
+    /**
+     * Tries to pick up ball at Point
+     * 
+     * @param point
+     *            Point location of ball
+     * @return true if ball is grabbed, false if ball is lost
+     */
     public boolean fetchBall(Point point) {
 	pilot.rotate(pp.getPose().relativeBearing(point));
 	pilot.forward();
@@ -224,7 +224,8 @@ class Mover extends Thread {
 	int run = 1;
 	while (Math.abs(distance - sensor.getDistance()) > ERR) {
 	    pilot.rotate(angle * run, true);
-	    while (pilot.isMoving() && Math.abs(distance - sensor.getDistance()) > ERR)Thread.yield();
+	    while (pilot.isMoving() && Math.abs(distance - sensor.getDistance()) > ERR)
+		Thread.yield();
 	    pilot.stop();
 	    if (angle * run >= 180)
 		return false;
@@ -331,10 +332,12 @@ class Mover extends Thread {
 	pp.setPose(startPose);
 
     }
-    public void goToPoint(Point point){
+
+    public void goToPoint(Point point) {
 	pilot.rotate(pp.getPose().relativeBearing(point));
 	pilot.travel(pp.getPose().distanceTo(point));
     }
+
     public void goToCentre(float searchRadius) {
 	goToPoint(startPose.pointAt(searchRadius, -45));
 	gyroRotateTo(0);

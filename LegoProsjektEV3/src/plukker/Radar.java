@@ -98,11 +98,13 @@ public class Radar {
 	    System.out.println("X: " + p.getX() + " Y: " + p.getY());
 	}
     }
-/**
- * 
- * @param delete if point should be removed from list
- * @return point closest to origo
- */
+
+    /**
+     * 
+     * @param delete
+     *            if point should be removed from list
+     * @return point closest to origo
+     */
     public Point getClosestPoint(boolean delete) {
 	float minLength = Float.POSITIVE_INFINITY;
 	int closest = -1;
@@ -111,7 +113,7 @@ public class Radar {
 		closest = i;
 	}
 	Point point = pointList.get(closest);
-	if (delete){
+	if (delete) {
 	    pointList.remove(closest);
 	}
 	return point;
