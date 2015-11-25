@@ -2,6 +2,7 @@ package plukker;
 
 //import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
+import lejos.utility.Delay;
 
 class Main {
     public static void main(String[] arg) throws Exception {
@@ -59,7 +60,8 @@ class Main {
 	    }
 	    Thread.sleep(50);
 	}
-	motor.terminate();
+	//motor.terminate();
+	Delay.msDelay(10000);
 	nxt.setDone();
 	//motor.join();
 	btThread.join();
