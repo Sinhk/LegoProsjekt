@@ -239,7 +239,7 @@ class Mover extends Thread {
 	int run = 1;
 	// System.out.println("Outside: " +sensor.getDistance());
 	while (Math.abs(distance - sensor.getDistance()) > ERR) {
-	    float angle = (float) (angleBase * run * ((Math.pow(-1, run + 1))));
+	    float angle = (float) (angleBase * run * ((Math.pow(-1, run))));
 	    pilot.rotate(angle, true);
 	    while (pilot.isMoving() && Math.abs(distance - sensor.getDistance()) > ERR) {
 		//System.out.println("Inside: " + sensor.getDistance());
