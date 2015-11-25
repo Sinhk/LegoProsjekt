@@ -122,7 +122,9 @@ class Mover extends Thread {
 	}
 
 	public void alignReverse() {
-		if (sensor.getRight()) {
+	    if (sensor.getRight() && sensor.getLeft()) {
+		
+	    }else if (sensor.getRight()) {
 			pilot.arcBackward(-wheelOffset);
 			while (!sensor.getLeft()) {
 			}
