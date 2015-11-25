@@ -61,7 +61,7 @@ class Main {
 	    Thread.sleep(50);
 	}
 	//motor.terminate();
-	Delay.msDelay(10000);
+	Delay.msDelay(5000);
 	nxt.setDone();
 	//motor.join();
 	btThread.join();

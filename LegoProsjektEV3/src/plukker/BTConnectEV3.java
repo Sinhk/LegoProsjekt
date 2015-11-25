@@ -54,8 +54,7 @@ public class BTConnectEV3 implements Runnable {
 		    if (ready) {
 			value = READY;
 			ready = false;
-		    }
-		    if (done) {
+		    }else if (done) {
 			value = DONE;
 			running = false;
 		    }
