@@ -86,7 +86,7 @@ public class Radar {
 		    double expectedAngle = Math.toDegrees(2.0 * Math.atan((objectSize / 2.0) / meanDistance));
 		    System.out.println(meanDistance + ", " + medianAngle + ", " + coverAngle);
 		    System.out.println(expectedAngle);
-		    if (coverAngle < expectedAngle) {
+		    if (coverAngle < expectedAngle&&coverAngle>=10.0f) {
 			pointList.add(mover.getPointAt(meanDistance, medianAngle));
 			System.out.println(mover.getPointAt(meanDistance, medianAngle));
 		    }
