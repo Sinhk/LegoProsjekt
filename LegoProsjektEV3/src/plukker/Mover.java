@@ -112,12 +112,12 @@ class Mover extends Thread {
 	if (sensor.getRight() && sensor.getLeft()) {
 	    
 	} else if (sensor.getRight()) {
-	    pilot.arcBackward(-wheelOffset);
+	    pilot.arcBackward(wheelOffset);
 	    while (!sensor.getLeft()) {
 	    }
 	    pilot.stop();
 	} else if (sensor.getLeft()) {
-	    pilot.arcBackward(wheelOffset);
+	    pilot.arcBackward(-wheelOffset);
 	    while (!sensor.getRight()) {
 	    }
 	    pilot.stop();

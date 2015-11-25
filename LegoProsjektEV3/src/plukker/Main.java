@@ -26,13 +26,6 @@ class Main {
 	// Button.ENTER.waitForPressAndRelease();
 	// radar.navigate();
 
-	motor.goToPoint(new Point(10, 0));
-	motor.align();
-	motor.goToPoint(new Point(10, 0));
-	motor.align();
-	motor.goToPoint(new Point(10, 0));
-	motor.align();
-	
 	// motor.start();
 	// EV3 ev3 = (EV3) BrickFinder.getLocal();
 	boolean fortsett = true;
