@@ -37,6 +37,7 @@ class Main {
 		nxt.setReady();
 		if (ballsFound >= ballTarget) {
 		    fortsett = false;
+		    break;
 		}
 		motor.resetHome();
 	    }
@@ -60,7 +61,7 @@ class Main {
 	}
 	motor.terminate();
 	nxt.setDone();
-	motor.join();
+	//motor.join();
 	btThread.join();
     }
 }

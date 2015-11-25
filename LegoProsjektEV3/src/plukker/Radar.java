@@ -6,6 +6,7 @@ import java.util.List;
 import lejos.robotics.geometry.Point;
 import lejos.robotics.navigation.Navigator;
 import lejos.robotics.navigation.Waypoint;
+import lejos.utility.Delay;
 
 public class Radar {
     private Sensor sensor;
@@ -50,6 +51,7 @@ public class Radar {
 		points.add(new float[] { distance , angle });
 		//System.out.println(distance + ", " + angle);
 	    }
+	    Delay.msDelay(100);
 	}
 	mover.gyroRotateTo(360.0);
 	float lastDistance = 0;

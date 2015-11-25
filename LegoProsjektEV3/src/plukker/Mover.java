@@ -56,7 +56,7 @@ class Mover extends Thread {
     }
 
     public void setSpeeds() {
-	pilot.setLinearSpeed(pilot.getMaxLinearSpeed() * (speed / 100));
+	pilot.setLinearSpeed(10);
 	pilot.setAngularSpeed(30);// pilot.getMaxAngularSpeed()* 0.1);
 	// pilot.setAngularAcceleration(pilot.getAngularAcceleration());
 	// pilot.setLinearAcceleration(pilot.getLinearAcceleration());
@@ -166,14 +166,14 @@ class Mover extends Thread {
     public void resetHome(){
 	pilot.rotate(-90);
 	pilot.backward();
-	while (!sensor.getRight() && sensor.getLeft()) {
+	while (!sensor.getRight() && !sensor.getLeft()) {
 	}
 	pilot.stop();
 	alignReverse();
 	pp.setPose(startPose);
 	sensor.resetGyro();
-	
     }
+    
     public void resumeSearch() {
 	pilot.rotate(-90);
 	pilot.backward();
@@ -241,12 +241,13 @@ class Mover extends Thread {
 	int run = 1;
 	//System.out.println("Outside: " +sensor.getDistance());
 	while (Math.abs(distance - sensor.getDistance()) > ERR) {
-	    float angle = (float) (angleBase *run*((Math.pow(-1, run+1))));
+	    float angle = (float) (angleBase *run*((Math.pow(-1, run))));
 	    pilot.rotate(angle, true);
 	    while (pilot.isMoving() && Math.abs(distance - sensor.getDistance()) > ERR){
 		//System.out.println("Inside: " +sensor.getDistance());
 		//Thread.yield();
 	    }
+	    Delay.msDelay(50);
 	    pilot.stop();
 	    if (angle >= 180)
 		return false;
