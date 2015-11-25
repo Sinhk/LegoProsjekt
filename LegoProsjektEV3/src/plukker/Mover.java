@@ -166,21 +166,6 @@ class Mover extends Thread {
 
     }
 
-    public void resumeSearch() {
-	pilot.rotate(-90);
-	pilot.backward();
-	while (!sensor.getRight() && sensor.getLeft()) {
-	}
-
-	pilot.stop();
-	align();
-	pp.setPose(startPose);
-	sensor.resetGyro();
-	pilot.rotate(pp.getPose().relativeBearing(searchPose.getLocation()));
-	pilot.travel(pp.getPose().distanceTo(searchPose.getLocation()));
-	pilot.rotate(searchPose.getHeading() - pp.getPose().getHeading());
-	searching = true;
-    }
 
     /**
      * Tries to pick up ball at Point
