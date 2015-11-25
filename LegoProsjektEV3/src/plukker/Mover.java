@@ -215,7 +215,7 @@ class Mover extends Thread {
 		}
 
 		float distance = sensor.getDistance();
-		if (distance >= lastDistance) {
+		if (distance > lastDistance) {
 		    if (!correctAim(lastDistance)) {
 			return false;
 		    }
@@ -237,12 +237,12 @@ class Mover extends Thread {
 	float ERR = 20f;
 	float angleBase = 30f;
 	int run = 1;
-	// System.out.println("Outside: " +sensor.getDistance());
+	System.out.println("Looking for: " +distance);
 	while (Math.abs(distance - sensor.getDistance()) > ERR) {
 	    float angle = (float) (angleBase * run * ((Math.pow(-1, run))));
 	    pilot.rotate(angle, true);
 	    while (pilot.isMoving() && Math.abs(distance - sensor.getDistance()) > ERR) {
-		//System.out.println("Inside: " + sensor.getDistance());
+		System.out.println("Finding: " + sensor.getDistance());
 		//Thread.yield();
 	    }
 	    pilot.stop();
