@@ -166,7 +166,9 @@ class Mover extends Thread {
 	while (!sensor.getBall()) {
 	    if (!sensor.getLeft()) {
 		chassis.setVelocity(10, 15);
-		while (!sensor.getLeft());
+		while (!sensor.getLeft()){
+		    if (sensor.getBall())break;
+		}
 		chassis.setVelocity(10, -5);
 		//pilot.arcForward(-40);
 	    }
