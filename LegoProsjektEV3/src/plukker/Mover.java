@@ -187,8 +187,7 @@ class Mover extends Thread {
     public boolean fetchBall(Point point) {
 	pilot.rotate(pp.getPose().relativeBearing(point));
 	pilot.forward();
-	while (pp.getPose().distanceTo(point) > 1f)
-	    ;
+	while (pp.getPose().distanceTo(point) > 100f);
 	float estDist = pp.getPose().distanceTo(point);
 	if (correctAim(estDist)) {
 	    pilot.forward();

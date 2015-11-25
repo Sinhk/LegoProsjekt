@@ -6,7 +6,7 @@ import lejos.hardware.Button;
 class Main {
     public static void main(String[] arg) throws Exception {
 	double speed = 30;
-	float searchRadius = 1f;
+	float searchRadius = 100f;
 	float sideOfSquare = (float) ((searchRadius * 2) * Math.sqrt(2));
 	float ballSize = 5f;
 	int ballTarget = 2;
@@ -63,6 +63,5 @@ class Main {
 	nxt.setDone();
 	motor.join();
 	btThread.join();
-
     }
 }

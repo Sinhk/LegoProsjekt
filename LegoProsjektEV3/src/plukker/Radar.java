@@ -44,7 +44,7 @@ public class Radar {
 	    float distance = sensor.getDistance();
 	    if (distance <= radius && distance > 0) {
 		float angle = sensor.getGyro();// mover.getHeading();
-		points.add(new float[] { distance * 100.0f, angle });
+		points.add(new float[] { distance , angle });
 		System.out.println(distance + ", " + angle);
 	    }
 	}
@@ -70,12 +70,11 @@ public class Radar {
 		    float meanDistance = totalDistance / matchCount;
 		    float meanAngle = totalAngle / matchCount;
 		    float coverAngle = angle - startAngle;
-		    System.out.println(meanDistance + ", " + meanAngle);
+		    System.out.println(meanDistance + ", " + meanAngle + ", " + coverAngle);
+		    System.out.println(2 * Math.atan((objectSize / 2) / meanDistance));
 		    if (coverAngle < 2 * Math.atan((objectSize / 2) / meanDistance)) {
 			pointList.add(mover.getPointAt(meanDistance, meanAngle));
 		    }
-		    ;
-
 		}
 		totalAngle = angle;
 		totalDistance = distance;
