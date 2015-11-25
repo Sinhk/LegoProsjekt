@@ -39,11 +39,12 @@ public class Radar {
     public void findPoints() {
 	pointList.clear();
 	List<float[]> points = new ArrayList<float[]>();
+	mover.gyroRotateTo(0.0);
 	mover.slowSpin(360);
 	while (mover.isMoving()) {
 	    float distance = sensor.getDistance();
 	    if (distance <= radius && distance > 0.0f) {
-		float angle = sensor.getGyro();// mover.getHeading();
+		float angle = sensor.getGyro()<=360.0f?sensor.getGyro():360.0f;// mover.getHeading();
 		points.add(new float[] { distance , angle });
 		System.out.println(distance + ", " + angle);
 	    }
@@ -57,24 +58,25 @@ public class Radar {
 	int matchCount = 0;
 	int i = 0;
 	boolean firstRound = true;
-	while(i == points.size()){
+	while(i < points.size()){
 	    float distance = points.get(i)[0];
 	    float angle = points.get(i)[1];
 	    
 	    // System.out.println(distance+", "+ angle + ", "+Math.abs(distance
 	    // - lastDistance) +", " +Math.abs(angle - lastAngle) );
+	    System.out.println((180-Math.abs(Math.abs(angle - lastAngle)-180)));
 	    if (Math.abs(distance - lastDistance) < ERR && (180-Math.abs(Math.abs(angle - lastAngle)-180)) < ERR) {
 		totalAngle += angle;
 		totalDistance += distance;
 		matchCount++;
-		if(!firstRound)
+		if(!firstRound&&pointList.size()!=0)
 		    pointList.remove(0);
 		// System.out.println(matchCount);
 	    } else {
 		if (matchCount > 1) {
 		    float meanDistance = totalDistance / matchCount;
 		    float meanAngle = totalAngle / matchCount;
-		    float coverAngle = angle - startAngle;
+		    float coverAngle =180-Math.abs(Math.abs(lastAngle - startAngle)-180);
 		    System.out.println(meanDistance + ", " + meanAngle + ", " + coverAngle);
 		    System.out.println(Math.toDegrees(2 * Math.atan((objectSize / 2) / meanDistance)));
 		    if (coverAngle < Math.toDegrees(2 * Math.atan((objectSize / 2) / meanDistance))) {

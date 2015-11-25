@@ -8,7 +8,7 @@ class Main {
 	double speed = 30;
 	float searchRadius = 100f;
 	float sideOfSquare = (float) ((searchRadius * 2) * Math.sqrt(2));
-	float ballSize = 5f;
+	float ballSize = 10f;
 	int ballTarget = 2;
 	int ballsFound = 0;
 	Sensor sensor = new Sensor();
