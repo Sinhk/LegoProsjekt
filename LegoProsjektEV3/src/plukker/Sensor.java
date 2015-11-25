@@ -34,9 +34,7 @@ class Sensor {
     }
 
     public boolean getBall() {
-	float[] sample = new float[distance.sampleSize()];
-	distance.fetchSample(sample, 0);
-	if (sample[0] <= 0.1 && sample[0] != 0.0) {
+	if (getDistance() <= 10.0 && getDistance() != 0.0) {
 	    return true;
 	} else {
 	    return false;
