@@ -2,6 +2,7 @@ package plukker;
 
 //import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
+import lejos.robotics.geometry.Point;
 import lejos.utility.Delay;
 
 class Main {
@@ -25,6 +26,13 @@ class Main {
 	// Button.ENTER.waitForPressAndRelease();
 	// radar.navigate();
 
+	motor.goToPoint(new Point(10, 0));
+	motor.alignReverse();
+	motor.goToPoint(new Point(10, 0));
+	motor.alignReverse();
+	motor.goToPoint(new Point(10, 0));
+	motor.alignReverse();
+	
 	// motor.start();
 	// EV3 ev3 = (EV3) BrickFinder.getLocal();
 	boolean fortsett = true;

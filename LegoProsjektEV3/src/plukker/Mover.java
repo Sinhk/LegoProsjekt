@@ -122,8 +122,11 @@ class Mover extends Thread {
     }
 
     public void alignReverse() {
+	pilot.backward();
+	while (!sensor.getRight() && !sensor.getLeft()) {
+	}
 	if (sensor.getRight() && sensor.getLeft()) {
-
+	    pilot.stop();
 	} else if (sensor.getRight()) {
 	    pilot.arcBackward(-wheelOffset);
 	    while (!sensor.getLeft()) {
@@ -174,10 +177,6 @@ class Mover extends Thread {
 
     public void resetHome() {
 	pilot.rotate(-90);
-	pilot.backward();
-	while (!sensor.getRight() && !sensor.getLeft()) {
-	}
-	pilot.stop();
 	alignReverse();
 	pp.setPose(startPose);
 	sensor.resetGyro();
