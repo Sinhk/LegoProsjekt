@@ -25,6 +25,7 @@ class Pickup {
 	while(!claw.isStalled());
 	if(claw.getTachoCount()<-200){
 	    claw.rotateTo(-10);
+	    lift.rotateTo(10);
 	    return false;
 	}
 	lift.rotateTo(10);

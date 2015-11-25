@@ -104,23 +104,23 @@ class Mover extends Thread {
     }
 
     public void align() {
-	pilot.backward();
-	while (!sensor.getRight() && !sensor.getLeft()) {
-	}
 	if (sensor.getRight() && sensor.getLeft()) {
-	    pilot.stop();
-	} else if (sensor.getRight()) {
-	    pilot.arcBackward(-wheelOffset);
-	    while (!sensor.getLeft()) {
+
+	} else {
+	    if (sensor.getRight()) {
+		pilot.arcForward(-wheelOffset);
+		while (!sensor.getLeft()) {
+		}
+		pilot.stop();
+	    } else if (sensor.getLeft()) {
+		pilot.arcForward(wheelOffset);
+		while (!sensor.getRight()) {
+		}
+		pilot.stop();
 	    }
-	    pilot.stop();
-	} else if (sensor.getLeft()) {
-	    pilot.arcBackward(wheelOffset);
-	    while (!sensor.getRight()) {
-	    }
-	    pilot.stop();
 	}
     }
+    
     public void alignReverse() {
 	pilot.backward();
 	while (!sensor.getRight() && !sensor.getLeft()) {
@@ -168,7 +168,7 @@ class Mover extends Thread {
 		chassis.setVelocity(10, 15);
 		while (!sensor.getLeft());
 		chassis.setVelocity(10, -5);
-		pilot.arcForward(-40);
+		//pilot.arcForward(-40);
 	    }
 	}
 	pilot.stop();
@@ -313,6 +313,9 @@ class Mover extends Thread {
 	if (sensor.getDistance()<pp.getPose().distanceTo(point)){
 	    pilot.stop();
 	    return false;
+	}
+	while(pilot.isMoving()){
+	    
 	}
 	gyroRotateTo(0);
 	return true;

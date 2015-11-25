@@ -30,7 +30,7 @@ public class BTConnectEV3 implements Runnable {
 	BTConnection nxt = null;
 	// DataInputStream dis = null;
 	DataOutputStream dos = null;
-	// System.err.close();
+	System.err.close();
 	while (running) {
 	    // Try to connect until success, then open io streams
 	    while (running && !connected) {

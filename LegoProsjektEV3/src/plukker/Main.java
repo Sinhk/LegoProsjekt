@@ -11,7 +11,7 @@ class Main {
 	float searchRadius = 60f;
 	float sideOfSquare = (float) ((searchRadius * 2) * Math.sqrt(2));
 	float ballSize = 50f;
-	int ballTarget = 2;
+	int ballTarget = 3;
 	int ballsFound = 0;
 	Sensor sensor = new Sensor();
 	Pickup pickUp = new Pickup();
