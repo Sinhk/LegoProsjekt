@@ -103,25 +103,8 @@ class Mover extends Thread {
 	pilot.stop();
     }
 
+    
     public void align() {
-	if (sensor.getRight() && sensor.getLeft()) {
-
-	} else {
-	    if (sensor.getRight()) {
-		pilot.arcForward(-wheelOffset);
-		while (!sensor.getLeft()) {
-		}
-		pilot.stop();
-	    } else if (sensor.getLeft()) {
-		pilot.arcForward(wheelOffset);
-		while (!sensor.getRight()) {
-		}
-		pilot.stop();
-	    }
-	}
-    }
-
-    public void alignReverse() {
 	pilot.backward();
 	while (!sensor.getRight() && !sensor.getLeft()) {
 	}
@@ -177,7 +160,7 @@ class Mover extends Thread {
 
     public void resetHome() {
 	pilot.rotate(-90);
-	alignReverse();
+	align();
 	pp.setPose(startPose);
 	sensor.resetGyro();
 
@@ -190,7 +173,7 @@ class Mover extends Thread {
 	}
 
 	pilot.stop();
-	alignReverse();
+	align();
 	pp.setPose(startPose);
 	sensor.resetGyro();
 	pilot.rotate(pp.getPose().relativeBearing(searchPose.getLocation()));

@@ -27,11 +27,11 @@ class Main {
 	// radar.navigate();
 
 	motor.goToPoint(new Point(10, 0));
-	motor.alignReverse();
+	motor.align();
 	motor.goToPoint(new Point(10, 0));
-	motor.alignReverse();
+	motor.align();
 	motor.goToPoint(new Point(10, 0));
-	motor.alignReverse();
+	motor.align();
 	
 	// motor.start();
 	// EV3 ev3 = (EV3) BrickFinder.getLocal();
