@@ -31,8 +31,12 @@ class Main {
 	boolean fortsett = true;
 	while (fortsett) {
 	    if (radar.getRemaining() == 0) {
-		motor.goToCentre(searchRadius);
-		radar.findPoints();
+		if (motor.goToCentre(searchRadius)){
+		    radar.findPoints();
+		}else{
+		    radar.addPoint(motor.getPointAt(sensor.getDistance(), motor.getHeading()));
+		}
+		
 	    }else if (motor.fetchBall(radar.getClosestPoint(true))) {
 		ballsFound++;
 		motor.goHome();

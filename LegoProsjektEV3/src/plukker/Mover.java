@@ -302,13 +302,19 @@ class Mover extends Thread {
 
     }
 
-    public void goToPoint(Point point) {
+    public void goToPoint(Point point, boolean immidiateReturn) {
 	pilot.rotate(pp.getPose().relativeBearing(point));
-	pilot.travel(pp.getPose().distanceTo(point));
+	pilot.travel(pp.getPose().distanceTo(point),immidiateReturn);
     }
 
-    public void goToCentre(float searchRadius) {
-	goToPoint(startPose.pointAt(searchRadius, -45));
+    public boolean goToCentre(float searchRadius) {
+	Point point = startPose.pointAt(searchRadius, -45);
+	goToPoint(point,true);
+	if (sensor.getDistance()<pp.getPose().distanceTo(point)){
+	    pilot.stop();
+	    return false;
+	}
 	gyroRotateTo(0);
+	return true;
     }
 }

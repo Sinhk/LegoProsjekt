@@ -152,4 +152,8 @@ public class Radar {
     public int getRemaining() {
 	return pointList.size();
     }
+    
+    public void addPoint(Point point){
+	pointList.add(point);
+    }
 }
