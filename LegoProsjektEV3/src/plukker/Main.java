@@ -50,14 +50,7 @@ class Main {
 		}
 		motor.resetHome();
 	    }
-
-	    if (false && sensor.getBall()) {
-		pickUp.pickup();
-		// Delay.msDelay(400);
-		motor.goHome();
-		nxt.setReady();
-		motor.resumeSearch();
-	    }
+	    
 	    if (Button.ESCAPE.isDown())
 		fortsett = false;
 	    if (Button.ENTER.isDown()) {
