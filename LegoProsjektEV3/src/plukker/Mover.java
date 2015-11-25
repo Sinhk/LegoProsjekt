@@ -163,7 +163,7 @@ class Mover extends Thread {
 	    if (!sensor.getLeft()) {
 		pilot.arcForward(wheelOffset);
 		while (!sensor.getLeft());
-		pilot.arcForward(30);
+		pilot.arcForward(-30);
 	    }
 	}
 	pilot.stop();
@@ -174,7 +174,7 @@ class Mover extends Thread {
     public void resetHome() {
 	pilot.rotate(-90);
 	pilot.backward();
-	while (!sensor.getRight() && sensor.getLeft()) {
+	while (!sensor.getRight() && !sensor.getLeft()) {
 	}
 	pilot.stop();
 	alignReverse();

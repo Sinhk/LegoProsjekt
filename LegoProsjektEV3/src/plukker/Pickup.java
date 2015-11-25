@@ -9,7 +9,7 @@ class Pickup {
 
     private static NXTRegulatedMotor lift = new NXTRegulatedMotor(MotorPort.C);
     private static EV3MediumRegulatedMotor claw = new EV3MediumRegulatedMotor(MotorPort.B);
-    private float liftSpeed = lift.getMaxSpeed();//200f;
+    private float liftSpeed = lift.getMaxSpeed()*0.8f;//200f;
     private float clawSpeed = 260f;
 
     public Pickup() {

@@ -5,7 +5,7 @@ import lejos.hardware.Button;
 
 class Main {
     public static void main(String[] arg) throws Exception {
-	double speed = 30;
+	double speed = 20;
 	float searchRadius = 60f;
 	float sideOfSquare = (float) ((searchRadius * 2) * Math.sqrt(2));
 	float ballSize = 50f;
