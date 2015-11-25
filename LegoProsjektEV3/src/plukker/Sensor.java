@@ -94,7 +94,7 @@ class Sensor {
     public float getDistance() {
 	float[] sample = new float[distance.sampleSize()];
 	distance.fetchSample(sample, 0);
-	return (sample[0] == 0.0) ? Float.POSITIVE_INFINITY : sample[0];
+	return ((sample[0] == 0.0) ? Float.POSITIVE_INFINITY : sample[0])*100;
     }
 
     public float getGyro() {
