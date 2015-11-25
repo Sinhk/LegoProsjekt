@@ -84,7 +84,7 @@ class Mover extends Thread {
 
 		if (sensor.getRight() || sensor.getLeft()) {
 		    pilot.stop();
-		    align();
+		    alignReverse();
 		    // TODO Add correction to poseprovider. Set heading, if
 		    // accurate
 		    // pilot.travel(-3);
@@ -103,8 +103,25 @@ class Mover extends Thread {
 	pilot.stop();
     }
 
-    
     public void align() {
+	pilot.backward();
+	while (!sensor.getRight() && !sensor.getLeft()) {
+	}
+	if (sensor.getRight() && sensor.getLeft()) {
+	    pilot.stop();
+	} else if (sensor.getRight()) {
+	    pilot.arcBackward(-wheelOffset);
+	    while (!sensor.getLeft()) {
+	    }
+	    pilot.stop();
+	} else if (sensor.getLeft()) {
+	    pilot.arcBackward(wheelOffset);
+	    while (!sensor.getRight()) {
+	    }
+	    pilot.stop();
+	}
+    }
+    public void alignReverse() {
 	pilot.backward();
 	while (!sensor.getRight() && !sensor.getLeft()) {
 	}
@@ -161,7 +178,7 @@ class Mover extends Thread {
 
     public void resetHome() {
 	pilot.rotate(-90);
-	align();
+	alignReverse();
 	pp.setPose(startPose);
 	sensor.resetGyro();
 
@@ -223,8 +240,8 @@ class Mover extends Thread {
 	    float angle = (float) (angleBase * run * ((Math.pow(-1, run + 1))));
 	    pilot.rotate(angle, true);
 	    while (pilot.isMoving() && Math.abs(distance - sensor.getDistance()) > ERR) {
-		System.out.println("Inside: " + sensor.getDistance());
-		// Thread.yield();
+		//System.out.println("Inside: " + sensor.getDistance());
+		//Thread.yield();
 	    }
 	    pilot.stop();
 	    if (angle >= 180)
