@@ -56,8 +56,9 @@ class Mover extends Thread {
     }
 
     public void setSpeeds() {
-	pilot.setLinearSpeed(pilot.getMaxLinearSpeed() * (speed / 100));
-	pilot.setAngularSpeed(30);// pilot.getMaxAngularSpeed()* 0.1);
+	pilot.setLinearSpeed(10);
+	pilot.setAngularSpeed(30);
+	// pilot.getMaxAngularSpeed()* 0.1);
 	// pilot.setAngularAcceleration(pilot.getAngularAcceleration());
 	// pilot.setLinearAcceleration(pilot.getLinearAcceleration());
     }
@@ -160,9 +161,10 @@ class Mover extends Thread {
 	pilot.forward();
 	while (!sensor.getBall()) {
 	    if (!sensor.getLeft()) {
-		pilot.arcForward(wheelOffset);
+		chassis.setVelocity(10, 15);
 		while (!sensor.getLeft());
-		pilot.arcForward(-30);
+		chassis.setVelocity(10, -5);
+		pilot.arcForward(-40);
 	    }
 	}
 	pilot.stop();
