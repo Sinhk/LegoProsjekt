@@ -13,7 +13,7 @@ public class Radar {
     private List<Point> pointList = new ArrayList<Point>();
     private float radius;
     private float diameter;
-    private final float ERR = 5f;
+    private final float ERR = 10f;
     private final float objectSize;
 
     /**
@@ -32,11 +32,17 @@ public class Radar {
 	this.sensor = sensor;
 	this.mover = mover;
 	radius = searchRadius;
-	diameter = radius * 2;
+	diameter = radius * 2.0f;
 	this.objectSize = objectSize;
     }
 
     public void findPoints() {
+	System.out.println("0,0" +mover.getPointAt(0, 0));
+	System.out.println("rett frem 50:" +mover.getPointAt(50, 0));
+	System.out.println("rett bak 50:" + mover.getPointAt(50, 180));
+	System.out.println("venstre  50:" +mover.getPointAt(50, 90));
+	System.out.println("høyre 50:" +mover.getPointAt(50, 270));
+	
 	pointList.clear();
 	List<float[]> points = new ArrayList<float[]>();
 	mover.gyroRotateTo(0.0);
@@ -46,10 +52,15 @@ public class Radar {
 	    if (distance <= radius && distance > 0.0f) {
 		float angle = sensor.getGyro()<=360.0f?sensor.getGyro():360.0f;// mover.getHeading();
 		points.add(new float[] { distance , angle });
-		System.out.println(distance + ", " + angle);
+		//System.out.println(distance + ", " + angle);
 	    }
 	}
 	mover.gyroRotateTo(360.0);
+	System.out.println("0,0" +mover.getPointAt(0, 0));
+	System.out.println("rett frem 50:" +mover.getPointAt(50, 0));
+	System.out.println("rett bak 50:" + mover.getPointAt(50, 180));
+	System.out.println("venstre  50:" +mover.getPointAt(50, 90));
+	System.out.println("høyre 50:" +mover.getPointAt(50, 270));
 	float lastDistance = 0;
 	float lastAngle = 0;
 	float totalAngle = 0;
@@ -58,29 +69,33 @@ public class Radar {
 	int matchCount = 0;
 	int i = 0;
 	boolean firstRound = true;
+	boolean firstRemoved = false;
 	while(i < points.size()){
 	    float distance = points.get(i)[0];
 	    float angle = points.get(i)[1];
 	    
 	    // System.out.println(distance+", "+ angle + ", "+Math.abs(distance
 	    // - lastDistance) +", " +Math.abs(angle - lastAngle) );
-	    System.out.println((180-Math.abs(Math.abs(angle - lastAngle)-180)));
-	    if (Math.abs(distance - lastDistance) < ERR && (180-Math.abs(Math.abs(angle - lastAngle)-180)) < ERR) {
+	    if (Math.abs(distance - lastDistance) < ERR && (180.0f-Math.abs(Math.abs(angle - lastAngle)-180.0f)) < ERR) {
 		totalAngle += angle;
 		totalDistance += distance;
 		matchCount++;
-		if(!firstRound&&pointList.size()!=0)
+		if(!firstRound&&pointList.size()!=0&&!firstRemoved){
+		    firstRemoved = true;
 		    pointList.remove(0);
+		}
 		// System.out.println(matchCount);
 	    } else {
 		if (matchCount > 1) {
 		    float meanDistance = totalDistance / matchCount;
 		    float meanAngle = totalAngle / matchCount;
-		    float coverAngle =180-Math.abs(Math.abs(lastAngle - startAngle)-180);
+		    float coverAngle =180.0f-Math.abs(Math.abs(lastAngle - startAngle)-180.0f);
+		    double expectedAngle = Math.toDegrees(2.0 * Math.atan((objectSize / 2.0) / meanDistance));
 		    System.out.println(meanDistance + ", " + meanAngle + ", " + coverAngle);
-		    System.out.println(Math.toDegrees(2 * Math.atan((objectSize / 2) / meanDistance)));
-		    if (coverAngle < Math.toDegrees(2 * Math.atan((objectSize / 2) / meanDistance))) {
+		    System.out.println(expectedAngle);
+		    if (coverAngle < expectedAngle) {
 			pointList.add(mover.getPointAt(meanDistance, meanAngle));
+			System.out.println(mover.getPointAt(meanDistance, meanAngle));
 		    }
 		    if(!firstRound)break;
 		}
@@ -118,10 +133,13 @@ public class Radar {
 	float minLength = Float.POSITIVE_INFINITY;
 	int closest = -1;
 	for (int i = 0; i < pointList.size(); i++) {
-	    if (pointList.get(i).length() < minLength)
+	    if (pointList.get(i).length() < minLength){
+		minLength = pointList.get(i).length();
 		closest = i;
+	    }		
 	}
 	Point point = pointList.get(closest);
+	System.out.println(point);
 	if (delete) {
 	    pointList.remove(closest);
 	}
