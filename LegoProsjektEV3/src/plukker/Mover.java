@@ -138,7 +138,8 @@ class Mover extends Thread {
 	searching = false;
 	pilot.stop();
 	searchPose = pp.getPose();
-	Point homePoint = startPose.getLocation();
+	Point homePoint = new Point(0,-20);//startPose.getLocation();
+	//homePoint.pointAt(20f, 270f);
 	// ps.setHeading(myHeading);
 	// SK.setPose(was);
 
@@ -162,6 +163,17 @@ class Mover extends Thread {
 	pilot.travel(-20);
     }
 
+    public void resetHome(){
+	pilot.rotate(-90);
+	pilot.backward();
+	while (!sensor.getRight() && sensor.getLeft()) {
+	}
+	pilot.stop();
+	alignReverse();
+	pp.setPose(startPose);
+	sensor.resetGyro();
+	
+    }
     public void resumeSearch() {
 	pilot.rotate(-90);
 	pilot.backward();
@@ -189,7 +201,7 @@ class Mover extends Thread {
 	float ERR = 2f;
 	pilot.rotate(pp.getPose().relativeBearing(point));
 	pilot.forward();
-	while (pp.getPose().distanceTo(point) > 100f);
+	while (pp.getPose().distanceTo(point) > 30f);
 	float estDist = pp.getPose().distanceTo(point);
 	System.out.println(estDist);
 	if (correctAim(estDist)) {
@@ -197,6 +209,7 @@ class Mover extends Thread {
 	    float lastDistance = estDist;
 	    while (true) {
 		if (sensor.getBall()) {
+		    pilot.stop();
 		    if (pickUp.pickup()) {
 			return true;
 		    } else
@@ -205,11 +218,13 @@ class Mover extends Thread {
 
 		float distance = sensor.getDistance();
 		if (distance >= lastDistance) {
-		    if (!correctAim(lastDistance))
+		    if (!correctAim(lastDistance)){
 			return false;
+			}
+		    pilot.forward();
 		}
 		lastDistance = distance;
-		Delay.msDelay(100);
+		Delay.msDelay(200);
 	    }
 	}
 	return false;
@@ -224,12 +239,12 @@ class Mover extends Thread {
 	float ERR = 20f;
 	float angleBase = 30f;
 	int run = 1;
-	System.out.println("Outside: " +sensor.getDistance());
+	//System.out.println("Outside: " +sensor.getDistance());
 	while (Math.abs(distance - sensor.getDistance()) > ERR) {
 	    float angle = (float) (angleBase *run*((Math.pow(-1, run+1))));
 	    pilot.rotate(angle, true);
 	    while (pilot.isMoving() && Math.abs(distance - sensor.getDistance()) > ERR){
-		System.out.println("Inside: " +sensor.getDistance());
+		//System.out.println("Inside: " +sensor.getDistance());
 		//Thread.yield();
 	    }
 	    pilot.stop();

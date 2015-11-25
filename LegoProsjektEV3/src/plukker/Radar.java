@@ -37,12 +37,6 @@ public class Radar {
     }
 
     public void findPoints() {
-	System.out.println("0,0" +mover.getPointAt(0, 0));
-	System.out.println("rett frem 50:" +mover.getPointAt(50, 0));
-	System.out.println("rett bak 50:" + mover.getPointAt(50, 180));
-	System.out.println("venstre  50:" +mover.getPointAt(50, 90));
-	System.out.println("høyre 50:" +mover.getPointAt(50, 270));
-	
 	pointList.clear();
 	List<float[]> points = new ArrayList<float[]>();
 	mover.gyroRotateTo(0.0);
@@ -50,17 +44,14 @@ public class Radar {
 	while (mover.isMoving()) {
 	    float distance = sensor.getDistance();
 	    if (distance <= radius && distance > 0.0f) {
-		float angle = sensor.getGyro()<=360.0f?sensor.getGyro():360.0f;// mover.getHeading();
+		float angle = sensor.getGyro();// mover.getHeading();
+		angle = (angle>360.0f)?360.0f:angle;
+		angle = (angle<0)?0:angle;
 		points.add(new float[] { distance , angle });
 		//System.out.println(distance + ", " + angle);
 	    }
 	}
 	mover.gyroRotateTo(360.0);
-	System.out.println("0,0" +mover.getPointAt(0, 0));
-	System.out.println("rett frem 50:" +mover.getPointAt(50, 0));
-	System.out.println("rett bak 50:" + mover.getPointAt(50, 180));
-	System.out.println("venstre  50:" +mover.getPointAt(50, 90));
-	System.out.println("høyre 50:" +mover.getPointAt(50, 270));
 	float lastDistance = 0;
 	float lastAngle = 0;
 	float totalAngle = 0;
@@ -88,14 +79,14 @@ public class Radar {
 	    } else {
 		if (matchCount > 1) {
 		    float meanDistance = totalDistance / matchCount;
-		    float meanAngle = totalAngle / matchCount;
-		    float coverAngle =180.0f-Math.abs(Math.abs(lastAngle - startAngle)-180.0f);
+		    float coverAngle = 180.0f-Math.abs(Math.abs(lastAngle - startAngle)-180.0f);
+		    float medianAngle = startAngle+(coverAngle/2.0f);
 		    double expectedAngle = Math.toDegrees(2.0 * Math.atan((objectSize / 2.0) / meanDistance));
-		    System.out.println(meanDistance + ", " + meanAngle + ", " + coverAngle);
+		    System.out.println(meanDistance + ", " + medianAngle + ", " + coverAngle);
 		    System.out.println(expectedAngle);
 		    if (coverAngle < expectedAngle) {
-			pointList.add(mover.getPointAt(meanDistance, meanAngle));
-			System.out.println(mover.getPointAt(meanDistance, meanAngle));
+			pointList.add(mover.getPointAt(meanDistance, medianAngle));
+			System.out.println(mover.getPointAt(meanDistance, medianAngle));
 		    }
 		    if(!firstRound)break;
 		}

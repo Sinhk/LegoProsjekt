@@ -6,7 +6,7 @@ import lejos.hardware.Button;
 class Main {
     public static void main(String[] arg) throws Exception {
 	double speed = 30;
-	float searchRadius = 100f;
+	float searchRadius = 60f;
 	float sideOfSquare = (float) ((searchRadius * 2) * Math.sqrt(2));
 	float ballSize = 50f;
 	int ballTarget = 2;
@@ -38,6 +38,7 @@ class Main {
 		if (ballsFound >= ballTarget) {
 		    fortsett = false;
 		}
+		motor.resetHome();
 	    }
 
 	    if (false && sensor.getBall()) {
