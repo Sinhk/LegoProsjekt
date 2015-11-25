@@ -42,7 +42,7 @@ public class Radar {
 	mover.slowSpin(360);
 	while (mover.isMoving()) {
 	    float distance = sensor.getDistance();
-	    if (distance <= radius && distance > 0) {
+	    if (distance <= radius && distance > 0.0f) {
 		float angle = sensor.getGyro();// mover.getHeading();
 		points.add(new float[] { distance , angle });
 		System.out.println(distance + ", " + angle);
@@ -55,15 +55,20 @@ public class Radar {
 	float totalDistance = 0;
 	float startAngle = 0;
 	int matchCount = 0;
-	for (float[] p : points) {
-	    float distance = p[0];
-	    float angle = p[1];
+	int i = 0;
+	boolean firstRound = true;
+	while(i == points.size()){
+	    float distance = points.get(i)[0];
+	    float angle = points.get(i)[1];
+	    
 	    // System.out.println(distance+", "+ angle + ", "+Math.abs(distance
 	    // - lastDistance) +", " +Math.abs(angle - lastAngle) );
-	    if (Math.abs(distance - lastDistance) < ERR && Math.abs(angle - lastAngle) < ERR) {
+	    if (Math.abs(distance - lastDistance) < ERR && (180-Math.abs(Math.abs(angle - lastAngle)-180)) < ERR) {
 		totalAngle += angle;
 		totalDistance += distance;
 		matchCount++;
+		if(!firstRound)
+		    pointList.remove(0);
 		// System.out.println(matchCount);
 	    } else {
 		if (matchCount > 1) {
@@ -71,10 +76,11 @@ public class Radar {
 		    float meanAngle = totalAngle / matchCount;
 		    float coverAngle = angle - startAngle;
 		    System.out.println(meanDistance + ", " + meanAngle + ", " + coverAngle);
-		    System.out.println(2 * Math.atan((objectSize / 2) / meanDistance));
-		    if (coverAngle < 2 * Math.atan((objectSize / 2) / meanDistance)) {
+		    System.out.println(Math.toDegrees(2 * Math.atan((objectSize / 2) / meanDistance)));
+		    if (coverAngle < Math.toDegrees(2 * Math.atan((objectSize / 2) / meanDistance))) {
 			pointList.add(mover.getPointAt(meanDistance, meanAngle));
 		    }
+		    if(!firstRound)break;
 		}
 		totalAngle = angle;
 		totalDistance = distance;
@@ -82,15 +88,16 @@ public class Radar {
 		matchCount = 1;
 	    }
 
-	    lastDistance = p[0];
-	    lastAngle = p[1];
+	    lastDistance = distance;
+	    lastAngle = angle;
+	    i++;
+	    if (i == points.size()&&matchCount>1){
+		i=0;
+		firstRound = false;
+	    }
 	}
-	if (matchCount > 1) {
-	    float meanDistance = totalDistance / matchCount;
-	    float meanAngle = totalAngle / matchCount;
-	    System.out.println(meanDistance + ", " + meanAngle);
-	    pointList.add(mover.getPointAt(meanDistance, meanAngle));
-	}
+	
+	
 	mover.setSpeeds();
 	System.out.println("Found " + pointList.size() + " potential balls:");
 	for (Point p : pointList) {
@@ -105,6 +112,7 @@ public class Radar {
      * @return point closest to origo
      */
     public Point getClosestPoint(boolean delete) {
+	if (getRemaining()==0)return null;
 	float minLength = Float.POSITIVE_INFINITY;
 	int closest = -1;
 	for (int i = 0; i < pointList.size(); i++) {

@@ -31,9 +31,7 @@ class Main {
 	    if (radar.getRemaining() == 0) {
 		motor.goToCentre(searchRadius);
 		radar.findPoints();
-	    }
-
-	    if (motor.fetchBall(radar.getClosestPoint(true))) {
+	    }else if (motor.fetchBall(radar.getClosestPoint(true))) {
 		ballsFound++;
 		motor.goHome();
 		nxt.setReady();
