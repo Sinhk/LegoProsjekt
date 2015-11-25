@@ -39,7 +39,6 @@ class Mover extends Thread {
     private double wheelOffset = 5.28;
     private volatile boolean running;
     private double speed;
-    private boolean dropped = false;
 
     public Mover(Sensor sensor, Pickup pickUp, double speed) {
 	Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, wheelSize).offset(wheelOffset);
