@@ -28,7 +28,6 @@ public class BTConnectEV3 implements Runnable {
 	boolean connected = false;
 	BTConnector con = new BTConnector();
 	BTConnection nxt = null;
-	// DataInputStream dis = null;
 	DataOutputStream dos = null;
 	System.err.close();
 	while (running) {
@@ -37,7 +36,6 @@ public class BTConnectEV3 implements Runnable {
 		try {
 		    nxt = con.connect(address, NXTConnection.PACKET);
 		    if (nxt != null) {
-			// dis = nxt.openDataInputStream();
 			dos = nxt.openDataOutputStream();
 			connected = true;
 			
@@ -67,7 +65,6 @@ public class BTConnectEV3 implements Runnable {
 		} catch (IOException ioe) {
 		    connected = false;
 		    try {
-			// dis.close();
 			dos.close();
 			Thread.sleep(100);
 			nxt.close();
@@ -83,7 +80,6 @@ public class BTConnectEV3 implements Runnable {
 	}
 	try {
 	    if (nxt != null) {
-		// dis.close();
 		dos.close();
 		Thread.sleep(100);
 		nxt.close();

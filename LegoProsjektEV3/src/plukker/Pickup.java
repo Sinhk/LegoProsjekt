@@ -8,15 +8,19 @@ class Pickup {
 
     private static NXTRegulatedMotor lift = new NXTRegulatedMotor(MotorPort.C);
     private static EV3MediumRegulatedMotor claw = new EV3MediumRegulatedMotor(MotorPort.B);
-    private float liftSpeed = lift.getMaxSpeed() * 0.6f;// 200f;
+    private float liftSpeed = lift.getMaxSpeed() * 0.6f;
     private float clawSpeed = 300f;
 
+    /**
+     * Klasse for å styre kloen
+     */
     public Pickup() {
 	zero();
     }
 
     /**
-     * Pickup ball
+     * Plukker opp ballen
+     * @return true om ballen ble plukke opp
      */
     public boolean pickup() {
 	lift.rotateTo(145);
@@ -43,7 +47,7 @@ class Pickup {
     }
 
     /**
-     * Drop ball
+     * Slipper ballen
      */
     public void drop() {
 	lift.rotateTo(50);
@@ -52,7 +56,7 @@ class Pickup {
     }
 
     /**
-     * Move motors to start positions and set speed
+     * Flytter kloen til startposisjon og setter motorhastighet
      */
     public void zero() {
 	lift.setSpeed(20);

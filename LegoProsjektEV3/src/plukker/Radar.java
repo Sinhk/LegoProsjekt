@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lejos.robotics.geometry.Point;
-import lejos.robotics.navigation.Navigator;
-import lejos.robotics.navigation.Waypoint;
 import lejos.utility.Delay;
 
 public class Radar {
@@ -17,16 +15,11 @@ public class Radar {
     private final float objectSize;
 
     /**
-     * 
-     * @param sensor
-     *            Sensor object to use
-     * @param mover
-     *            Mover object to use
-     * @param searchRadius
-     *            radius to search inn
-     * @param objectSize
-     *            approximate size of object to search for. Side viewed by
-     *            sensor
+     * Klasse for å lete etter baller
+     * @param sensor Sensor objekt
+     * @param mover Mover objekt
+     * @param searchRadius radius på søkområde
+     * @param objectSize størrelse på ball
      */
     public Radar(Sensor sensor, Mover mover, float searchRadius, float objectSize) {
 	this.sensor = sensor;
@@ -35,10 +28,14 @@ public class Radar {
 	this.objectSize = objectSize;
     }
 
+    /**
+     * Finner baller og lagrer dem i liste
+     */
     public void findPoints() {
 	pointList.clear();
 	List<float[]> points = new ArrayList<float[]>();
 	mover.gyroRotateTo(0.0);
+	//Roterer 360 grader og lagrer alle punkt som er inne i søkeområdet
 	mover.slowSpin(360);
 	while (mover.isMoving()) {
 	    float distance = sensor.getDistance();
@@ -47,50 +44,43 @@ public class Radar {
 		angle = (angle>360.0f)?360.0f:angle;
 		angle = (angle<0)?0:angle;
 		points.add(new float[] { distance , angle });
-		//System.out.println(distance + ", " + angle);
 	    }
 	    Delay.msDelay(100);
 	}
 	mover.gyroRotateTo(360.0);
 	float lastDistance = 0;
 	float lastAngle = 0;
-	//float totalAngle = 0;
 	float totalDistance = 0;
 	float startAngle = 0;
 	int matchCount = 0;
 	int i = 0;
 	boolean firstRound = true;
 	boolean firstRemoved = false;
+	//Slår sammen punkt som er nær hverandre og lagrer dem som baller.
 	while(i < points.size()){
 	    float distance = points.get(i)[0];
 	    float angle = points.get(i)[1];
 	    
-	    // System.out.println(distance+", "+ angle + ", "+Math.abs(distance
-	    // - lastDistance) +", " +Math.abs(angle - lastAngle) );
 	    if (Math.abs(distance - lastDistance) < ERR && (180.0f-Math.abs(Math.abs(angle - lastAngle)-180.0f)) < ERR) {
-		//totalAngle += angle;
 		totalDistance += distance;
 		matchCount++;
 		if(!firstRound&&pointList.size()!=0&&!firstRemoved){
 		    firstRemoved = true;
 		    pointList.remove(0);
 		}
-		// System.out.println(matchCount);
+		
 	    } else {
 		if (matchCount > 1) {
 		    float meanDistance = totalDistance / matchCount;
 		    float coverAngle = 180.0f-Math.abs(Math.abs(lastAngle - startAngle)-180.0f);
 		    float medianAngle = startAngle+(coverAngle/2.0f);
 		    double expectedAngle = Math.toDegrees(2.0 * Math.atan((objectSize / 2.0) / meanDistance));
-		    System.out.println(meanDistance + ", " + medianAngle + ", " + coverAngle);
-		    System.out.println(expectedAngle);
+		    // Hvis punktene dekker mer en 10 grader og mindre enn forventet vinkel (utregnet fra ballstørrelse) legres de som en ball. 
 		    if (coverAngle < expectedAngle&&coverAngle>=10.0f) {
 			pointList.add(mover.getPointAt(meanDistance, medianAngle));
-			System.out.println(mover.getPointAt(meanDistance, medianAngle));
 		    }
 		    if(!firstRound)break;
 		}
-		//totalAngle = angle;
 		totalDistance = distance;
 		startAngle = angle;
 		matchCount = 1;
@@ -99,25 +89,19 @@ public class Radar {
 	    lastDistance = distance;
 	    lastAngle = angle;
 	    i++;
+	    
 	    if (i == points.size()&&matchCount>1){
 		i=0;
 		firstRound = false;
 	    }
 	}
-	
-	
 	mover.setSpeeds();
-	System.out.println("Found " + pointList.size() + " potential balls:");
-	for (Point p : pointList) {
-	    System.out.println("X: " + p.getX() + " Y: " + p.getY());
-	}
     }
 
     /**
-     * 
-     * @param delete
-     *            if point should be removed from list
-     * @return point closest to origo
+     * Finner nærmeste ball
+     * @param delete true hvis ballen skla slettes fra listen
+     * @return point nærmeste ball
      */
     public Point getClosestPoint(boolean delete) {
 	if (getRemaining()==0)return null;
@@ -130,27 +114,24 @@ public class Radar {
 	    }		
 	}
 	Point point = pointList.get(closest);
-	System.out.println(point);
 	if (delete) {
 	    pointList.remove(closest);
 	}
 	return point;
     }
 
-    public void navigate() {
-	Navigator navigator = new Navigator(mover.getPilot());
-	for (Point p : pointList) {
-	    navigator.addWaypoint(new Waypoint(p));
-	}
-	navigator.followPath();
-	navigator.singleStep(false);
-	// navigator.waitForStop();
-    }
-
+    /**
+     * Sjekker hvor mange baller som finnes i listen
+     * @return antall baller i listen
+     */
     public int getRemaining() {
 	return pointList.size();
     }
     
+    /**
+     * Legger til ball i listen 
+     * @param point ballens plassering
+     */
     public void addPoint(Point point){
 	pointList.add(point);
     }

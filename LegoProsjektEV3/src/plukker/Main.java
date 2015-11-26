@@ -1,65 +1,57 @@
 package plukker;
 
-//import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
 import lejos.utility.Delay;
 
 class Main {
     public static void main(String[] arg) throws Exception {
+	// Bestemmer hvor stort søkeområdet skal være
 	float searchRadius = 60f;
-	//float sideOfSquare = (float) ((searchRadius * 2) * Math.sqrt(2));
-	float ballSize = 50f;
+	float ballSize = 40f;
+	// Hvor mange baller som skal finnes
 	int ballTarget = 4;
 	int ballsFound = 0;
+
 	Sensor sensor = new Sensor();
 	Pickup pickUp = new Pickup();
-	Mover motor = new Mover(sensor, pickUp);
+	Mover mover = new Mover(sensor, pickUp);
 	BTConnectEV3 nxt = new BTConnectEV3();
+	// Starter tråd for bluetooth tilkobling
 	Thread btThread = new Thread(nxt);
 	btThread.start();
-	// motor.testRotate();
-	Radar radar = new Radar(sensor, motor, searchRadius, ballSize);
-	// radar.findPoints();
-	// LCD.drawString("Press enter to start", 0, 4);
-	// Button.ENTER.waitForPressAndRelease();
-	// radar.navigate();
-
-	// motor.start();
-	// EV3 ev3 = (EV3) BrickFinder.getLocal();
+	Radar radar = new Radar(sensor, mover, searchRadius, ballSize);
 	boolean fortsett = true;
 	while (fortsett) {
+	    // Leter etter nye baller, om det ikke er flere baller i listen
 	    if (radar.getRemaining() == 0) {
-		if (motor.goToCentre(searchRadius)){
+		if (mover.goToCentre(searchRadius)) {
 		    radar.findPoints();
-		}else{
-		    radar.addPoint(motor.getPointAt(sensor.getDistance(), motor.getHeading()));
+		} else {
+		    // hvis det ligger en ball mellom roboten og midten av
+		    // søkefeltet, hentes den før roboten leter etter flere baller
+		    radar.addPoint(mover.getPointAt(sensor.getDistance(), mover.getHeading()));
 		}
-		
-	    }else if (motor.fetchBall(radar.getClosestPoint(true))) {
-		ballsFound++;
-		motor.goHome();
+		// Henter baller, den nærmeste først, og leverer den til sorterer. 
+	    } else if (mover.fetchBall(radar.getClosestPoint(true))) {
+		mover.goHome();
+		// Aktiverer sorterer
 		nxt.setReady();
+		ballsFound++;
 		if (ballsFound >= ballTarget) {
 		    fortsett = false;
 		    break;
 		}
-		motor.resetHome();
+		mover.resetHome();
 	    }
 	    
 	    if (Button.ESCAPE.isDown())
 		fortsett = false;
-	    if (Button.ENTER.isDown()) {
-		motor.setPose0();
-		sensor.resetGyro();
-		radar.findPoints();
-		radar.navigate();
-	    }
 	    Thread.sleep(50);
 	}
-	//motor.terminate();
+	sensor.close();
+	//Venter med å sende avslutt signalet til NXTen, så den rekker å sortere den siste ballen før den avlutter.
 	Delay.msDelay(5000);
 	nxt.setDone();
-	//motor.join();
 	btThread.join();
     }
 }
