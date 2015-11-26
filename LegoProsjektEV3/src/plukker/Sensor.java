@@ -103,6 +103,6 @@ class Sensor {
 
     public void resetGyro() {
 	gyroSensor.reset();
-	Delay.msDelay(5000);
+	Delay.msDelay(2000);
     }
 }

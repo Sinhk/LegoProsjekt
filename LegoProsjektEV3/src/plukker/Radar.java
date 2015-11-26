@@ -13,7 +13,6 @@ public class Radar {
     private Mover mover;
     private List<Point> pointList = new ArrayList<Point>();
     private float radius;
-    private float diameter;
     private final float ERR = 10f;
     private final float objectSize;
 
@@ -33,7 +32,6 @@ public class Radar {
 	this.sensor = sensor;
 	this.mover = mover;
 	radius = searchRadius;
-	diameter = radius * 2.0f;
 	this.objectSize = objectSize;
     }
 
@@ -56,7 +54,7 @@ public class Radar {
 	mover.gyroRotateTo(360.0);
 	float lastDistance = 0;
 	float lastAngle = 0;
-	float totalAngle = 0;
+	//float totalAngle = 0;
 	float totalDistance = 0;
 	float startAngle = 0;
 	int matchCount = 0;
@@ -70,7 +68,7 @@ public class Radar {
 	    // System.out.println(distance+", "+ angle + ", "+Math.abs(distance
 	    // - lastDistance) +", " +Math.abs(angle - lastAngle) );
 	    if (Math.abs(distance - lastDistance) < ERR && (180.0f-Math.abs(Math.abs(angle - lastAngle)-180.0f)) < ERR) {
-		totalAngle += angle;
+		//totalAngle += angle;
 		totalDistance += distance;
 		matchCount++;
 		if(!firstRound&&pointList.size()!=0&&!firstRemoved){
@@ -92,7 +90,7 @@ public class Radar {
 		    }
 		    if(!firstRound)break;
 		}
-		totalAngle = angle;
+		//totalAngle = angle;
 		totalDistance = distance;
 		startAngle = angle;
 		matchCount = 1;

@@ -38,14 +38,12 @@ class Mover extends Thread {
     private double wheelSize = 5.56;
     private double wheelOffset = 5.28;
     private volatile boolean running;
-    private double speed;
-
-    public Mover(Sensor sensor, Pickup pickUp, double speed) {
+    
+    public Mover(Sensor sensor, Pickup pickUp) {
 	Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, wheelSize).offset(wheelOffset);
 	Wheel rightWheel = WheeledChassis.modelWheel(rightMotor, wheelSize).offset(-wheelOffset);
 	chassis = new WheeledChassis(new Wheel[] { leftWheel, rightWheel }, WheeledChassis.TYPE_DIFFERENTIAL);
 	pilot = new MovePilot(chassis);
-	this.speed = speed;
 	setSpeeds();
 	pp = new OdometryPoseProvider(pilot);
 	startPose = pp.getPose();
@@ -195,7 +193,6 @@ class Mover extends Thread {
      * @return true if ball is grabbed, false if ball is lost
      */
     public boolean fetchBall(Point point) {
-	float ERR = 2f;
 	pilot.rotate(pp.getPose().relativeBearing(point));
 	pilot.forward();
 	while (pp.getPose().distanceTo(point) > 30f)
@@ -219,6 +216,7 @@ class Mover extends Thread {
 		    if (!correctAim(lastDistance)) {
 			return false;
 		    }
+		    distance = sensor.getDistance();
 		    pilot.forward();
 		}
 		lastDistance = distance;
@@ -235,14 +233,14 @@ class Mover extends Thread {
      */
     public boolean correctAim(float distance) {
 	float ERR = 20f;
-	float angleBase = 30f;
+	float angleBase = 15f;
 	int run = 1;
 	System.out.println("Looking for: " +distance);
 	while (Math.abs(distance - sensor.getDistance()) > ERR) {
 	    float angle = (float) (angleBase * run * ((Math.pow(-1, run))));
 	    pilot.rotate(angle, true);
-	    while (pilot.isMoving() && Math.abs(distance - sensor.getDistance()) > ERR) {
-		System.out.println("Finding: " + sensor.getDistance());
+	    while (pilot.isMoving() && (Math.abs(distance - sensor.getDistance()) > ERR)&&(sensor.getDistance()>distance)) {
+		//if(sensor.getDistance()<100f)System.out.println("Finding: " + sensor.getDistance());
 		//Thread.yield();
 	    }
 	    pilot.stop();

@@ -2,20 +2,18 @@ package plukker;
 
 //import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
-import lejos.robotics.geometry.Point;
 import lejos.utility.Delay;
 
 class Main {
     public static void main(String[] arg) throws Exception {
-	double speed = 20;
 	float searchRadius = 60f;
-	float sideOfSquare = (float) ((searchRadius * 2) * Math.sqrt(2));
+	//float sideOfSquare = (float) ((searchRadius * 2) * Math.sqrt(2));
 	float ballSize = 50f;
-	int ballTarget = 3;
+	int ballTarget = 4;
 	int ballsFound = 0;
 	Sensor sensor = new Sensor();
 	Pickup pickUp = new Pickup();
-	Mover motor = new Mover(sensor, pickUp, speed);
+	Mover motor = new Mover(sensor, pickUp);
 	BTConnectEV3 nxt = new BTConnectEV3();
 	Thread btThread = new Thread(nxt);
 	btThread.start();

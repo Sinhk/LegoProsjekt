@@ -3,14 +3,13 @@ package plukker;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.MotorPort;
-import lejos.utility.Delay;
 
 class Pickup {
 
     private static NXTRegulatedMotor lift = new NXTRegulatedMotor(MotorPort.C);
     private static EV3MediumRegulatedMotor claw = new EV3MediumRegulatedMotor(MotorPort.B);
-    private float liftSpeed = lift.getMaxSpeed()*0.8f;//200f;
-    private float clawSpeed = 260f;
+    private float liftSpeed = lift.getMaxSpeed() * 0.6f;// 200f;
+    private float clawSpeed = 300f;
 
     public Pickup() {
 	zero();
@@ -22,13 +21,24 @@ class Pickup {
     public boolean pickup() {
 	lift.rotateTo(145);
 	claw.backward();
-	while(!claw.isStalled());
-	if(claw.getTachoCount()<-200){
+	while (!claw.isStalled());
+	if (claw.getTachoCount() < -200) {
 	    claw.rotateTo(-10);
+	    lift.setSpeed(liftSpeed / 4);
 	    lift.rotateTo(10);
+	    lift.setSpeed(liftSpeed);
 	    return false;
 	}
+	lift.setSpeed(liftSpeed / 4);
 	lift.rotateTo(10);
+	lift.setSpeed(liftSpeed);
+	claw.backward();
+	while (!claw.isStalled())
+	    ;
+	if (claw.getTachoCount() < -200) {
+	    claw.rotateTo(-10);
+	    return false;
+	}
 	return true;
     }
 
@@ -37,7 +47,7 @@ class Pickup {
      */
     public void drop() {
 	lift.rotateTo(50);
-	claw.rotateTo(-10);
+	claw.rotateTo(-20);
 	lift.rotateTo(20);
     }
 
@@ -47,7 +57,7 @@ class Pickup {
     public void zero() {
 	lift.setSpeed(20);
 	lift.backward();
-	while (!lift.isStalled()){
+	while (!lift.isStalled()) {
 	}
 	lift.stop();
 	lift.resetTachoCount();
@@ -61,7 +71,8 @@ class Pickup {
 	claw.stop();
 	claw.resetTachoCount();
 	claw.setSpeed(clawSpeed);
-	claw.rotateTo(-10);
+	claw.setStallThreshold(100, 1000);
+	claw.rotateTo(-20);
     }
 
 }
