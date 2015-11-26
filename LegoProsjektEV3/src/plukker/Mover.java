@@ -244,7 +244,7 @@ class Mover extends Thread {
 		//Thread.yield();
 	    }
 	    pilot.stop();
-	    if (angle >= 180)
+	    if (angle >= 90)
 		return false;
 	    run++;
 	}
